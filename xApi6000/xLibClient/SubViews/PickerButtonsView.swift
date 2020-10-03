@@ -29,7 +29,7 @@ struct PickerButtonsView: View {
       }) {Text("Select")}
         .padding(.trailing, 20)
     }
-//    .padding(.bottom, 10)
+    .padding(.bottom, 10)
   }
 }
 

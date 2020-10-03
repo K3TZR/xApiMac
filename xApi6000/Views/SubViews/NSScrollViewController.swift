@@ -10,21 +10,21 @@ import SwiftUI
 
 struct ScrollableView<Content:View>: NSViewControllerRepresentable {
   typealias NSViewControllerType = NSScrollViewController<Content>
-  var scrollPosition : Binding<CGPoint?>
   
-  var hasScrollbars : Bool
-  var content: () -> Content
+  var scrollPosition  : Binding<CGPoint?>
+  var hasScrollbars   : Bool
+  var content         : () -> Content
   
   init(hasScrollbars: Bool = true, scrollTo: Binding<CGPoint?>, @ViewBuilder content: @escaping () -> Content) {
     self.scrollPosition = scrollTo
-    self.hasScrollbars = hasScrollbars
-    self.content = content
+    self.hasScrollbars  = hasScrollbars
+    self.content        = content
   }
   
   func makeNSViewController(context: NSViewControllerRepresentableContext<Self>) -> NSViewControllerType {
     let scrollViewController = NSScrollViewController(rootView: self.content())
     
-    scrollViewController.scrollView.hasVerticalScroller = hasScrollbars
+    scrollViewController.scrollView.hasVerticalScroller   = hasScrollbars
     scrollViewController.scrollView.hasHorizontalScroller = hasScrollbars
     
     return scrollViewController
@@ -42,14 +42,14 @@ struct ScrollableView<Content:View>: NSViewControllerRepresentable {
 }
 
 class NSScrollViewController<Content: View> : NSViewController, ObservableObject {
-  var scrollView = NSScrollView()
-  var scrollPosition : Binding<CGPoint>? = nil
-  var hostingController : NSHostingController<Content>! = nil
+  var scrollView          = NSScrollView()
+  var scrollPosition      : Binding<CGPoint>? = nil
+  var hostingController   : NSHostingController<Content>! = nil
+  
   @Published var scrollTo : CGFloat? = nil
   
   override func loadView() {
     scrollView.documentView = hostingController.view
-    
     view = scrollView
   }
   

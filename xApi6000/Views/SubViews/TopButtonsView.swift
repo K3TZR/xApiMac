@@ -32,7 +32,7 @@ struct TopButtonsView: View {
       HStack {
         // Top row
         Button(action: {
-          tester.startStop()
+          tester.startStopTester()
         })
         {Text(tester.isConnected ? "Disconnect" : "Connect")
           .frame(width: 70, alignment: .center)

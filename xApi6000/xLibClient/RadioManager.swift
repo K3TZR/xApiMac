@@ -40,7 +40,7 @@ struct Station : Identifiable {
 // ----------------------------------------------------------------------------
 
 protocol RadioManagerDelegate {
-
+  
   /// Called asynchronously by RadioManager to indicate success / failure for a Radio connection attempt
   /// - Parameters:
   ///   - state:          true if connected
@@ -52,7 +52,7 @@ protocol RadioManagerDelegate {
   /// - Parameter msg:      explanation
   ///
   func disconnectionState(_ msg: String)
-
+  
   /// Called by the SmartLinkView to initiate a SmartLink Login | Logout
   ///
   func smartLinkLogin()
@@ -68,7 +68,7 @@ protocol RadioManagerDelegate {
   ///   - msg:      a string describing the result
   ///
   func smartLinkTestResults(status: Bool, msg: String)
-
+  
   /// Called by WanManager or RadioManager to Get / Set / Delete the saved Refresh Token
   /// - Parameters:
   ///   - service:  the Auth0 service name
@@ -77,25 +77,10 @@ protocol RadioManagerDelegate {
   func refreshTokenGet(service: String, account: String) -> String?
   func refreshTokenSet(service: String, account: String, refreshToken: String)
   func refreshTokenDelete(service: String, account: String)
-
-  /// Called to request an Alert to be shown
-  /// - Parameters:
-  ///   - style:    the alert style
-  ///   - msg:      the alert message
-  ///   - text:     the alert informative text
-  ///   - button1:  button text (if any)
-  ///   - button2:  button text (if any)
-  ///   - button3:  button text (if any)
-  ///   - button4:  button text (if any)
-  ///   - handler:  a callback closure
-  ///
-//  func showAlert(_ style: NSAlert.Style, msg: String, text: String,
-//                 button1: String, button2: String, button3: String, button4: String,
-//                 handler: @escaping (NSApplication.ModalResponse) -> Void)
-
+  
   func openStatus(_ status: OpenCloseStatus, _ clients: [GuiClient], handler: @escaping (NSApplication.ModalResponse) -> Void )
   func closeStatus(_ status: OpenCloseStatus, _ clients: [GuiClient], handler: @escaping (NSApplication.ModalResponse) -> Void )
-
+  
   var clientId              : String  {get}
   var connectAsGui          : Bool    {get}
   var kAppNameTrimmed       : String  {get}
@@ -112,17 +97,17 @@ public final class RadioManager : ObservableObject {
   
   // ----------------------------------------------------------------------------
   // MARK: - Static properties
-
+  
   static let kAuth0Domain               = "https://frtest.auth0.com/"
   static let kAuth0ClientId             = "4Y9fEIIsVYyQo5u6jr7yBWc4lV5ugC2m"
   static let kRedirect                  = "https://frtest.auth0.com/mobile"
   static let kResponseType              = "token"
   static let kScope                     = "openid%20offline_access%20email%20given_name%20family_name%20picture"
   static let kUserInitiated             = "User initiated"
-
+  
   // ----------------------------------------------------------------------------
   // MARK: - Published properties
-
+  
   var useLowBw : Bool = false
   
   @Published var activePacket           : DiscoveryPacket?
@@ -130,53 +115,53 @@ public final class RadioManager : ObservableObject {
   @Published var stations               = [Station]()
   @Published var stationChoices         = [Station]()
   @Published var bindingChoices         = [Station]()
-
+  
   @Published var pickerPackets          = [PickerPacket]()
   @Published var showPickerSheet        = false
   @Published var pickerSelection        = Set<Int>()
   @Published var stationSelection       = 0
   @Published var bindingSelection       = 0  {didSet {bind( bindingSelection )}}
-
+  
   @Published var showAuth0Sheet         = false
-
+  
   @Published var smartLinkIsLoggedIn    = false
   @Published var smartLinkTestStatus    = false
   @Published var smartLinkName          = ""
   @Published var smartLinkCallsign      = ""
   @Published var smartLinkImage         : NSImage?
-
+  
   // ----------------------------------------------------------------------------
   // MARK: - Internal properties
-
+  
   var delegate            : RadioManagerDelegate
   var wanManager          : WanManager?
-  var discoveryPackets    : [DiscoveryPacket] { Discovery.sharedInstance.discoveredRadios }
+  var packets             : [DiscoveryPacket] { Discovery.sharedInstance.discoveredRadios }
   
   // ----------------------------------------------------------------------------
   // MARK: - Private properties
-
+  
   private var _api        = Api.sharedInstance          // initializes the API
   private let _log        = Logger.sharedInstance.logMessage
-
+  
   private let kAvailable  = "available"
   private let kInUse      = "in_use"
-
+  
   // ----------------------------------------------------------------------------
   // MARK: - Initialization
-
+  
   init(delegate: RadioManagerDelegate) {
     self.delegate = delegate
-
+    
     // give the Api access to our logger
     Log.sharedInstance.delegate = Logger.sharedInstance
-
+    
     // start Discovery
     let _ = Discovery.sharedInstance
     
     // start listening to notifications
     addNotifications()
   }
-
+  
   // ----------------------------------------------------------------------------
   // MARK: - Internal methods
   
@@ -200,7 +185,7 @@ public final class RadioManager : ObservableObject {
     if smartLinkIsLoggedIn {
       // remove any SmartLink radios from Discovery
       Discovery.sharedInstance.removeSmartLinkRadios()
-            
+      
       if delegate.smartLinkAuth0Email != "" {
         // remove the RefreshToken
         delegate.refreshTokenDelete( service: delegate.kAppNameTrimmed + ".oauth-token", account: delegate.smartLinkAuth0Email)
@@ -227,7 +212,7 @@ public final class RadioManager : ObservableObject {
     // was a connection specified?
     if connection == "" {
       // NO, where one or more radios found?
-      if discoveryPackets.count > 0 {
+      if packets.count > 0 {
         // YES, attempt a connection to the first
         connectTo(index: 0)
       } else {
@@ -239,7 +224,7 @@ public final class RadioManager : ObservableObject {
       if let conn = parseConnection(connection) {
         // VALID, find the matching packet
         var foundIndex : Int? = nil
-        for (i, packet) in discoveryPackets.enumerated() where  (packet.serialNumber == conn.serialNumber) && (packet.isWan == conn.isWan) {
+        for (i, packet) in packets.enumerated() where  (packet.serialNumber == conn.serialNumber) && (packet.isWan == conn.isWan) {
           foundIndex = i
         }
         // is there a match?
@@ -271,11 +256,11 @@ public final class RadioManager : ObservableObject {
   ///
   func disconnect(msg: String = RadioManager.kUserInitiated) {
     
-    _log("Tester: Disconnect - \(msg)", .info,  #function, #file, #line)
+    _log("RadioManager: Disconnect - \(msg)", .info,  #function, #file, #line)
     
     // remove all Client Id's
-    for client in activePacket!.guiClients {
-      client.value.clientId = nil
+    for (i, _) in activePacket!.guiClients.enumerated() {
+      activePacket!.guiClients[i].clientId = nil
     }
     
     // tell the library to disconnect
@@ -299,28 +284,21 @@ public final class RadioManager : ObservableObject {
   /// - Parameter packet:     the packet describing the Radio to be opened
   ///
   func openRadio(_ packet: DiscoveryPacket) {
-        
+    
     guard delegate.connectAsGui else {
       connectRadio(packet, isGui: delegate.connectAsGui, station: delegate.stationName)
       return
     }
     
-    let status = packet.status.lowercased()
-    let guiCount = packet.guiClients.count
-    let isNewApi = Version(packet.firmwareVersion).isNewApi
-    
-    let handles = [Handle](packet.guiClients.keys)
-    let clients = [GuiClient](packet.guiClients.values)
-    
-    switch (isNewApi, status, guiCount) {
+    switch (Version(packet.firmwareVersion).isNewApi, packet.status.lowercased(), packet.guiClients.count) {
     case (false, kAvailable, _):          // oldApi, not connected to another client
-      delegate.openStatus( (false, ConnectionStatus.available, 0), clients )
+      delegate.openStatus( (false, ConnectionStatus.available, 0), packet.guiClients )
       { [self] _ in
         connectRadio(packet, isGui: delegate.connectAsGui, station: delegate.stationName)
       }
-
+      
     case (false, kInUse, _):              // oldApi, connected to another client
-      delegate.openStatus( (false, ConnectionStatus.inUse, 1), clients )
+      delegate.openStatus( (false, ConnectionStatus.inUse, 1), packet.guiClients )
       { [self] response in
         switch response {
         case NSApplication.ModalResponse.alertFirstButtonReturn:
@@ -332,33 +310,33 @@ public final class RadioManager : ObservableObject {
         default:  break
         }
       }
-
+      
     case (true, kAvailable, 0):           // newApi, not connected to another client
-      delegate.openStatus( (true, ConnectionStatus.available, 0), clients )
+      delegate.openStatus( (true, ConnectionStatus.available, 0), packet.guiClients )
       { [self] _ in
         connectRadio(packet, station: delegate.stationName)
       }
       
     case (true, kAvailable, _):           // newApi, connected to another client
-      delegate.openStatus( (true, ConnectionStatus.available, 1), clients)
+      delegate.openStatus( (true, ConnectionStatus.available, 1), packet.guiClients)
       { [self] response in
         switch response {
-        case NSApplication.ModalResponse.alertFirstButtonReturn:  connectRadio(packet, isGui: delegate.connectAsGui, pendingDisconnect: .newApi(handle: handles[0]), station: delegate.stationName)
+        case NSApplication.ModalResponse.alertFirstButtonReturn:  connectRadio(packet, isGui: delegate.connectAsGui, pendingDisconnect: .newApi(handle: packet.guiClients[0].handle), station: delegate.stationName)
         case NSApplication.ModalResponse.alertSecondButtonReturn: connectRadio(packet, isGui: delegate.connectAsGui, station: delegate.stationName)
         default:  break
         }
       }
-
+      
     case (true, kInUse, 2):               // newApi, connected to 2 clients
-      delegate.openStatus( (true, ConnectionStatus.inUse, 2), clients)
+      delegate.openStatus( (true, ConnectionStatus.inUse, 2), packet.guiClients)
       { [self] response in
         switch response {
-        case NSApplication.ModalResponse.alertFirstButtonReturn:  connectRadio(packet, isGui: delegate.connectAsGui, pendingDisconnect: .newApi(handle: handles[0]), station: delegate.stationName)
-        case NSApplication.ModalResponse.alertSecondButtonReturn: connectRadio(packet, isGui: delegate.connectAsGui, pendingDisconnect: .newApi(handle: handles[1]), station: delegate.stationName)
+        case NSApplication.ModalResponse.alertFirstButtonReturn:  connectRadio(packet, isGui: delegate.connectAsGui, pendingDisconnect: .newApi(handle: packet.guiClients[0].handle), station: delegate.stationName)
+        case NSApplication.ModalResponse.alertSecondButtonReturn: connectRadio(packet, isGui: delegate.connectAsGui, pendingDisconnect: .newApi(handle: packet.guiClients[1].handle), station: delegate.stationName)
         default:  break
         }
       }
-
+      
     default:
       break
     }
@@ -373,23 +351,23 @@ public final class RadioManager : ObservableObject {
       disconnect()
       return
     }
-
-    let status = packet.status.lowercased()
-    let guiCount = packet.guiClients.count
-    let isNewApi = Version(packet.firmwareVersion).isNewApi
     
-    let handles = [Handle](packet.guiClients.keys)
-    let clients = [GuiClient](packet.guiClients.values)
+    //    let status = packet.status.lowercased()
+    //    let guiCount = packet.guiClients.count
+    //    let isNewApi = Version(packet.firmwareVersion).isNewApi
+    
+    //    let handles = [Handle](packet.guiClients.keys)
+    //    let clients = [GuiClient](packet.guiClients.values)
     
     // CONNECT, is the selected radio connected to another client?
-    switch (isNewApi, status, guiCount) {
-      
+    switch (Version(packet.firmwareVersion).isNewApi, packet.status.lowercased(),  packet.guiClients.count) {
+    
     case (false, _, _):                   // oldApi
       self.disconnect()
       
     case (true, kAvailable, 1):           // newApi, 1 client
       // am I the client?
-      if handles[0] == _api.connectionHandle {
+      if packet.guiClients[0].handle == _api.connectionHandle {
         // YES, disconnect me
         self.disconnect()
         
@@ -398,22 +376,22 @@ public final class RadioManager : ObservableObject {
         // FIXME: don't think this code can ever be executed???
         
         // NO, let the user choose what to do
-        delegate.closeStatus( (true, ConnectionStatus.inUse, 1), clients)
+        delegate.closeStatus( (true, ConnectionStatus.inUse, 1), packet.guiClients)
         { [self] response in
           switch response {
-          case NSApplication.ModalResponse.alertFirstButtonReturn:  _api.requestClientDisconnect( packet: packet, handle: handles[0])
+          case NSApplication.ModalResponse.alertFirstButtonReturn:  _api.requestClientDisconnect( packet: packet, handle: packet.guiClients[0].handle)
           case NSApplication.ModalResponse.alertSecondButtonReturn: disconnect()
           default:  break
           }
         }
       }
-        
+      
     case (true, kInUse, 2):           // newApi, 2 clients
-      delegate.closeStatus( (true, ConnectionStatus.inUse, 2), clients)
+      delegate.closeStatus( (true, ConnectionStatus.inUse, 2), packet.guiClients)
       { [self] response in
         switch response {
-        case NSApplication.ModalResponse.alertFirstButtonReturn:  _api.requestClientDisconnect( packet: packet, handle: handles[0])
-        case NSApplication.ModalResponse.alertSecondButtonReturn: _api.requestClientDisconnect( packet: packet, handle: handles[1])
+        case NSApplication.ModalResponse.alertFirstButtonReturn:  _api.requestClientDisconnect( packet: packet, handle: packet.guiClients[0].handle)
+        case NSApplication.ModalResponse.alertSecondButtonReturn: _api.requestClientDisconnect( packet: packet, handle: packet.guiClients[1].handle)
         case NSApplication.ModalResponse.alertThirdButtonReturn:  disconnect()
         default:  break
         }
@@ -437,7 +415,7 @@ public final class RadioManager : ObservableObject {
   ///
   func testSmartLink() {
     if let i = pickerSelection.first {      
-      let packet = discoveryPackets[i]
+      let packet = packets[i]
       wanManager?.sendTestConnection(for: packet)
     }
   }
@@ -451,19 +429,19 @@ public final class RadioManager : ObservableObject {
       connectTo(index: i)
     }
   }
-
+  
   // ----------------------------------------------------------------------------
   // MARK: - Auth0 actions
-
+  
   /// Called when the Auth0 Login Cancel button is clicked
   ///
   func cancelButton() {
     _log("RadioManager: Auth0 cancel button", .debug,  #function, #file, #line)
   }
-
+  
   // ----------------------------------------------------------------------------
   // MARK: - Private methods
-
+  
   private func bind(_ index: Int) {
     // get the clientId (index 0 is "None", i.e. "unbind")
     let clientId = (index == 0) ? "" : stations[index - 1].clientId
@@ -479,8 +457,8 @@ public final class RadioManager : ObservableObject {
     
     guard activePacket == nil else { disconnect() ; return }
     
-    if discoveryPackets.count - 1 >= index {
-      let packet = discoveryPackets[index]
+    if packets.count - 1 >= index {
+      let packet = packets[index]
       
       if packet.isWan {
         wanManager?.validateWanRadio(packet)
@@ -516,27 +494,27 @@ public final class RadioManager : ObservableObject {
   private func getPickerPackets() -> [PickerPacket] {
     var pickerPackets = [PickerPacket]()
     
-    for (i, packet) in discoveryPackets.enumerated() {
+    for (i, packet) in packets.enumerated() {
       pickerPackets.append( PickerPacket(id: i, type: packet.isWan ? .wan : .local, nickname: packet.nickname, status: ConnectionStatus(rawValue: packet.status.lowercased()) ?? .inUse, stations: packet.guiClientStations))
     }
     return pickerPackets
   }
-
+  
   /// Create a subset of GuiClients
   /// - Returns:                an array of Station
   ///
-  private func getStations(_ packet: DiscoveryPacket) -> [Station] {
+  private func getStations(from guiClients: [GuiClient]) -> [Station] {
     var stations = [Station]()
     var i = 0
     
-    for client in packet.guiClients {
-      let station = Station(id: i, station: client.value.station, clientId: client.value.clientId)
+    for client in guiClients {
+      let station = Station(id: i, station: client.station, clientId: client.clientId)
       stations.append( station )
       i += 1
     }
     return stations
   }
-
+  
   /// Parse the Type and Serial Number in a connection string
   ///
   /// - Parameter connectionString:   a string of the form <type>.<serialNumber>
@@ -551,7 +529,7 @@ public final class RadioManager : ObservableObject {
     //
     // If the Type and period separator are omitted. "local" is assumed
     //
-
+    
     // split by the "." (if any)
     let parts = connectionString.components(separatedBy: ".")
     if parts.count == 2 {
@@ -575,21 +553,19 @@ public final class RadioManager : ObservableObject {
   private func addNotifications() {
     NotificationCenter.makeObserver(self, with: #selector(discoveredRadios(_:)),   of: .discoveredRadios)
     NotificationCenter.makeObserver(self, with: #selector(clientDidConnect(_:)),   of: .clientDidConnect)
+    NotificationCenter.makeObserver(self, with: #selector(clientDidDisconnect(_:)),   of: .clientDidDisconnect)
     NotificationCenter.makeObserver(self, with: #selector(guiClientHasBeenAdded(_:)),   of: .guiClientHasBeenAdded)
     NotificationCenter.makeObserver(self, with: #selector(guiClientHasBeenUpdated(_:)), of: .guiClientHasBeenUpdated)
     NotificationCenter.makeObserver(self, with: #selector(guiClientHasBeenRemoved(_:)), of: .guiClientHasBeenRemoved)
   }
-
+  
   @objc private func discoveredRadios(_ note: Notification) {
     // the list of radios has changed
     DispatchQueue.main.async { [self] in
       pickerPackets = getPickerPackets()
-//      stations = getStations()
-//      stationChoices = insertChoice("All", into: stations)
-//      bindingChoices = insertChoice("None", into: stations)
     }
   }
-
+  
   @objc private func clientDidConnect(_ note: Notification) {
     if let radio = note.object as? Radio {
       DispatchQueue.main.async { [self] in
@@ -601,40 +577,52 @@ public final class RadioManager : ObservableObject {
     }
   }
 
+  @objc private func clientDidDisconnect(_ note: Notification) {
+    if let reason = note.object as? String {
+      
+      print("Did Disconnect: reason = \(reason), connectionHandle = \(Api.sharedInstance.connectionHandle!.hex)")
+      
+      delegate.connectionState(false, "")
+//      DispatchQueue.main.async { [self] in
+//        activePacket = nil
+//        activeRadio = nil
+//      }
+//      let connection = (activePacket!.isWan ? "wan" : "local") + "." + activePacket!.serialNumber
+//      delegate.connectionState(false, connection)
+    }
+  }
+
   @objc private func guiClientHasBeenAdded(_ note: Notification) {
-    if let packet = note.object as? DiscoveryPacket {
+    
+    if let guiClients = note.object as? [GuiClient] {
       DispatchQueue.main.async { [self] in
         pickerPackets = getPickerPackets()
-        stations = getStations(packet)
-
-//        stationChoices = insertChoice("All", into: stations)
-//        bindingChoices = insertChoice("None", into: stations)
+        stations = getStations(from: guiClients)
+        
+        //      printGuiClients("Added")
       }
     }
   }
   
   @objc private func guiClientHasBeenUpdated(_ note: Notification) {
-    if let packet = note.object as? DiscoveryPacket {
+    if let guiClients = note.object as? [GuiClient] {
       // ClientId has been populated
       DispatchQueue.main.async { [self] in
         pickerPackets = getPickerPackets()
-        stations = getStations(packet)
+        stations = getStations(from: guiClients)
         
-//        stationChoices = insertChoice("All", into: stations)
-//        bindingChoices = insertChoice("None", into: stations)
+        //      printGuiClients("Updated")
       }
     }
   }
-
+  
   @objc private func guiClientHasBeenRemoved(_ note: Notification) {
-
-    if let packet = note.object as? DiscoveryPacket {
+    if let guiClients = note.object as? [GuiClient] {
       DispatchQueue.main.async { [self] in
         pickerPackets = getPickerPackets()
-        stations = getStations(packet)
-
-//        stationChoices = insertChoice("All", into: stations)
-//        bindingChoices = insertChoice("None", into: stations)
+        stations = getStations(from: guiClients)
+        
+        //      printGuiClients("Removed")
         
         // connected?
         if activeRadio != nil {
@@ -650,5 +638,4 @@ public final class RadioManager : ObservableObject {
       }
     }
   }
-  
 }

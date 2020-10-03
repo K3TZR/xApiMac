@@ -363,15 +363,12 @@ public final class WanManager : WanServerDelegate {
     var expireDate = Date()
     
     do {
-      
       // try to get the JSON Web Token
       let jwt = try decode(jwt: idToken)
       
       // validate id token; see https://auth0.com/docs/tokens/id-token#validate-an-id-token
       if !isJWTValid(jwt) {
-        
         _log("SmartLink login: token INVALID", .debug,  #function, #file, #line)
-        
         return
       }
       // save the Log On email (if any)
@@ -386,7 +383,6 @@ public final class WanManager : WanServerDelegate {
         // save the Refresh Token
         _radioManager!.delegate.refreshTokenSet(service: service, account: email, refreshToken: refreshToken)
       }
-      
       // save the Log On picture (if any)
       claim = jwt.claim(name: kClaimPicture)
       if let gravatar = claim.string, let url = URL(string: gravatar) {
@@ -399,12 +395,10 @@ public final class WanManager : WanServerDelegate {
       if let expiresAt = jwt.expiresAt {
         expireDate = expiresAt
       }
-      
+    
     } catch let error as NSError {
-      
       // log the error & exit
       _log("SmartLink login: error decoding token, \(error.localizedDescription)", .debug,  #function, #file, #line)
-      
       return
     }
     // save id token with expiry date
@@ -415,12 +409,8 @@ public final class WanManager : WanServerDelegate {
 
   func closeAuth0() {
     _radioManager!.showAuth0Sheet = false
-    
-    // attempt a SmartLink server login
-    _ = smartLinkLogin(using: _radioManager!.delegate.smartLinkAuth0Email)
-    
     // display the RadioPicker
-    _radioManager!.showPickerSheet = true
+//    _radioManager!.showPickerSheet = true
   }
   
   // ----------------------------------------------------------------------------
@@ -434,9 +424,9 @@ public final class WanManager : WanServerDelegate {
   }
   
   public func wanRadioConnectReady(handle: String, serial: String) {
-    for (i, packet) in _radioManager!.discoveryPackets.enumerated() where packet.serialNumber == serial && packet.isWan {
-      _radioManager!.discoveryPackets[i].wanHandle = handle
-      _radioManager!.openRadio(_radioManager!.discoveryPackets[i])
+    for (i, packet) in Discovery.sharedInstance.discoveredRadios.enumerated() where packet.serialNumber == serial && packet.isWan {
+      Discovery.sharedInstance.discoveredRadios[i].wanHandle = handle
+      _radioManager!.openRadio(_radioManager!.packets[i])
     }
   }
   

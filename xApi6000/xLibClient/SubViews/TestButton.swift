@@ -15,7 +15,7 @@ struct TestButton: View {
 
     HStack {
       // only enable Test if a SmartLink connection is selected
-      let testEnabled = radioManager.pickerSelection.count > 0 && radioManager.discoveryPackets[radioManager.pickerSelection.first!].isWan
+      let testEnabled = radioManager.pickerSelection.count > 0 && radioManager.packets[radioManager.pickerSelection.first!].isWan
 
       Button(action: { radioManager.testSmartLink() }) {Text("Test")}.disabled(testEnabled)
         .padding(.horizontal, 20)

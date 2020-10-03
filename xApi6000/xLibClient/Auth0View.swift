@@ -9,15 +9,6 @@
 import SwiftUI
 import WebKit
 
-//public struct Token {
-//  var value         : String
-//  var expiresAt     : Date
-//  
-//  public func isValidAtDate(_ date: Date) -> Bool {
-//    return (date < self.expiresAt)
-//  }
-//}
-
 struct Auth0View: View {
   @EnvironmentObject var radioManager : RadioManager
   @Environment(\.presentationMode) var presentationMode
@@ -58,6 +49,7 @@ public struct WebBrowserView {
   
   func closeAuth0(idToken: String, refreshToken: String) {
     radioManager.wanManager!.setTokens(idToken: idToken, refreshToken: refreshToken)
+    radioManager.wanManager!.closeAuth0()
   }
   
   func load(urlString: String) {

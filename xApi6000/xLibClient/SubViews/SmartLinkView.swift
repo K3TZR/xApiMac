@@ -10,13 +10,9 @@ import SwiftUI
 struct SmartLinkView: View {
   @EnvironmentObject var radioManager : RadioManager
   @Environment(\.presentationMode) var presentationMode
-
   
   var body: some View {
 
-//    let smartLinkEnabled = radioManager.smartLinkIsEnabled
-//    let height : CGFloat = smartLinkEnabled ? 90 : 0
-    
     HStack {
       ZStack {
         Rectangle()
