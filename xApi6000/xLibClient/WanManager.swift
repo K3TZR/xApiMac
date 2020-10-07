@@ -99,7 +99,7 @@ public final class WanManager : WanServerDelegate {
     _wanServer = nil
   }
   
-  /// Show the Web page for SmartLInk Login (Auth0)
+  /// Show the Web page for SmartLink Login (Auth0)
   ///
   func validateAuth0Credentials() {
     // clear all cookies to prevent falling back to earlier saved login credentials
@@ -190,7 +190,7 @@ public final class WanManager : WanServerDelegate {
   ///
   private func getTokenValue(from refreshToken: String) -> String? {
     
-    // guard that the token isn't empty
+    // guard that the refresh token isn't empty
     guard refreshToken != "" else { return nil }
     
     // build a URL Request
@@ -424,8 +424,8 @@ public final class WanManager : WanServerDelegate {
   }
   
   public func wanRadioConnectReady(handle: String, serial: String) {
-    for (i, packet) in Discovery.sharedInstance.discoveredRadios.enumerated() where packet.serialNumber == serial && packet.isWan {
-      Discovery.sharedInstance.discoveredRadios[i].wanHandle = handle
+    for (i, packet) in Discovery.sharedInstance.discoveryPackets.enumerated() where packet.serialNumber == serial && packet.isWan {
+      Discovery.sharedInstance.discoveryPackets[i].wanHandle = handle
       _radioManager!.openRadio(_radioManager!.packets[i])
     }
   }

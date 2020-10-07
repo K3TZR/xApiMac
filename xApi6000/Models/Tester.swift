@@ -26,7 +26,7 @@ enum FilterType: String {
   case objects
 }
 
-enum Filter : String, CaseIterable {
+enum FilterObjects : String, CaseIterable {
   case none
   case prefix
   case includes
@@ -87,12 +87,12 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   @Published var stationName          = ""
 
   @Published var filteredMessages     = [Message]()
-  @Published var messagesFilterBy     : FilterMessages = .none  { didSet {filterCollection(of: .messages) ; Defaults.messagesFilterBy = messagesFilterBy.rawValue }}
+  @Published var messagesFilterBy     : FilterMessages  = .none { didSet {filterCollection(of: .messages) ; Defaults.messagesFilterBy = messagesFilterBy.rawValue }}
   @Published var messagesFilterText   = ""                      { didSet {filterCollection(of: .messages) ; Defaults.messagesFilterText = messagesFilterText }}
   @Published var messagesScrollTo     : CGPoint? = nil
  
   @Published var filteredObjects      = [Object]()
-  @Published var objectsFilterBy      : Filter = .none          { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterBy = objectsFilterBy.rawValue }}
+  @Published var objectsFilterBy      : FilterObjects   = .none { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterBy = objectsFilterBy.rawValue }}
   @Published var objectsFilterText    = ""                      { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterText = objectsFilterText}}
   @Published var objectsScrollTo      : CGPoint? = nil
 
@@ -103,17 +103,12 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   private var _commandsIndex        = 0
   private var _commandHistory       = [String]()
   private let _log                  = Logger.sharedInstance.logMessage
-  private var _myHandle             = ""
   private var _messageNumber        = 0
   private var _objectNumber         = 0
   private let _objectQ              = DispatchQueue(label: AppDelegate.kAppName + ".objectQ", attributes: [.concurrent])
-  private var _objectsTimer         : DispatchSourceTimer!
+  private var _packets              : [DiscoveryPacket] { Discovery.sharedInstance.discoveryPackets }
   private var _previousCommand      = ""
   private var _startTimestamp       : Date?
-  private let _timerInterval        : TimeInterval = 1.0
-  private let _timerQ               = DispatchQueue(label: "xApi6000" + ".timerQ")
-  
-  private var _packets              : [DiscoveryPacket] { Discovery.sharedInstance.discoveredRadios }
   
   // ----------------------------------------------------------------------------
   // MARK: - Private properties with concurrency protection
@@ -158,10 +153,10 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     
     messagesFilterBy      = FilterMessages(rawValue: Defaults.messagesFilterBy) ?? .none
     messagesFilterText    = Defaults.messagesFilterText
-    objectsFilterBy       = Filter(rawValue: Defaults.objectsFilterBy) ?? .none
+    objectsFilterBy       = FilterObjects(rawValue: Defaults.objectsFilterBy) ?? .none
     objectsFilterText     = Defaults.objectsFilterText
     
-    // is there a Client ID?
+    // is there a saved Client ID?
     if clientId == "" {
       // NO, assign one
       clientId = UUID().uuidString
@@ -276,7 +271,8 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   }
   
   // RefreshToken callbacks
-  //    NOTE: The RefreshToken can be stored in any way, using Keychain is one possibility
+  //    NOTE: The RefreshToken can be stored in any secure way, using Keychain
+  //    as done here is one possibility
 
   /// Get a stored refresh token
   /// - Parameters:
@@ -408,7 +404,6 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
       // what verion is the Radio?
       if radio.version.isNewApi {
         
-        color = NSColor.systemRed
 
         // newApi
         for packet in _packets where packet == radioManager.activePacket {
@@ -416,6 +411,9 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
             
             if  radioManager.stationSelection == 0 || (radioManager.stationSelection > 0 && radioManager.stations[radioManager.stationSelection - 1].station == guiClient.station) {
               activeHandle = guiClient.handle
+              
+              color = NSColor.systemRed
+              if connectAsGui == false && guiClient.clientId != nil && guiClient.clientId == radio.boundClientId { color = NSColor.systemPurple }
               
               self.appendObject(color, "Gui Client     station = \(guiClient.station.padTo(15))  handle = \(guiClient.handle.hex)  id = \(guiClient.clientId ?? "unknown")  localPtt = \(guiClient.isLocalPtt ? "Yes" : "No ")  available = \(radio.packet.status.lowercased() == "available" ? "Yes" : "No ")  program = \(guiClient.program)")
               
@@ -561,13 +559,16 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   // ----------------------------------------------------------------------------
   // MARK: - Misc methods
   
-  /// Login to the SmartLInk server (if appropriate)
+  /// Login to the SmartLink server (if appropriate)
   ///
   private func checkSmartLinkStatus() {
-    // if SmartLink enabled but not logged in
     if smartLinkEnabled && radioManager.smartLinkIsLoggedIn == false {
-      // attempt to make a SmartLink server login
+      // SmartLink enabled but not logged in, attempt to make a SmartLink server login
       radioManager.smartLinkLogin(with: smartLinkAuth0Email)
+    
+    } else if smartLinkEnabled == false && radioManager.smartLinkIsLoggedIn {
+      // SmartLink disabled and logged in, SmartLink server logout
+      radioManager.smartLinkDisable()
     }
   }
 
@@ -640,26 +641,25 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   ///   - state:          true if connected
   ///   - connection:     the connection string attempted
   ///
-  func connectionState(_ state: Bool, _ connection: String) {
+  func connectionState(_ state: Bool, _ connection: String, _ msg: String = "") {
     // was the connection successful?
     if state {
       // YES
       DispatchQueue.main.async { [self] in isConnected = true }
-      _log("Tester: Connection initiated to \(connection)", .debug,  #function, #file, #line)
+      _log("Tester: Connection to \(connection) established", .debug,  #function, #file, #line)
 
     } else {
       // NO
-      _log("Tester: Connection failed to \(connection)", .debug,  #function, #file, #line)
+      _log("Tester: Connection failed to \(connection), \(msg)", .debug,  #function, #file, #line)
       DispatchQueue.main.async { [self] in
         isConnected = false
         let alert = NSAlert()
         alert.alertStyle = .warning
-        alert.messageText = "Connection FAILED"
+        alert.messageText = msg
         alert.informativeText = "Connection string = \(connection)"
         
         // tell the user
-        alert.beginSheetModal(for: NSApplication.shared.mainWindow!, completionHandler: { (response) in
-          // close the connected Radio if the YES button pressed
+        alert.beginSheetModal(for: NSApplication.shared.mainWindow!, completionHandler: { _ in
         })
       }
     }
@@ -669,6 +669,9 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   /// - Parameter msg:      explanation
   ///
   func disconnectionState(_ text: String) {
+    
+    DispatchQueue.main.async { [self] in isConnected = false }
+    
     if text != RadioManager.kUserInitiated {
       var params = AlertParams(handler: { _ in })
       params.style = .warning
@@ -778,12 +781,12 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     // switch on the first character
     switch text[text.startIndex] {
     
-    case "C":   appendMessage(text)   // Commands
-    case "H":   _myHandle = String(format: "%X", suffix.handle ?? 0) ; appendMessage(text)    // Handle type
-    case "M":   appendMessage(text)   // Message Type
-    case "R":   parseReplyMessage(suffix)    // Reply Type
-    case "S":   appendMessage(text)   // Status type
-    case "V":   appendMessage(text)   // Version Type
+    case "C":   appendMessage(text)       // Commands
+    case "H":   appendMessage(text)       // Handle type
+    case "M":   appendMessage(text)       // Message Type
+    case "R":   parseReplyMessage(suffix) // Reply Type
+    case "S":   appendMessage(text)       // Status type
+    case "V":   appendMessage(text)       // Version Type
     default:    appendMessage("ERROR: Unknown Message, \(text[text.startIndex] as! CVarArg)") // Unknown Type
     }
     refreshObjects()

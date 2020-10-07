@@ -27,7 +27,6 @@ struct TopButtonsView: View {
     VStack {
       
       let stationChoices = insertChoice("All", into: tester.radioManager.stations)
-      let bindingChoices = insertChoice("None", into: tester.radioManager.stations)
 
       HStack {
         // Top row
@@ -69,15 +68,6 @@ struct TopButtonsView: View {
         Toggle("SmartLink enabled", isOn: $tester.smartLinkEnabled)
           .frame(width: 150, alignment: .leading)
         Spacer()
-        if tester.connectAsGui == false {
-          Picker(selection: $tester.radioManager.bindingSelection, label: Text("Bind to")) {
-            ForEach(bindingChoices, id: \.id) {
-              Text($0.station)
-            }
-          }
-          .frame(width: 264, height: 18, alignment: .leading)
-          .padding(.trailing, 10)
-        }
       }
     }
   }

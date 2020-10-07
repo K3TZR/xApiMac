@@ -20,7 +20,7 @@ struct RadioListView : View {
           .frame(width: 150, alignment: .leading)
         Text("Status")
           .frame(width: 100, alignment: .leading)
-        Text("Stations")
+        Text("Station(s)")
           .frame(width: 200, alignment: .leading)
       }.padding(.top, 10)
       HStack {

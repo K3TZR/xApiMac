@@ -11,25 +11,37 @@ import XCGLogger
 import SwiftyUserDefaults
 import xLib6000
 
+// ----------------------------------------------------------------------------
+// Logging implementation
+//
+//    Access to this logging functionality should be given to the underlying
+//    Library so that Library messages will be included in application logs.
+//
+//    e.g. in xApi6000.RadioManager.swift
+//
+//          // give the Api access to our logger
+//          Log.sharedInstance.delegate = Logger.sharedInstance
+//
+// ----------------------------------------------------------------------------
+
 public class Logger : LogHandler {
   
   // Log parameters
   static let kMaxLogFiles                   : UInt8 = 5
   static let kMaxFileSize                   : UInt64 = 20_000_000
-
-  public var version                        : Version!
   
   // ----------------------------------------------------------------------------
   // MARK: - Internal properties
-  
-  private var logLevel : XCGLogger.Level = .debug
-  
-  private var _objectQ = DispatchQueue(label: AppDelegate.kAppName + ".Logger.objectQ", attributes: [.concurrent])
-  
+
   var log : XCGLogger {
     get { _objectQ.sync { _log } }
     set { _objectQ.sync(flags: .barrier) {_log = newValue }}}
+  
+  // ----------------------------------------------------------------------------
+  // MARK: - Private properties
 
+  private var _logLevel : XCGLogger.Level = .debug
+  private var _objectQ = DispatchQueue(label: AppDelegate.kAppName + ".Logger.objectQ", attributes: [.concurrent])
   private var _log : XCGLogger = XCGLogger(identifier: AppDelegate.kAppName, includeDefaultDestinations: false)
   
   // ----------------------------------------------------------------------------
@@ -48,7 +60,7 @@ public class Logger : LogHandler {
     let systemDestination = AppleSystemLogDestination(identifier: AppDelegate.kAppName + ".systemDestination")
     
     // Optionally set some configuration options
-    systemDestination.outputLevel           = logLevel
+    systemDestination.outputLevel           = _logLevel
     systemDestination.showLogIdentifier     = false
     systemDestination.showFileName          = false
     systemDestination.showFunctionName      = false
@@ -67,7 +79,7 @@ public class Logger : LogHandler {
     // Optionally set some configuration options
     fileDestination.targetMaxFileSize       = Logger.kMaxFileSize
     fileDestination.targetMaxLogFiles       = Logger.kMaxLogFiles
-    fileDestination.outputLevel             = logLevel
+    fileDestination.outputLevel             = _logLevel
     fileDestination.showLogIdentifier       = false
     fileDestination.showFileName            = false
     fileDestination.showFunctionName        = false
@@ -108,26 +120,24 @@ public class Logger : LogHandler {
   public func logMessage(_ msg: String, _ level: MessageLevel, _ function: StaticString, _ file: StaticString, _ line: Int) -> Void {
     
     // Log Handler to support XCGLogger    
-//    DispatchQueue.main.async { [weak self] in
-      switch level {
-      case .verbose:
-        log.verbose(msg, functionName: function, fileName: file, lineNumber: line )
-        
-      case .debug:
-        log.debug(msg, functionName: function, fileName: file, lineNumber: line)
-        
-      case .info:
-        log.info(msg, functionName: function, fileName: file, lineNumber: line)
-        
-      case .warning:
-        log.warning(msg, functionName: function, fileName: file, lineNumber: line)
-        
-      case .error:
-        log.error(msg, functionName: function, fileName: file, lineNumber: line)
-        
-      case .severe:
-        log.severe(msg, functionName: function, fileName: file, lineNumber: line)
-      }
-//    }
+    switch level {
+    case .verbose:
+      log.verbose(msg, functionName: function, fileName: file, lineNumber: line )
+      
+    case .debug:
+      log.debug(msg, functionName: function, fileName: file, lineNumber: line)
+      
+    case .info:
+      log.info(msg, functionName: function, fileName: file, lineNumber: line)
+      
+    case .warning:
+      log.warning(msg, functionName: function, fileName: file, lineNumber: line)
+      
+    case .error:
+      log.error(msg, functionName: function, fileName: file, lineNumber: line)
+      
+    case .severe:
+      log.severe(msg, functionName: function, fileName: file, lineNumber: line)
+    }
   }
 }

@@ -27,7 +27,7 @@ struct FilterView: View {
         
       } else {
         Picker(selection: $tester.objectsFilterBy, label: Text("Filter " + filterType.rawValue)) {
-          ForEach(Filter.allCases, id: \.self) {
+          ForEach(FilterObjects.allCases, id: \.self) {
             Text($0.rawValue)
           }
         }.frame(width: 200, height: 20, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)

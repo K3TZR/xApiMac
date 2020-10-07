@@ -10,7 +10,7 @@ import xLib6000
 
 class MockRadioManagerDelegate : RadioManagerDelegate {
 
-  func connectionState(_ connected: Bool, _ connection: String) { /* stub */ }
+  func connectionState(_ connected: Bool, _ connection: String, _ msg: String) { /* stub */ }
 
   var clientId              = UUID().uuidString
   var connectAsGui          = true
@@ -26,33 +26,11 @@ class MockRadioManagerDelegate : RadioManagerDelegate {
   var smartLinkEnabled      = true
   var smartLinkWasLoggedIn  = false  
 
-  func refreshTokenGet(service: String, account: String) -> String? {
-    return ""
-  }
-  func refreshTokenSet(service: String, account: String, refreshToken: String) {
-    
-  }
-  func refreshTokenDelete(service: String, account: String) {
-    
-  }
-  func smartLinkTestResults(status: Bool, msg: String) {
-    //
-  }
-  func disconnectionState(_ msg: String) {
-    //
-  }
-
-//  func showAlert(_ style: NSAlert.Style, msg: String, text: String,
-//                 button1: String, button2: String, button3: String, button4: String,
-//                 handler: @escaping (NSApplication.ModalResponse) -> Void) {
-//    //
-//  }
-
-  func openStatus(_ status: OpenCloseStatus, _ clients: [GuiClient], handler: @escaping (NSApplication.ModalResponse) -> Void) {
-    //
-  }
-  
-  func closeStatus(_ status: OpenCloseStatus, _ clients: [GuiClient], handler: @escaping (NSApplication.ModalResponse) -> Void) {
-    //
-  }
+  func refreshTokenGet(service: String, account: String) -> String? { return "" }
+  func refreshTokenSet(service: String, account: String, refreshToken: String) { /* stub */ }
+  func refreshTokenDelete(service: String, account: String) { /* stub */ }
+  func smartLinkTestResults(status: Bool, msg: String) { /* stub */ }
+  func disconnectionState(_ msg: String) { /* stub */ }
+  func openStatus(_ status: OpenCloseStatus, _ clients: [GuiClient], handler: @escaping (NSApplication.ModalResponse) -> Void) { /* stub */ }
+  func closeStatus(_ status: OpenCloseStatus, _ clients: [GuiClient], handler: @escaping (NSApplication.ModalResponse) -> Void) { /* stub */ }
 }

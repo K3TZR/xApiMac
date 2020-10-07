@@ -12,11 +12,12 @@ import xLib6000
 typealias OpenCloseStatus = (isNewApi: Bool, status: ConnectionStatus, connectionCount: Int)
 
 struct PickerPacket : Identifiable {
-  var id        = 0
-  var type      : ConnectionType = .local
-  var nickname  = ""
-  var status    : ConnectionStatus = .available
-  var stations  = ""
+  var id          = 0
+  var packetIndex = 0
+  var type        : ConnectionType = .local
+  var nickname    = ""
+  var status      : ConnectionStatus = .available
+  var stations    = ""
 }
 
 enum ConnectionType : String {
@@ -46,7 +47,7 @@ protocol RadioManagerDelegate {
   ///   - state:          true if connected
   ///   - connection:     the connection string attempted
   ///
-  func connectionState(_ state: Bool, _ connection: String)
+  func connectionState(_ state: Bool, _ connection: String, _ msg: String)
   
   /// Called  asynchronously by RadioManager when a disconnection occurs
   /// - Parameter msg:      explanation
@@ -120,7 +121,8 @@ public final class RadioManager : ObservableObject {
   @Published var showPickerSheet        = false
   @Published var pickerSelection        = Set<Int>()
   @Published var stationSelection       = 0
-  @Published var bindingSelection       = 0  {didSet {bind( bindingSelection )}}
+  @Published var bindingSelection       = 0
+//  {didSet {bind( bindingSelection )}}
   
   @Published var showAuth0Sheet         = false
   
@@ -135,12 +137,13 @@ public final class RadioManager : ObservableObject {
   
   var delegate            : RadioManagerDelegate
   var wanManager          : WanManager?
-  var packets             : [DiscoveryPacket] { Discovery.sharedInstance.discoveredRadios }
+  var packets             : [DiscoveryPacket] { Discovery.sharedInstance.discoveryPackets }
   
   // ----------------------------------------------------------------------------
   // MARK: - Private properties
   
   private var _api        = Api.sharedInstance          // initializes the API
+  private var _autoBind   : Int? = nil
   private let _log        = Logger.sharedInstance.logMessage
   
   private let kAvailable  = "available"
@@ -177,6 +180,25 @@ public final class RadioManager : ObservableObject {
     } else {
       wanManager!.validateAuth0Credentials()
     }
+  }
+  
+  func smartLinkDisable() {
+    if smartLinkIsLoggedIn {
+      // remove any SmartLink radios from Discovery
+      Discovery.sharedInstance.removeSmartLinkRadios()
+
+      // close out the connection
+      wanManager?.smartLinkLogout()
+    }
+    wanManager = nil
+    
+    // remember the current state
+    smartLinkIsLoggedIn = false
+    
+    // remove the current user info
+    smartLinkName = ""
+    smartLinkCallsign = ""
+    smartLinkImage = nil
   }
   
   /// Initiate a Logout from the SmartLink server
@@ -217,7 +239,7 @@ public final class RadioManager : ObservableObject {
         connectTo(index: 0)
       } else {
         // NO, no radios found
-        delegate.connectionState(false, connection)
+        delegate.connectionState(false, connection, "No Radios found")
       }
     } else {
       // YES, is it a valid connection string?
@@ -233,11 +255,11 @@ public final class RadioManager : ObservableObject {
           connectTo(index: index)
         } else {
           // NO, no match found
-          delegate.connectionState(false, connection)
+          delegate.connectionState(false, connection, "No matching radio")
         }
       } else {
         // NO, not a valid connection string
-        delegate.connectionState(false, connection)
+        delegate.connectionState(false, connection, "Invalid connection string")
       }
     }
   }
@@ -254,19 +276,19 @@ public final class RadioManager : ObservableObject {
   /// Disconnect the current connection
   /// - Parameter msg:    explanation
   ///
-  func disconnect(msg: String = RadioManager.kUserInitiated) {
+  func disconnect(reason: String = RadioManager.kUserInitiated) {
     
-    _log("RadioManager: Disconnect - \(msg)", .info,  #function, #file, #line)
-    
-    // remove all Client Id's
-    for (i, _) in activePacket!.guiClients.enumerated() {
-      activePacket!.guiClients[i].clientId = nil
-    }
+    _log("RadioManager: Disconnect - \(reason)", .info,  #function, #file, #line)
     
     // tell the library to disconnect
-    _api.disconnect(reason: msg)
+    _api.disconnect(reason: reason)
     
     DispatchQueue.main.async { [self] in
+      // remove all Client Id's
+      for (i, _) in activePacket!.guiClients.enumerated() {
+        activePacket!.guiClients[i].clientId = nil
+      }
+      
       activePacket = nil
       activeRadio = nil
       stationSelection = 0
@@ -275,8 +297,8 @@ public final class RadioManager : ObservableObject {
       
     }
     // if anything unusual, tell the delegate
-    if msg != RadioManager.kUserInitiated {
-      delegate.disconnectionState( msg)
+    if reason != RadioManager.kUserInitiated {
+      delegate.disconnectionState( reason)
     }
   }
   
@@ -351,13 +373,6 @@ public final class RadioManager : ObservableObject {
       disconnect()
       return
     }
-    
-    //    let status = packet.status.lowercased()
-    //    let guiCount = packet.guiClients.count
-    //    let isNewApi = Version(packet.firmwareVersion).isNewApi
-    
-    //    let handles = [Handle](packet.guiClients.keys)
-    //    let clients = [GuiClient](packet.guiClients.values)
     
     // CONNECT, is the selected radio connected to another client?
     switch (Version(packet.firmwareVersion).isNewApi, packet.status.lowercased(),  packet.guiClients.count) {
@@ -442,12 +457,9 @@ public final class RadioManager : ObservableObject {
   // ----------------------------------------------------------------------------
   // MARK: - Private methods
   
-  private func bind(_ index: Int) {
-    // get the clientId (index 0 is "None", i.e. "unbind")
-    let clientId = (index == 0) ? "" : stations[index - 1].clientId
-    
+  private func bind(to id: String) {
     // cause a bind command to be sent
-    activeRadio?.boundClientId = clientId
+    activeRadio?.boundClientId = id
   }
   
   /// Connect to the Radio found at the specified index in the Discovered Radios
@@ -457,8 +469,13 @@ public final class RadioManager : ObservableObject {
     
     guard activePacket == nil else { disconnect() ; return }
     
-    if packets.count - 1 >= index {
-      let packet = packets[index]
+    let packetIndex = delegate.connectAsGui ? index : pickerPackets[index].packetIndex
+    
+    if packets.count - 1 >= packetIndex {
+      let packet = packets[packetIndex]
+      
+      // if Non-Gui, schedule automatic binding
+      _autoBind = delegate.connectAsGui ? nil : index
       
       if packet.isWan {
         wanManager?.validateWanRadio(packet)
@@ -493,9 +510,22 @@ public final class RadioManager : ObservableObject {
   ///
   private func getPickerPackets() -> [PickerPacket] {
     var pickerPackets = [PickerPacket]()
+    var i = 0
+    var p = 0
     
-    for (i, packet) in packets.enumerated() {
-      pickerPackets.append( PickerPacket(id: i, type: packet.isWan ? .wan : .local, nickname: packet.nickname, status: ConnectionStatus(rawValue: packet.status.lowercased()) ?? .inUse, stations: packet.guiClientStations))
+    if delegate.connectAsGui {
+      for packet in packets {
+        pickerPackets.append( PickerPacket(id: i, packetIndex: i, type: packet.isWan ? .wan : .local, nickname: packet.nickname, status: ConnectionStatus(rawValue: packet.status.lowercased()) ?? .inUse, stations: packet.guiClientStations))
+        i += 1
+      }
+    } else {
+      for packet in packets {
+        for client in packet.guiClients {
+          pickerPackets.append( PickerPacket(id: i, packetIndex: p, type: packet.isWan ? .wan : .local, nickname: packet.nickname, status: ConnectionStatus(rawValue: packet.status.lowercased()) ?? .inUse, stations: client.station))
+          i += 1
+        }
+        p += 1
+      }
     }
     return pickerPackets
   }
@@ -573,16 +603,15 @@ public final class RadioManager : ObservableObject {
         activeRadio = radio
       }
       let connection = (radio.packet.isWan ? "wan" : "local") + "." + radio.packet.serialNumber
-      delegate.connectionState(true, connection)
+      delegate.connectionState(true, connection, "")
     }
   }
 
   @objc private func clientDidDisconnect(_ note: Notification) {
     if let reason = note.object as? String {
       
-      print("Did Disconnect: reason = \(reason), connectionHandle = \(Api.sharedInstance.connectionHandle!.hex)")
-      
-      delegate.connectionState(false, "")
+      disconnect(reason: reason)
+//      delegate.connectionState(false, "", reason)
 //      DispatchQueue.main.async { [self] in
 //        activePacket = nil
 //        activeRadio = nil
@@ -598,8 +627,6 @@ public final class RadioManager : ObservableObject {
       DispatchQueue.main.async { [self] in
         pickerPackets = getPickerPackets()
         stations = getStations(from: guiClients)
-        
-        //      printGuiClients("Added")
       }
     }
   }
@@ -611,7 +638,11 @@ public final class RadioManager : ObservableObject {
         pickerPackets = getPickerPackets()
         stations = getStations(from: guiClients)
         
-        //      printGuiClients("Updated")
+        if _autoBind != nil {
+          for guiClient in guiClients where guiClient.station == pickerPackets[_autoBind!].stations && guiClient.clientId != nil {
+            bind(to: guiClient.clientId!)
+          }
+        }
       }
     }
   }
@@ -621,8 +652,6 @@ public final class RadioManager : ObservableObject {
       DispatchQueue.main.async { [self] in
         pickerPackets = getPickerPackets()
         stations = getStations(from: guiClients)
-        
-        //      printGuiClients("Removed")
         
         // connected?
         if activeRadio != nil {
