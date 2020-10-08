@@ -6,7 +6,7 @@
 *  macOS 10.15.7
 *  Xcode 12.0 
 *  Swift 5.3 / SwiftUI
-*  xLib6000 1.3.10
+*  xLib6000 1.3.11
 *  SwiftyUserDefaults 5.0.0
 *  XCGLogger 7.0.1
 
