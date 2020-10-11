@@ -1,6 +1,6 @@
 //
 //  NSScrollViewController.swift
-//  TestScrollView
+//  xApi6000
 //
 //  Derived from https://www.thetopsites.net/article/58571702.shtml
 //

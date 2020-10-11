@@ -20,6 +20,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   // MARK: - Internal properties
   
   var window: NSWindow!
+  
+//  var logViewerWindow: NSWindow?
 
   // ----------------------------------------------------------------------------
   // MARK: - Internal methods
@@ -46,5 +48,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
     true
   }
+
+//  @IBAction func showLogViewer(_ sender: Any) {
+//    var windowRef:NSWindow
+//    windowRef = NSWindow(
+//      contentRect: NSRect(x: 0, y: 0, width: 100, height: 100),
+//      styleMask: [.titled, .resizable, .miniaturizable, .fullSizeContentView],
+//      backing: .buffered, defer: false)
+//    logViewerWindow = windowRef
+//    windowRef.contentView = NSHostingView(rootView: LogViewer(logViewerWindow: windowRef))
+//    windowRef.makeKeyAndOrderFront(nil)
+//  }
+  
 }
 

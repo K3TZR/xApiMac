@@ -1,6 +1,6 @@
 //
 //  Auth0View.swift
-//  RadioManager package
+//  xLibClient package
 //
 //  Created by Douglas Adams on 8/18/20.
 //  Copyright © 2020 Douglas Adams. All rights reserved.

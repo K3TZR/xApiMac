@@ -25,6 +25,7 @@
 		91541C4D24E17500002FE61E /* FiltersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91541C4C24E17500002FE61E /* FiltersView.swift */; };
 		91541C5124E21DBB002FE61E /* Tester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91541C5024E21DBB002FE61E /* Tester.swift */; };
 		91541C7724E43469002FE61E /* NSScrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91541C7624E43469002FE61E /* NSScrollViewController.swift */; };
+		91583D1825324ABE0088C3B8 /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D1725324ABE0088C3B8 /* LogView.swift */; };
 		9160D53425053B5000A2100C /* StubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D52C25053B4F00A2100C /* StubView.swift */; };
 		9160D53525053B5000A2100C /* Auth0View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D52D25053B4F00A2100C /* Auth0View.swift */; };
 		9160D53625053B5000A2100C /* PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D52E25053B4F00A2100C /* PickerView.swift */; };
@@ -66,6 +67,7 @@
 		91541C4C24E17500002FE61E /* FiltersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersView.swift; sourceTree = "<group>"; };
 		91541C5024E21DBB002FE61E /* Tester.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tester.swift; sourceTree = "<group>"; };
 		91541C7624E43469002FE61E /* NSScrollViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSScrollViewController.swift; sourceTree = "<group>"; };
+		91583D1725324ABE0088C3B8 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
 		9160D52C25053B4F00A2100C /* StubView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StubView.swift; sourceTree = "<group>"; };
 		9160D52D25053B4F00A2100C /* Auth0View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Auth0View.swift; sourceTree = "<group>"; };
 		9160D52E25053B4F00A2100C /* PickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerView.swift; sourceTree = "<group>"; };
@@ -205,6 +207,7 @@
 				9160D53D2505819800A2100C /* RadioManager.swift */,
 				9160D53F250581B500A2100C /* WanManager.swift */,
 				91BDFEF124EC45A600DEEFC1 /* Logger.swift */,
+				91583D1725324ABE0088C3B8 /* LogView.swift */,
 				9160D52D25053B4F00A2100C /* Auth0View.swift */,
 				9160D52E25053B4F00A2100C /* PickerView.swift */,
 				9160D52C25053B4F00A2100C /* StubView.swift */,
@@ -298,6 +301,7 @@
 			files = (
 				91541C3F24E05078002FE61E /* TopButtonsView.swift in Sources */,
 				91541C4924E16E2E002FE61E /* StatusView.swift in Sources */,
+				91583D1825324ABE0088C3B8 /* LogView.swift in Sources */,
 				9160D54A250581DF00A2100C /* JWTDecode.swift in Sources */,
 				91541C7724E43469002FE61E /* NSScrollViewController.swift in Sources */,
 				91BDFEF224EC45A600DEEFC1 /* Logger.swift in Sources */,
@@ -476,7 +480,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				MARKETING_VERSION = 0.9.6;
+				MARKETING_VERSION = 0.9.7;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApi6000;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -502,7 +506,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				MARKETING_VERSION = 0.9.6;
+				MARKETING_VERSION = 0.9.7;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApi6000;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

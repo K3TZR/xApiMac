@@ -29,7 +29,7 @@ public class Logger : LogHandler {
   // Log parameters
   static let kMaxLogFiles                   : UInt8 = 5
   static let kMaxFileSize                   : UInt64 = 20_000_000
-  
+
   // ----------------------------------------------------------------------------
   // MARK: - Internal properties
 

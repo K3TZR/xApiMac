@@ -41,7 +41,7 @@ struct MessagesView: View {
       }
     }
     .background(Color(.textBackgroundColor))
-  }
+  }  
 }
 
 struct MessagesView_Previews: PreviewProvider {

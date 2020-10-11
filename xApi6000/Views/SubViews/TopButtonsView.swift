@@ -10,7 +10,6 @@ import SwiftUI
 
 struct TopButtonsView: View {
   @EnvironmentObject var tester : Tester
-  @State var connectState : String = "Connect"
   
   func insertChoice(_ item: String, into stations: [Station]) -> [Station] {
     var choices = [Station]()

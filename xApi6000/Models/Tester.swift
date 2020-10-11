@@ -8,6 +8,7 @@
 import Cocoa
 import xLib6000
 import SwiftyUserDefaults
+import SwiftUI
 
 typealias ObjectTuple = (color: NSColor, text: String)
 
@@ -134,7 +135,6 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   // MARK: - Initialization
   
   init() {
-    
     // restore Defaults
     clearAtConnect        = Defaults.clearAtConnect
     clearAtDisconnect     = Defaults.clearAtDisconnect

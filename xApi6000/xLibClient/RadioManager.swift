@@ -132,13 +132,15 @@ public final class RadioManager : ObservableObject {
   @Published var smartLinkCallsign      = ""
   @Published var smartLinkImage         : NSImage?
   
+  
   // ----------------------------------------------------------------------------
   // MARK: - Internal properties
   
   var delegate            : RadioManagerDelegate
   var wanManager          : WanManager?
   var packets             : [DiscoveryPacket] { Discovery.sharedInstance.discoveryPackets }
-  
+  var logViewerWindow     : NSWindow?
+
   // ----------------------------------------------------------------------------
   // MARK: - Private properties
   
@@ -417,6 +419,130 @@ public final class RadioManager : ObservableObject {
     }
   }
   
+  // ----------------------------------------------------------------------------
+  // MARK: - LogViewer actions
+  
+  enum logFilter: String, CaseIterable {
+    case none
+    case prefix
+    case includes
+    case excludes
+  }
+  
+  enum logLevel: String, CaseIterable {
+    case debug
+    case info
+    case warning
+    case error
+  }
+  
+  struct LogLine: Identifiable {
+    var id    = 0
+    var text  = ""
+  }
+
+  @Published var logViewerIsOpen  = false { didSet{ logViewer() }}
+
+  @Published var filterBy         : logFilter = .none
+  @Published var filterByText     = ""
+  @Published var level            : logLevel  = .debug
+  @Published var logLines         = [LogLine]()
+  @Published var shortLogView     = true
+
+  private var _openFileUrl        : URL?
+  private var _logString          : String!
+  private var _linesArray         = [String.SubSequence]()
+  
+  func loadLog() {
+    // TODO:
+  }
+  
+  func saveLog() {
+    // TODO:
+  }
+  
+  /// Open / Close the LogViewer window
+  /// - Parameter open:     open / close Bool
+  ///
+  func logViewer() {
+    if logViewerIsOpen {
+      var windowRef:NSWindow
+      windowRef = NSWindow(
+        contentRect: NSRect(x: 0, y: 0, width: 100, height: 100),
+        styleMask: [.titled, .resizable, .miniaturizable, .fullSizeContentView],
+        backing: .buffered, defer: false)
+      logViewerWindow = windowRef
+      windowRef.contentView = NSHostingView(rootView: LogView(logViewerWindow: windowRef).environmentObject( self))
+      windowRef.orderFront(nil)
+      
+//      logViewerIsOpen = true
+      logViewerWindow!.setFrameUsingName("LogViewerWindow")
+      logViewerWindow!.level = .floating
+
+      loadDefaultLog()
+      filterLog()
+      
+    } else {
+      logViewerWindow?.saveFrame(usingName: "LogViewerWindow")
+      logViewerWindow?.close()
+//      logViewerIsOpen = false
+    }
+  }
+
+  /// Load the current Log
+  ///
+  private func loadDefaultLog() {
+    // get the url for the Logs
+    let defaultLogUrl = FileManager.appFolder.appendingPathComponent( "Logs/xApi6000.log")
+
+      // read it & populate the textView
+      do {
+        logLines.removeAll()
+        
+        _logString = try String(contentsOf: defaultLogUrl, encoding: .ascii)
+        _linesArray = _logString.split(separator: "\n")
+        _openFileUrl = defaultLogUrl
+        _log("Default Log loaded: \(defaultLogUrl)", .debug,  #function, #file, #line)
+
+      } catch {
+        let alert = NSAlert()
+        alert.messageText = "Unable to load Default Log"
+        alert.informativeText = "Log file\n\n\(defaultLogUrl)\n\nNOT found"
+        alert.alertStyle = .critical
+        alert.addButton(withTitle: "Ok")
+        
+        let _ = alert.runModal()
+      }
+  }
+  
+  /// Filter the displayed Log
+  /// - Parameter level:    log level
+  ///
+  private func filterLog() {
+    var limitedLines = [String.SubSequence]()
+    var filteredLines      = [String.SubSequence]()
+
+    // filter the log entries
+    switch level {
+    case .debug:     filteredLines = _linesArray
+    case .info:      filteredLines = _linesArray.filter { $0.contains(" [" + logLevel.error.rawValue + "] ") || $0.contains(" [" + logLevel.warning.rawValue + "] ") || $0.contains(" [" + logLevel.info.rawValue + "] ") }
+    case .warning:   filteredLines = _linesArray.filter { $0.contains(" [" + logLevel.error.rawValue + "] ") || $0.contains(" [" + logLevel.warning.rawValue + "] ") }
+    case .error:     filteredLines = _linesArray.filter { $0.contains(" [" + logLevel.error.rawValue + "] ") }
+    }
+    
+    switch filterBy {
+    case .none:      limitedLines = filteredLines
+    case .prefix:    limitedLines = filteredLines.filter { $0.hasPrefix(filterByText) }
+    case .includes:  limitedLines = filteredLines.filter { $0.contains(filterByText) }
+    case .excludes:  limitedLines = filteredLines.filter { !$0.contains(filterByText) }
+    }
+    logLines = [LogLine]()
+    for (i, line) in limitedLines.enumerated() {
+      let offset = line.firstIndex(of: ">") ?? line.startIndex
+      logLines.append( LogLine(id: i, text: shortLogView ? String(line[offset...]) : String(line)) )
+    }
+  }
+
   // ----------------------------------------------------------------------------
   // MARK: - Picker actions
   

@@ -14,15 +14,20 @@ struct BottomButtonsView: View {
   var body: some View {
     HStack {
       Toggle("Clear at Connect", isOn: $tester.clearAtConnect)
-        .padding(.leading, 20)
         .frame(width: 200)
       Toggle("Clear at Disconnect", isOn: $tester.clearAtDisconnect)
         .frame(width: 200)
+
       Spacer()
+
+      Toggle("LogViewer", isOn: $tester.radioManager.logViewerIsOpen )
+        .frame(width: 150, alignment: .leading)
+
+      Spacer()
+
       Button(action: {self.tester.clear()}) {Text("Clear")}
-        .padding(.trailing, 20)
     }
-//    .padding(.bottom, 10)
+    .padding(.horizontal, 20)
     .padding(.top, 10)
   }
 }
