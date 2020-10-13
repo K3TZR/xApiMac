@@ -30,6 +30,6 @@ struct TestButton: View {
   struct TestButton_Previews: PreviewProvider {
     static var previews: some View {
       TestButton()
-        .environmentObject(RadioManager(delegate: MockRadioManagerDelegate()))
+        .environmentObject(RadioManager(delegate: MockRadioManagerDelegate(), domain: "net.k3tzr", appName: "xApi6000"))
     }
   }

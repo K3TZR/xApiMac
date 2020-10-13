@@ -26,6 +26,7 @@
 		91541C5124E21DBB002FE61E /* Tester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91541C5024E21DBB002FE61E /* Tester.swift */; };
 		91541C7724E43469002FE61E /* NSScrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91541C7624E43469002FE61E /* NSScrollViewController.swift */; };
 		91583D1825324ABE0088C3B8 /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D1725324ABE0088C3B8 /* LogView.swift */; };
+		91583D2F253640830088C3B8 /* xLibClientExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D2E253640830088C3B8 /* xLibClientExtensions.swift */; };
 		9160D53425053B5000A2100C /* StubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D52C25053B4F00A2100C /* StubView.swift */; };
 		9160D53525053B5000A2100C /* Auth0View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D52D25053B4F00A2100C /* Auth0View.swift */; };
 		9160D53625053B5000A2100C /* PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D52E25053B4F00A2100C /* PickerView.swift */; };
@@ -38,7 +39,6 @@
 		9160D548250581DF00A2100C /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D546250581DF00A2100C /* Keychain.swift */; };
 		9160D549250581DF00A2100C /* JWT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D547250581DF00A2100C /* JWT.swift */; };
 		9160D54A250581DF00A2100C /* JWTDecode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D545250581DF00A2100C /* JWTDecode.swift */; };
-		9160D54B250581DF00A2100C /* RadioManagerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D542250581DF00A2100C /* RadioManagerExtensions.swift */; };
 		9160D54C250581DF00A2100C /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D544250581DF00A2100C /* Errors.swift */; };
 		9160D54D250581DF00A2100C /* MockRadioManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D543250581DF00A2100C /* MockRadioManagerDelegate.swift */; };
 		9185317B252262570085EC51 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 9185317A252262570085EC51 /* README.md */; };
@@ -68,6 +68,7 @@
 		91541C5024E21DBB002FE61E /* Tester.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tester.swift; sourceTree = "<group>"; };
 		91541C7624E43469002FE61E /* NSScrollViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSScrollViewController.swift; sourceTree = "<group>"; };
 		91583D1725324ABE0088C3B8 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
+		91583D2E253640830088C3B8 /* xLibClientExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = xLibClientExtensions.swift; sourceTree = "<group>"; };
 		9160D52C25053B4F00A2100C /* StubView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StubView.swift; sourceTree = "<group>"; };
 		9160D52D25053B4F00A2100C /* Auth0View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Auth0View.swift; sourceTree = "<group>"; };
 		9160D52E25053B4F00A2100C /* PickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerView.swift; sourceTree = "<group>"; };
@@ -77,7 +78,6 @@
 		9160D53325053B5000A2100C /* TestButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestButton.swift; sourceTree = "<group>"; };
 		9160D53D2505819800A2100C /* RadioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioManager.swift; sourceTree = "<group>"; };
 		9160D53F250581B500A2100C /* WanManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WanManager.swift; sourceTree = "<group>"; };
-		9160D542250581DF00A2100C /* RadioManagerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioManagerExtensions.swift; sourceTree = "<group>"; };
 		9160D543250581DF00A2100C /* MockRadioManagerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRadioManagerDelegate.swift; sourceTree = "<group>"; };
 		9160D544250581DF00A2100C /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		9160D545250581DF00A2100C /* JWTDecode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JWTDecode.swift; sourceTree = "<group>"; };
@@ -105,9 +105,9 @@
 		91541C0C24E02E7C002FE61E = {
 			isa = PBXGroup;
 			children = (
+				91541C1624E02E7C002FE61E /* Products */,
 				9185317A252262570085EC51 /* README.md */,
 				91541C1724E02E7C002FE61E /* xApi6000 */,
-				91541C1624E02E7C002FE61E /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -122,16 +122,16 @@
 		91541C1724E02E7C002FE61E /* xApi6000 */ = {
 			isa = PBXGroup;
 			children = (
-				91541C3424E02FA1002FE61E /* AppExtensions.swift */,
 				91541C1824E02E7C002FE61E /* AppDelegate.swift */,
-				91E0586824F2C26100BC8AD9 /* xLibClient */,
-				91541C3324E02F69002FE61E /* Models */,
-				91541C2B24E02EB8002FE61E /* Views */,
+				91541C3424E02FA1002FE61E /* AppExtensions.swift */,
 				91541C1C24E02E7D002FE61E /* Assets.xcassets */,
-				91541C2124E02E7D002FE61E /* Main.storyboard */,
 				91541C2424E02E7D002FE61E /* Info.plist */,
-				91541C2524E02E7D002FE61E /* xApi6000.entitlements */,
+				91541C2124E02E7D002FE61E /* Main.storyboard */,
+				91541C3324E02F69002FE61E /* Models */,
 				91541C1E24E02E7D002FE61E /* Preview Content */,
+				91541C2B24E02EB8002FE61E /* Views */,
+				91541C2524E02E7D002FE61E /* xApi6000.entitlements */,
+				91E0586824F2C26100BC8AD9 /* xLibClient */,
 			);
 			path = xApi6000;
 			sourceTree = "<group>";
@@ -156,8 +156,8 @@
 		91541C3324E02F69002FE61E /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				91541C5024E21DBB002FE61E /* Tester.swift */,
 				9160D546250581DF00A2100C /* Keychain.swift */,
+				91541C5024E21DBB002FE61E /* Tester.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -165,15 +165,15 @@
 		91541C4E24E193AF002FE61E /* SubViews */ = {
 			isa = PBXGroup;
 			children = (
-				91541C3E24E05078002FE61E /* TopButtonsView.swift */,
-				91541C4624E0F187002FE61E /* SendView.swift */,
-				91541C4C24E17500002FE61E /* FiltersView.swift */,
-				91541C4024E0510C002FE61E /* ObjectsView.swift */,
-				91541C2D24E02EE7002FE61E /* MessagesView.swift */,
 				91541C2C24E02EE7002FE61E /* BottomButtonsView.swift */,
-				91541C7624E43469002FE61E /* NSScrollViewController.swift */,
-				91541C4824E16E2E002FE61E /* StatusView.swift */,
+				91541C4C24E17500002FE61E /* FiltersView.swift */,
 				91541C4A24E16FF0002FE61E /* FilterView.swift */,
+				91541C2D24E02EE7002FE61E /* MessagesView.swift */,
+				91541C7624E43469002FE61E /* NSScrollViewController.swift */,
+				91541C4024E0510C002FE61E /* ObjectsView.swift */,
+				91541C4624E0F187002FE61E /* SendView.swift */,
+				91541C4824E16E2E002FE61E /* StatusView.swift */,
+				91541C3E24E05078002FE61E /* TopButtonsView.swift */,
 			);
 			path = SubViews;
 			sourceTree = "<group>";
@@ -192,11 +192,11 @@
 		9160D541250581DF00A2100C /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
-				9160D545250581DF00A2100C /* JWTDecode.swift */,
-				9160D542250581DF00A2100C /* RadioManagerExtensions.swift */,
-				9160D547250581DF00A2100C /* JWT.swift */,
-				9160D543250581DF00A2100C /* MockRadioManagerDelegate.swift */,
 				9160D544250581DF00A2100C /* Errors.swift */,
+				9160D547250581DF00A2100C /* JWT.swift */,
+				9160D545250581DF00A2100C /* JWTDecode.swift */,
+				9160D543250581DF00A2100C /* MockRadioManagerDelegate.swift */,
+				91583D2E253640830088C3B8 /* xLibClientExtensions.swift */,
 			);
 			path = Supporting;
 			sourceTree = "<group>";
@@ -204,15 +204,15 @@
 		91E0586824F2C26100BC8AD9 /* xLibClient */ = {
 			isa = PBXGroup;
 			children = (
-				9160D53D2505819800A2100C /* RadioManager.swift */,
-				9160D53F250581B500A2100C /* WanManager.swift */,
+				9160D52D25053B4F00A2100C /* Auth0View.swift */,
 				91BDFEF124EC45A600DEEFC1 /* Logger.swift */,
 				91583D1725324ABE0088C3B8 /* LogView.swift */,
-				9160D52D25053B4F00A2100C /* Auth0View.swift */,
 				9160D52E25053B4F00A2100C /* PickerView.swift */,
+				9160D53D2505819800A2100C /* RadioManager.swift */,
 				9160D52C25053B4F00A2100C /* StubView.swift */,
 				9160D52F25053B5000A2100C /* SubViews */,
 				9160D541250581DF00A2100C /* Supporting */,
+				9160D53F250581B500A2100C /* WanManager.swift */,
 			);
 			path = xLibClient;
 			sourceTree = "<group>";
@@ -312,6 +312,7 @@
 				91541C2F24E02EE7002FE61E /* MessagesView.swift in Sources */,
 				91541C1B24E02E7C002FE61E /* ContentView.swift in Sources */,
 				9160D549250581DF00A2100C /* JWT.swift in Sources */,
+				91583D2F253640830088C3B8 /* xLibClientExtensions.swift in Sources */,
 				9160D53425053B5000A2100C /* StubView.swift in Sources */,
 				91541C3524E02FA1002FE61E /* AppExtensions.swift in Sources */,
 				91541C4724E0F187002FE61E /* SendView.swift in Sources */,
@@ -321,7 +322,6 @@
 				9160D53725053B5000A2100C /* PickerButtonsView.swift in Sources */,
 				9160D540250581B500A2100C /* WanManager.swift in Sources */,
 				91541C1924E02E7C002FE61E /* AppDelegate.swift in Sources */,
-				9160D54B250581DF00A2100C /* RadioManagerExtensions.swift in Sources */,
 				91541C4B24E16FF0002FE61E /* FilterView.swift in Sources */,
 				9160D53625053B5000A2100C /* PickerView.swift in Sources */,
 				9160D54C250581DF00A2100C /* Errors.swift in Sources */,

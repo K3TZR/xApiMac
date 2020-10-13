@@ -53,6 +53,6 @@ struct SmartLinkView: View {
 struct SmartLinkView_Previews: PreviewProvider {
   static var previews: some View {
     SmartLinkView()
-      .environmentObject(RadioManager(delegate: MockRadioManagerDelegate()))
+      .environmentObject(RadioManager(delegate: MockRadioManagerDelegate(), domain: "net.k3tzr", appName: "xApi6000"))
   }
 }

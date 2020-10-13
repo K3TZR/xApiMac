@@ -84,7 +84,6 @@ protocol RadioManagerDelegate {
   
   var clientId              : String  {get}
   var connectAsGui          : Bool    {get}
-  var kAppNameTrimmed       : String  {get}
   var smartLinkAuth0Email   : String  {get set}
   var smartLinkEnabled      : Bool    {get}
   var stationName           : String  {get}     
@@ -144,22 +143,31 @@ public final class RadioManager : ObservableObject {
   // ----------------------------------------------------------------------------
   // MARK: - Private properties
   
-  private var _api        = Api.sharedInstance          // initializes the API
-  private var _autoBind   : Int? = nil
-  private let _log        = Logger.sharedInstance.logMessage
+  private var _api            = Api.sharedInstance          // initializes the API
+  private var _appNameTrimmed = ""
+  private var _autoBind       : Int? = nil
+  private let _log            : (_ msg: String, _ level: MessageLevel, _ function: StaticString, _ file: StaticString, _ line: Int) -> Void
+  private let _domain         : String
   
-  private let kAvailable  = "available"
-  private let kInUse      = "in_use"
+  private let kAvailable      = "available"
+  private let kInUse          = "in_use"
   
   // ----------------------------------------------------------------------------
   // MARK: - Initialization
   
-  init(delegate: RadioManagerDelegate) {
+  init(delegate: RadioManagerDelegate, domain: String, appName: String) {
     self.delegate = delegate
+    _domain = domain
+    _appNameTrimmed = appName.replacingSpaces(with: "")
     
+    // setup the Logger
+    let logger = Logger.sharedInstance
+    logger.config(domain: domain, appName: _appNameTrimmed)
+    _log = logger.logMessage
+
     // give the Api access to our logger
-    Log.sharedInstance.delegate = Logger.sharedInstance
-    
+    Log.sharedInstance.delegate = logger
+
     // start Discovery
     let _ = Discovery.sharedInstance
     
@@ -175,15 +183,15 @@ public final class RadioManager : ObservableObject {
   ///
   func smartLinkLogin(with auth0Email: String) {
     // start the WanManager
-    wanManager = WanManager(radioManager: self)
-    
+    wanManager = WanManager(radioManager: self, appNameTrimmed: _appNameTrimmed)
+
     if wanManager!.smartLinkLogin(using: auth0Email) {
       smartLinkIsLoggedIn = true
     } else {
       wanManager!.validateAuth0Credentials()
     }
   }
-  
+
   func smartLinkDisable() {
     if smartLinkIsLoggedIn {
       // remove any SmartLink radios from Discovery
@@ -202,7 +210,7 @@ public final class RadioManager : ObservableObject {
     smartLinkCallsign = ""
     smartLinkImage = nil
   }
-  
+
   /// Initiate a Logout from the SmartLink server
   ///
   func smartLinkLogout() {
@@ -212,7 +220,7 @@ public final class RadioManager : ObservableObject {
       
       if delegate.smartLinkAuth0Email != "" {
         // remove the RefreshToken
-        delegate.refreshTokenDelete( service: delegate.kAppNameTrimmed + ".oauth-token", account: delegate.smartLinkAuth0Email)
+        delegate.refreshTokenDelete( service: _appNameTrimmed + ".oauth-token", account: delegate.smartLinkAuth0Email)
       }
       // close out the connection
       wanManager?.smartLinkLogout()
@@ -447,18 +455,82 @@ public final class RadioManager : ObservableObject {
   @Published var filterByText     = ""
   @Published var level            : logLevel  = .debug
   @Published var logLines         = [LogLine]()
-  @Published var shortLogView     = true
+  @Published var showTimestamps   = false { didSet{filterLog() }}
 
   private var _openFileUrl        : URL?
   private var _logString          : String!
   private var _linesArray         = [String.SubSequence]()
   
   func loadLog() {
-    // TODO:
+    
+    // allow the user to select a Log file
+    let openPanel = NSOpenPanel()
+    openPanel.canChooseFiles = true
+    openPanel.canChooseDirectories = false
+    openPanel.allowsMultipleSelection = false
+    openPanel.allowedFileTypes = ["log"]
+    openPanel.directoryURL = URL(fileURLWithPath: URL.appSupport.path + "/" + _domain + "." + _appNameTrimmed + "/Logs")
+    
+    // open an Open Dialog
+    openPanel.beginSheetModal(for: logViewerWindow!) { [unowned self] (result: NSApplication.ModalResponse) in
+      
+      // if the user selects Open
+      if result == NSApplication.ModalResponse.OK {
+        do {
+          self.logLines.removeAll()
+          
+          self._logString = try String(contentsOf: openPanel.url!, encoding: .ascii)
+          self._linesArray = self._logString.split(separator: "\n")
+          _openFileUrl = openPanel.url!
+
+          self._log("Log loaded: \(openPanel.url!)", .debug,  #function, #file, #line)
+
+          filterLog()
+
+        } catch {
+          let alert = NSAlert()
+          alert.messageText = "Unable to load file"
+          alert.informativeText = "File\n\n\(openPanel.url!)\n\nNOT loaded"
+          alert.alertStyle = .critical
+          alert.addButton(withTitle: "Ok")
+          
+          let _ = alert.runModal()
+        }
+      }
+    }
   }
   
   func saveLog() {
-    // TODO:
+    // Allow the User to save a copy of the Log file
+    let savePanel = NSSavePanel()
+    savePanel.allowedFileTypes = ["log"]
+    savePanel.allowsOtherFileTypes = false
+    savePanel.nameFieldStringValue = _openFileUrl?.lastPathComponent ?? ""
+    savePanel.directoryURL = URL(fileURLWithPath: "~/Desktop".expandingTilde)
+    
+    // open a Save Dialog
+    savePanel.beginSheetModal(for: logViewerWindow!) { [unowned self] (result: NSApplication.ModalResponse) in
+      
+      // if the user pressed Save
+      if result == NSApplication.ModalResponse.OK {
+        
+        // write it to the File
+        do {
+          try self._logString.write(to: savePanel.url!, atomically: true, encoding: .ascii)
+
+          self._log("Log \(savePanel.nameFieldStringValue) saved to: \(savePanel.url!)", .debug,  #function, #file, #line)
+
+        } catch {
+          let alert = NSAlert()
+          alert.messageText = "Unable to save Log"
+          alert.informativeText = "File\n\n\(savePanel.url!)\n\nNOT saved"
+          alert.alertStyle = .critical
+          alert.addButton(withTitle: "Ok")
+          
+          let _ = alert.runModal()
+        }
+      }
+    }
   }
   
   /// Open / Close the LogViewer window
@@ -472,10 +544,10 @@ public final class RadioManager : ObservableObject {
         styleMask: [.titled, .resizable, .miniaturizable, .fullSizeContentView],
         backing: .buffered, defer: false)
       logViewerWindow = windowRef
+      windowRef.title = "Log Viewer"
       windowRef.contentView = NSHostingView(rootView: LogView(logViewerWindow: windowRef).environmentObject( self))
       windowRef.orderFront(nil)
       
-//      logViewerIsOpen = true
       logViewerWindow!.setFrameUsingName("LogViewerWindow")
       logViewerWindow!.level = .floating
 
@@ -485,7 +557,6 @@ public final class RadioManager : ObservableObject {
     } else {
       logViewerWindow?.saveFrame(usingName: "LogViewerWindow")
       logViewerWindow?.close()
-//      logViewerIsOpen = false
     }
   }
 
@@ -493,7 +564,7 @@ public final class RadioManager : ObservableObject {
   ///
   private func loadDefaultLog() {
     // get the url for the Logs
-    let defaultLogUrl = FileManager.appFolder.appendingPathComponent( "Logs/xApi6000.log")
+    let defaultLogUrl = URL.appSupport.appendingPathComponent( _domain + "." + _appNameTrimmed + "/Logs/" + _appNameTrimmed + ".log")
 
       // read it & populate the textView
       do {
@@ -539,7 +610,7 @@ public final class RadioManager : ObservableObject {
     logLines = [LogLine]()
     for (i, line) in limitedLines.enumerated() {
       let offset = line.firstIndex(of: ">") ?? line.startIndex
-      logLines.append( LogLine(id: i, text: shortLogView ? String(line[offset...]) : String(line)) )
+      logLines.append( LogLine(id: i, text: showTimestamps ? String(line) : String(line[offset...]) ))
     }
   }
 
@@ -623,7 +694,7 @@ public final class RadioManager : ObservableObject {
     // attempt a connection
     _api.connect(packet,
                  station           : stationName,
-                 program           : delegate.kAppNameTrimmed,
+                 program           : _appNameTrimmed,
                  clientId          : isGui ? delegate.clientId : nil,
                  isGui             : isGui,
                  wanHandle         : packet.wanHandle,

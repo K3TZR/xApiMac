@@ -62,6 +62,9 @@ struct AlertParams {
 
 final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     
+  static let kAppName     = "xApi6000"
+  static let kDomainName  = "net.k3tzr"
+  
   // ----------------------------------------------------------------------------
   // MARK: - Published properties
   
@@ -110,6 +113,8 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   private var _packets              : [DiscoveryPacket] { Discovery.sharedInstance.discoveryPackets }
   private var _previousCommand      = ""
   private var _startTimestamp       : Date?
+  
+  private let _kAppNameTrimmed      = kAppName.replacingSpaces(with: "")
   
   // ----------------------------------------------------------------------------
   // MARK: - Private properties with concurrency protection
@@ -164,7 +169,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
       _log("Tester: ClientId created - \(clientId)", .debug,  #function, #file, #line)
     }
     // create a Radio Manager
-    radioManager = RadioManager(delegate: self)
+    radioManager = RadioManager(delegate: self, domain: "net.k3tzr", appName: Tester.kAppName)
     
     // receive delegate actions from the Api
     _api.testerDelegate = self
@@ -625,7 +630,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   // ----------------------------------------------------------------------------
   // MARK: - RadioManagerDelegate
 
-  let kAppNameTrimmed: String = AppDelegate.kAppName.replacingSpaces(with: "")
+//  let kAppNameTrimmed: String = kAppName.replacingSpaces(with: "")
   
   /// Called asynchronously by RadioManager to indicate success / failure for a SmartLink server connection attempt
   /// - Parameter state:      true if connected
@@ -739,17 +744,17 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     switch status {
     case (true, .inUse, 1):
       params.msg = "Radio is connected to one Station"
-      params.text = "Close the Station . . Or . . Disconnect " + kAppNameTrimmed
+      params.text = "Close the Station . . Or . . Disconnect " + _kAppNameTrimmed
       params.button1 = "Close \(clients[0].station)"
-      params.button2 = "Disconnect " + kAppNameTrimmed
+      params.button2 = "Disconnect " + _kAppNameTrimmed
       params.button3 = "Cancel"
 
     case (true, .inUse, 2):
       params.msg = "Radio is connected to multiple Stations"
-      params.text = "Close a Station . . Or . . Disconnect "  + kAppNameTrimmed
-      params.button1 = (clients[0].station == kAppNameTrimmed ? "---" : "Close \(clients[0].station)")
-      params.button2 = (clients[1].station == kAppNameTrimmed ? "---" : "Close \(clients[1].station)")
-      params.button3 = "Disconnect " + kAppNameTrimmed
+      params.text = "Close a Station . . Or . . Disconnect "  + _kAppNameTrimmed
+      params.button1 = (clients[0].station == _kAppNameTrimmed ? "---" : "Close \(clients[0].station)")
+      params.button2 = (clients[1].station == _kAppNameTrimmed ? "---" : "Close \(clients[1].station)")
+      params.button3 = "Disconnect " + _kAppNameTrimmed
       params.button4 = "Cancel"
 
     default:

@@ -8,7 +8,6 @@
 
 import Foundation
 import XCGLogger
-import SwiftyUserDefaults
 import xLib6000
 
 // ----------------------------------------------------------------------------
@@ -41,9 +40,9 @@ public class Logger : LogHandler {
   // MARK: - Private properties
 
   private var _logLevel : XCGLogger.Level = .debug
-  private var _objectQ = DispatchQueue(label: AppDelegate.kAppName + ".Logger.objectQ", attributes: [.concurrent])
-  private var _log : XCGLogger = XCGLogger(identifier: AppDelegate.kAppName, includeDefaultDestinations: false)
-  
+  private var _objectQ  : DispatchQueue!
+  private var _log      : XCGLogger!
+
   // ----------------------------------------------------------------------------
   // MARK: - Singleton
   
@@ -52,13 +51,19 @@ public class Logger : LogHandler {
   public static var sharedInstance = Logger()
   
   private init() {
+  }
+  
+  public func config(domain: String, appName: String) {
+    
+    _objectQ = DispatchQueue(label: appName + ".Logger.objectQ", attributes: [.concurrent])
+    _log = XCGLogger(identifier: appName, includeDefaultDestinations: false)
     
     #if DEBUG
     
     // for DEBUG only
     // Create a destination for the system console log (via NSLog)
-    let systemDestination = AppleSystemLogDestination(identifier: AppDelegate.kAppName + ".systemDestination")
-    
+    let systemDestination = AppleSystemLogDestination(identifier: appName + ".systemDestination")
+
     // Optionally set some configuration options
     systemDestination.outputLevel           = _logLevel
     systemDestination.showLogIdentifier     = false
@@ -74,8 +79,9 @@ public class Logger : LogHandler {
     #endif
     
     // Create a file log destination
-    let fileDestination = AutoRotatingFileDestination(writeToFile: URL.logs.appendingPathComponent( AppDelegate.kAppName + ".log"), identifier: AppDelegate.kAppName + ".autoRotatingFileDestination")
-    
+    let logs = URL.createLogFolder(domain: domain, appName: appName)
+    let fileDestination = AutoRotatingFileDestination(writeToFile: logs.appendingPathComponent( appName + ".log"), identifier: appName + ".autoRotatingFileDestination")
+
     // Optionally set some configuration options
     fileDestination.targetMaxFileSize       = Logger.kMaxFileSize
     fileDestination.targetMaxLogFiles       = Logger.kMaxLogFiles

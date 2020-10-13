@@ -37,6 +37,7 @@ public final class WanManager : WanServerDelegate {
   private weak var _serverDelegate          : WanServerDelegate?
   private weak var _radioManager            : RadioManager?
 
+  private let _appNameTrimmed               : String
   private let _log                          = Logger.sharedInstance.logMessage
   private var _wanServer                    : WanServer?
   private var _previousToken                : Token?
@@ -67,8 +68,9 @@ public final class WanManager : WanServerDelegate {
   // ----------------------------------------------------------------------------
   // MARK: - Initialization
 
-  init(radioManager: RadioManager) {
+  init(radioManager: RadioManager, appNameTrimmed: String) {
     _radioManager = radioManager
+    _appNameTrimmed = appNameTrimmed
     _wanServer = WanServer(delegate: self)
   }
   
@@ -85,13 +87,13 @@ public final class WanManager : WanServerDelegate {
       _radioManager!.smartLinkImage = getUserImage(tokenValue: tokenValue)
       
       // have a token, try to connect
-      return _wanServer!.connectToSmartLinkServer(appName: _radioManager!.delegate.kAppNameTrimmed, platform: kPlatform, token: tokenValue, ping: true)
+      return _wanServer!.connectToSmartLinkServer(appName: _appNameTrimmed, platform: kPlatform, token: tokenValue, ping: true)
     }
     
     _log("Smartlink login: token NOT found", .debug,  #function, #file, #line)
     return false
   }
-  
+
   /// SmartLink log out
   ///
   func smartLinkLogout() {
@@ -117,7 +119,7 @@ public final class WanManager : WanServerDelegate {
       &response_type=\(RadioManager.kResponseType)\
       &scope=\(RadioManager.kScope)\
       &state=\(_state)\
-      &device=\(_radioManager!.delegate.kAppNameTrimmed)
+      &device=\(_appNameTrimmed)
       """
     // cause the sheet to appear
     _radioManager!.showAuth0Sheet = true
@@ -154,7 +156,7 @@ public final class WanManager : WanServerDelegate {
 
     } else if auth0Email != nil {
       
-      let service = _radioManager!.delegate.kAppNameTrimmed + WanManager.kServiceName
+      let service = _appNameTrimmed + WanManager.kServiceName
       
       // there is a saved email, use it to obtain a Refresh Token
       if let refreshToken = _radioManager!.delegate.refreshTokenGet(service: service, account: auth0Email!) {
@@ -378,7 +380,7 @@ public final class WanManager : WanServerDelegate {
         // YES, save it
         _radioManager!.delegate.smartLinkAuth0Email = email
 
-        let service = _radioManager!.delegate.kAppNameTrimmed + WanManager.kServiceName
+        let service = _appNameTrimmed + WanManager.kServiceName
 
         // save the Refresh Token
         _radioManager!.delegate.refreshTokenSet(service: service, account: email, refreshToken: refreshToken)

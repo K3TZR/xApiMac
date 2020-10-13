@@ -1,11 +1,66 @@
 //
-//  RadioManagerExtensions.swift
+//  xLibClientExtensions.swift
 //  xLibClient package
 //
-//  Created by Douglas Adams on 9/5/20.
+//  Created by Douglas Adams on 10/12/20.
 //
 
 import Foundation
+
+extension String {
+    var expandingTilde: String { NSString(string: self).expandingTildeInPath }
+}
+
+extension FileManager {
+  
+  /// Get / create the Application Support folder
+  ///
+  static var appFolder : URL {
+    let fileManager = FileManager.default
+    let urls = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask )
+    let appFolderUrl = urls.first!.appendingPathComponent( Bundle.main.bundleIdentifier! )
+    
+    // does the folder exist?
+    if !fileManager.fileExists( atPath: appFolderUrl.path ) {
+      
+      // NO, create it
+      do {
+        try fileManager.createDirectory( at: appFolderUrl, withIntermediateDirectories: false, attributes: nil)
+      } catch let error as NSError {
+        fatalError("Error creating App Support folder: \(error.localizedDescription)")
+      }
+    }
+    return appFolderUrl
+  }
+}
+
+extension URL {
+  
+  /// setup the Support folders
+  ///
+  static var appSupport : URL { return FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first! }
+  
+  static func createLogFolder(domain: String, appName: String) -> URL {
+    return createAsNeeded(domain + "." + appName + "/Logs")
+  }
+  
+  static func createAsNeeded(_ folder: String) -> URL {
+    let fileManager = FileManager.default
+    let folderUrl = appSupport.appendingPathComponent( folder )
+    
+    // does the folder exist?
+    if fileManager.fileExists( atPath: folderUrl.path ) == false {
+      
+      // NO, create it
+      do {
+        try fileManager.createDirectory( at: folderUrl, withIntermediateDirectories: true, attributes: nil)
+      } catch let error as NSError {
+        fatalError("Error creating App Support folder: \(error.localizedDescription)")
+      }
+    }
+    return folderUrl
+  }
+}
 
 extension String {
   
@@ -80,6 +135,7 @@ extension String {
     return parameters
   }
 }
+
 //  Created by Mario Illgen on 27.01.18.
 //  Copyright © 2018 Mario Illgen. All rights reserved.
 //
@@ -112,5 +168,5 @@ extension Dictionary {
       }
     }
   }
-  
 }
+

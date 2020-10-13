@@ -28,6 +28,6 @@ struct StubView: View {
 
 struct StubView_Previews: PreviewProvider {
   static var previews: some View {
-    StubView(radioManager: RadioManager(delegate: MockRadioManagerDelegate()))
+    StubView(radioManager: RadioManager(delegate: MockRadioManagerDelegate(), domain: "net.k3tzr", appName: "xApi6000"))
   }
 }

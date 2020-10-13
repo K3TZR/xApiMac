@@ -46,6 +46,6 @@ struct RadioListView : View {
 struct RadioListView_Previews: PreviewProvider {
   static var previews: some View {
     RadioListView()
-      .environmentObject(RadioManager(delegate: MockRadioManagerDelegate()))
+      .environmentObject(RadioManager(delegate: MockRadioManagerDelegate(), domain: "net.k3tzr", appName: "xApi6000"))
   }
 }

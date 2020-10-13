@@ -21,6 +21,6 @@ struct PickerView: View {
 
 struct PickerView_Previews: PreviewProvider {
     static var previews: some View {
-      PickerView().environmentObject(RadioManager(delegate: Tester()))
+      PickerView().environmentObject(RadioManager(delegate: MockRadioManagerDelegate(), domain: "net.k3tzr", appName: "xApi6000"))
     }
 }

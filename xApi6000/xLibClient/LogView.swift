@@ -68,11 +68,11 @@ struct LogView: View {
           .frame(width: 200, alignment: .leading)
           .padding(.trailing, 20)
         
+        Toggle("Timestamps", isOn: $radioManager.showTimestamps).frame(width: 150, alignment: .leading)
         Spacer()
         
         Button(action: {radioManager.loadLog() }) {Text("Load") }.padding(.trailing, 20)
         Button(action: {radioManager.saveLog() }) {Text("Save")}.padding(.trailing, 10)
-        Toggle("Short", isOn: $radioManager.shortLogView).frame(width: 150, alignment: .leading)
         Button(action: {radioManager.logViewerIsOpen = false}) {Text("Close")}.padding(.trailing, 20)
 
       }
@@ -84,6 +84,6 @@ struct LogView: View {
 
 struct LogView_Previews: PreviewProvider {
     static var previews: some View {
-      LogView(logViewerWindow: NSWindow()).environmentObject( RadioManager(delegate: Tester()))
+      LogView(logViewerWindow: NSWindow()).environmentObject( RadioManager(delegate: MockRadioManagerDelegate(), domain: "net.k3tzr", appName: "xApi6000"))
     }
 }
