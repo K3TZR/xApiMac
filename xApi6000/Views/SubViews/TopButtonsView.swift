@@ -13,10 +13,10 @@ struct TopButtonsView: View {
   
   func insertChoice(_ item: String, into stations: [Station]) -> [Station] {
     var choices = [Station]()
-    
-    choices.append(Station(id: 0, station: item, clientId: nil))
+
+    choices.append( Station(id: 0, name: item, clientId: nil))
     for station in stations {
-      choices.append( Station(id: station.id + 1, station: station.station, clientId: station.clientId) )
+      choices.append( Station(id: station.id + 1, name: station.name, clientId: station.clientId) )
     }
     return choices
   }
@@ -49,7 +49,7 @@ struct TopButtonsView: View {
         Spacer()
         Picker(selection: $tester.radioManager.stationSelection, label: Text("Show Station")) {
           ForEach(stationChoices, id: \.id) {
-            Text($0.station)
+            Text($0.name)
           }
         }
         .frame(width: 300, height: 18, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)

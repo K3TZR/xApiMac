@@ -32,7 +32,7 @@ enum ConnectionStatus : String {
 
 struct Station : Identifiable {
   var id        = 0
-  var station   = ""
+  var name      = ""
   var clientId  : String?
 }
 
@@ -131,14 +131,12 @@ public final class RadioManager : ObservableObject {
   @Published var smartLinkCallsign      = ""
   @Published var smartLinkImage         : NSImage?
   
-  
   // ----------------------------------------------------------------------------
   // MARK: - Internal properties
   
   var delegate            : RadioManagerDelegate
   var wanManager          : WanManager?
   var packets             : [DiscoveryPacket] { Discovery.sharedInstance.discoveryPackets }
-  var logViewerWindow     : NSWindow?
 
   // ----------------------------------------------------------------------------
   // MARK: - Private properties
@@ -146,7 +144,7 @@ public final class RadioManager : ObservableObject {
   private var _api            = Api.sharedInstance          // initializes the API
   private var _appNameTrimmed = ""
   private var _autoBind       : Int? = nil
-  private let _log            : (_ msg: String, _ level: MessageLevel, _ function: StaticString, _ file: StaticString, _ line: Int) -> Void
+  private let _log            = Log.sharedInstance.logMessage
   private let _domain         : String
   
   private let kAvailable      = "available"
@@ -160,13 +158,13 @@ public final class RadioManager : ObservableObject {
     _domain = domain
     _appNameTrimmed = appName.replacingSpaces(with: "")
     
-    // setup the Logger
-    let logger = Logger.sharedInstance
-    logger.config(domain: domain, appName: _appNameTrimmed)
-    _log = logger.logMessage
-
-    // give the Api access to our logger
-    Log.sharedInstance.delegate = logger
+//    // setup the Logger
+//    let logger = Logger.sharedInstance
+//    logger.config(domain: domain, appName: _appNameTrimmed)
+//    _log = logger.logMessage
+//
+//    // give the Api access to our logger
+//    Log.sharedInstance.delegate = logger
 
     // start Discovery
     let _ = Discovery.sharedInstance
@@ -426,194 +424,6 @@ public final class RadioManager : ObservableObject {
       self.disconnect()
     }
   }
-  
-  // ----------------------------------------------------------------------------
-  // MARK: - LogViewer actions
-  
-  enum logFilter: String, CaseIterable {
-    case none
-    case prefix
-    case includes
-    case excludes
-  }
-  
-  enum logLevel: String, CaseIterable {
-    case debug
-    case info
-    case warning
-    case error
-  }
-  
-  struct LogLine: Identifiable {
-    var id    = 0
-    var text  = ""
-  }
-
-  @Published var logViewerIsOpen  = false { didSet{ logViewer() }}
-
-  @Published var filterBy         : logFilter = .none
-  @Published var filterByText     = ""
-  @Published var level            : logLevel  = .debug
-  @Published var logLines         = [LogLine]()
-  @Published var showTimestamps   = false { didSet{filterLog() }}
-
-  private var _openFileUrl        : URL?
-  private var _logString          : String!
-  private var _linesArray         = [String.SubSequence]()
-  
-  func loadLog() {
-    
-    // allow the user to select a Log file
-    let openPanel = NSOpenPanel()
-    openPanel.canChooseFiles = true
-    openPanel.canChooseDirectories = false
-    openPanel.allowsMultipleSelection = false
-    openPanel.allowedFileTypes = ["log"]
-    openPanel.directoryURL = URL(fileURLWithPath: URL.appSupport.path + "/" + _domain + "." + _appNameTrimmed + "/Logs")
-    
-    // open an Open Dialog
-    openPanel.beginSheetModal(for: logViewerWindow!) { [unowned self] (result: NSApplication.ModalResponse) in
-      
-      // if the user selects Open
-      if result == NSApplication.ModalResponse.OK {
-        do {
-          self.logLines.removeAll()
-          
-          self._logString = try String(contentsOf: openPanel.url!, encoding: .ascii)
-          self._linesArray = self._logString.split(separator: "\n")
-          _openFileUrl = openPanel.url!
-
-          self._log("Log loaded: \(openPanel.url!)", .debug,  #function, #file, #line)
-
-          filterLog()
-
-        } catch {
-          let alert = NSAlert()
-          alert.messageText = "Unable to load file"
-          alert.informativeText = "File\n\n\(openPanel.url!)\n\nNOT loaded"
-          alert.alertStyle = .critical
-          alert.addButton(withTitle: "Ok")
-          
-          let _ = alert.runModal()
-        }
-      }
-    }
-  }
-  
-  func saveLog() {
-    // Allow the User to save a copy of the Log file
-    let savePanel = NSSavePanel()
-    savePanel.allowedFileTypes = ["log"]
-    savePanel.allowsOtherFileTypes = false
-    savePanel.nameFieldStringValue = _openFileUrl?.lastPathComponent ?? ""
-    savePanel.directoryURL = URL(fileURLWithPath: "~/Desktop".expandingTilde)
-    
-    // open a Save Dialog
-    savePanel.beginSheetModal(for: logViewerWindow!) { [unowned self] (result: NSApplication.ModalResponse) in
-      
-      // if the user pressed Save
-      if result == NSApplication.ModalResponse.OK {
-        
-        // write it to the File
-        do {
-          try self._logString.write(to: savePanel.url!, atomically: true, encoding: .ascii)
-
-          self._log("Log \(savePanel.nameFieldStringValue) saved to: \(savePanel.url!)", .debug,  #function, #file, #line)
-
-        } catch {
-          let alert = NSAlert()
-          alert.messageText = "Unable to save Log"
-          alert.informativeText = "File\n\n\(savePanel.url!)\n\nNOT saved"
-          alert.alertStyle = .critical
-          alert.addButton(withTitle: "Ok")
-          
-          let _ = alert.runModal()
-        }
-      }
-    }
-  }
-  
-  /// Open / Close the LogViewer window
-  /// - Parameter open:     open / close Bool
-  ///
-  func logViewer() {
-    if logViewerIsOpen {
-      var windowRef:NSWindow
-      windowRef = NSWindow(
-        contentRect: NSRect(x: 0, y: 0, width: 100, height: 100),
-        styleMask: [.titled, .resizable, .miniaturizable, .fullSizeContentView],
-        backing: .buffered, defer: false)
-      logViewerWindow = windowRef
-      windowRef.title = "Log Viewer"
-      windowRef.contentView = NSHostingView(rootView: LogView(logViewerWindow: windowRef).environmentObject( self))
-      windowRef.orderFront(nil)
-      
-      logViewerWindow!.setFrameUsingName("LogViewerWindow")
-      logViewerWindow!.level = .floating
-
-      loadDefaultLog()
-      filterLog()
-      
-    } else {
-      logViewerWindow?.saveFrame(usingName: "LogViewerWindow")
-      logViewerWindow?.close()
-    }
-  }
-
-  /// Load the current Log
-  ///
-  private func loadDefaultLog() {
-    // get the url for the Logs
-    let defaultLogUrl = URL.appSupport.appendingPathComponent( _domain + "." + _appNameTrimmed + "/Logs/" + _appNameTrimmed + ".log")
-
-      // read it & populate the textView
-      do {
-        logLines.removeAll()
-        
-        _logString = try String(contentsOf: defaultLogUrl, encoding: .ascii)
-        _linesArray = _logString.split(separator: "\n")
-        _openFileUrl = defaultLogUrl
-        _log("Default Log loaded: \(defaultLogUrl)", .debug,  #function, #file, #line)
-
-      } catch {
-        let alert = NSAlert()
-        alert.messageText = "Unable to load Default Log"
-        alert.informativeText = "Log file\n\n\(defaultLogUrl)\n\nNOT found"
-        alert.alertStyle = .critical
-        alert.addButton(withTitle: "Ok")
-        
-        let _ = alert.runModal()
-      }
-  }
-  
-  /// Filter the displayed Log
-  /// - Parameter level:    log level
-  ///
-  private func filterLog() {
-    var limitedLines = [String.SubSequence]()
-    var filteredLines      = [String.SubSequence]()
-
-    // filter the log entries
-    switch level {
-    case .debug:     filteredLines = _linesArray
-    case .info:      filteredLines = _linesArray.filter { $0.contains(" [" + logLevel.error.rawValue + "] ") || $0.contains(" [" + logLevel.warning.rawValue + "] ") || $0.contains(" [" + logLevel.info.rawValue + "] ") }
-    case .warning:   filteredLines = _linesArray.filter { $0.contains(" [" + logLevel.error.rawValue + "] ") || $0.contains(" [" + logLevel.warning.rawValue + "] ") }
-    case .error:     filteredLines = _linesArray.filter { $0.contains(" [" + logLevel.error.rawValue + "] ") }
-    }
-    
-    switch filterBy {
-    case .none:      limitedLines = filteredLines
-    case .prefix:    limitedLines = filteredLines.filter { $0.hasPrefix(filterByText) }
-    case .includes:  limitedLines = filteredLines.filter { $0.contains(filterByText) }
-    case .excludes:  limitedLines = filteredLines.filter { !$0.contains(filterByText) }
-    }
-    logLines = [LogLine]()
-    for (i, line) in limitedLines.enumerated() {
-      let offset = line.firstIndex(of: ">") ?? line.startIndex
-      logLines.append( LogLine(id: i, text: showTimestamps ? String(line) : String(line[offset...]) ))
-    }
-  }
-
   // ----------------------------------------------------------------------------
   // MARK: - Picker actions
   
@@ -735,7 +545,7 @@ public final class RadioManager : ObservableObject {
     var i = 0
     
     for client in guiClients {
-      let station = Station(id: i, station: client.station, clientId: client.clientId)
+      let station = Station(id: i, name: client.station, clientId: client.clientId)
       stations.append( station )
       i += 1
     }

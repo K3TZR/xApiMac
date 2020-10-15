@@ -62,8 +62,8 @@ struct AlertParams {
 
 final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     
-  static let kAppName     = "xApi6000"
-  static let kDomainName  = "net.k3tzr"
+  static let kAppName       = "xApi6000"
+  static let kDomainName    = "net.k3tzr"
   
   // ----------------------------------------------------------------------------
   // MARK: - Published properties
@@ -87,7 +87,6 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   @Published var smartLinkAuth0Email  = ""      { didSet {Defaults.smartLinkAuth0Email = smartLinkAuth0Email} }
   @Published var smartLinkEnabled     = false   { didSet {Defaults.smartLinkEnabled = smartLinkEnabled} }
   @Published var smartLinkWasLoggedIn = false   { didSet {Defaults.smartLinkWasLoggedIn = smartLinkWasLoggedIn} }
-  @Published var startConnection      = false   { didSet { startStopTester() }}
   @Published var stationName          = ""
 
   @Published var filteredMessages     = [Message]()
@@ -99,14 +98,16 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   @Published var objectsFilterBy      : FilterObjects   = .none { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterBy = objectsFilterBy.rawValue }}
   @Published var objectsFilterText    = ""                      { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterText = objectsFilterText}}
   @Published var objectsScrollTo      : CGPoint? = nil
-
+  
+  @Published var logWindowIsOpen      = false   { didSet {Logger.sharedInstance.showLogView(logWindowIsOpen)} }
+  
   // ----------------------------------------------------------------------------
   // MARK: - Private properties
   
   private var _api                  = Api.sharedInstance
   private var _commandsIndex        = 0
   private var _commandHistory       = [String]()
-  private let _log                  = Logger.sharedInstance.logMessage
+  private let _log                  : (_ msg: String, _ level: MessageLevel, _ function: StaticString, _ file: StaticString, _ line: Int) -> Void
   private var _messageNumber        = 0
   private var _objectNumber         = 0
   private let _objectQ              = DispatchQueue(label: AppDelegate.kAppName + ".objectQ", attributes: [.concurrent])
@@ -161,6 +162,14 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     objectsFilterBy       = FilterObjects(rawValue: Defaults.objectsFilterBy) ?? .none
     objectsFilterText     = Defaults.objectsFilterText
     
+    // setup the Logger
+    let logger = Logger.sharedInstance
+    logger.config(domain: Tester.kDomainName, appName: Tester.kAppName.replacingSpaces(with: ""))
+    _log = logger.logMessage
+
+    // give the Api access to our logger
+    Log.sharedInstance.delegate = logger
+
     // is there a saved Client ID?
     if clientId == "" {
       // NO, assign one
@@ -324,7 +333,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
       displayAlert(alertData)
     }
   }
-  
+
   // ----------------------------------------------------------------------------
   // MARK: -  Private methods (Messages-related)
   
@@ -414,7 +423,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
         for packet in _packets where packet == radioManager.activePacket {
           for guiClient in packet.guiClients {
             
-            if  radioManager.stationSelection == 0 || (radioManager.stationSelection > 0 && radioManager.stations[radioManager.stationSelection - 1].station == guiClient.station) {
+            if  radioManager.stationSelection == 0 || (radioManager.stationSelection > 0 && radioManager.stations[radioManager.stationSelection - 1].name == guiClient.station) {
               activeHandle = guiClient.handle
               
               color = NSColor.systemRed
@@ -584,7 +593,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   private func filterCollection(of type: FilterType) {
     if type == .messages {
       switch messagesFilterBy {
-      
+
       case .none:       filteredMessages = messages
       case .prefix:     filteredMessages =  messages.filter { $0.text.contains("|" + messagesFilterText) }
       case .includes:   filteredMessages =  messages.filter { $0.text.contains(messagesFilterText) }
@@ -600,7 +609,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     }
     else {
       switch objectsFilterBy {
-      
+
       case .none:       filteredObjects = objects
       case .prefix:     filteredObjects = objects.filter { $0.line.text.contains("|" + objectsFilterText) }
       case .includes:   filteredObjects = objects.filter { $0.line.text.contains(objectsFilterText) }

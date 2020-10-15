@@ -10,7 +10,7 @@ import SwiftUI
 
 struct BottomButtonsView: View {
   @EnvironmentObject var tester : Tester
-
+  
   var body: some View {
     HStack {
       Toggle("Clear at Connect", isOn: $tester.clearAtConnect)
@@ -20,7 +20,7 @@ struct BottomButtonsView: View {
 
       Spacer()
 
-      Toggle("LogViewer", isOn: $tester.radioManager.logViewerIsOpen )
+      Toggle("LogViewer", isOn: $tester.logWindowIsOpen)
         .frame(width: 150, alignment: .leading)
 
       Spacer()

@@ -25,24 +25,24 @@
 		91541C4D24E17500002FE61E /* FiltersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91541C4C24E17500002FE61E /* FiltersView.swift */; };
 		91541C5124E21DBB002FE61E /* Tester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91541C5024E21DBB002FE61E /* Tester.swift */; };
 		91541C7724E43469002FE61E /* NSScrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91541C7624E43469002FE61E /* NSScrollViewController.swift */; };
-		91583D1825324ABE0088C3B8 /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D1725324ABE0088C3B8 /* LogView.swift */; };
-		91583D2F253640830088C3B8 /* xLibClientExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D2E253640830088C3B8 /* xLibClientExtensions.swift */; };
-		9160D53425053B5000A2100C /* StubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D52C25053B4F00A2100C /* StubView.swift */; };
-		9160D53525053B5000A2100C /* Auth0View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D52D25053B4F00A2100C /* Auth0View.swift */; };
-		9160D53625053B5000A2100C /* PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D52E25053B4F00A2100C /* PickerView.swift */; };
-		9160D53725053B5000A2100C /* PickerButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D53025053B5000A2100C /* PickerButtonsView.swift */; };
-		9160D53825053B5000A2100C /* RadioListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D53125053B5000A2100C /* RadioListView.swift */; };
-		9160D53925053B5000A2100C /* SmartLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D53225053B5000A2100C /* SmartLinkView.swift */; };
-		9160D53A25053B5000A2100C /* TestButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D53325053B5000A2100C /* TestButton.swift */; };
-		9160D53E2505819800A2100C /* RadioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D53D2505819800A2100C /* RadioManager.swift */; };
-		9160D540250581B500A2100C /* WanManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D53F250581B500A2100C /* WanManager.swift */; };
+		91583D5225367F7F0088C3B8 /* PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D4025367F7F0088C3B8 /* PickerView.swift */; };
+		91583D5325367F7F0088C3B8 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D4125367F7F0088C3B8 /* Logger.swift */; };
+		91583D5425367F7F0088C3B8 /* PickerButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D4325367F7F0088C3B8 /* PickerButtonsView.swift */; };
+		91583D5525367F7F0088C3B8 /* RadioListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D4425367F7F0088C3B8 /* RadioListView.swift */; };
+		91583D5625367F7F0088C3B8 /* SmartLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D4525367F7F0088C3B8 /* SmartLinkView.swift */; };
+		91583D5725367F7F0088C3B8 /* TestButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D4625367F7F0088C3B8 /* TestButton.swift */; };
+		91583D5825367F7F0088C3B8 /* StubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D4725367F7F0088C3B8 /* StubView.swift */; };
+		91583D5925367F7F0088C3B8 /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D4825367F7F0088C3B8 /* LogView.swift */; };
+		91583D5A25367F7F0088C3B8 /* RadioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D4925367F7F0088C3B8 /* RadioManager.swift */; };
+		91583D5B25367F7F0088C3B8 /* JWTDecode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D4B25367F7F0088C3B8 /* JWTDecode.swift */; };
+		91583D5C25367F7F0088C3B8 /* JWT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D4C25367F7F0088C3B8 /* JWT.swift */; };
+		91583D5D25367F7F0088C3B8 /* MockRadioManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D4D25367F7F0088C3B8 /* MockRadioManagerDelegate.swift */; };
+		91583D5E25367F7F0088C3B8 /* xLibClientExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D4E25367F7F0088C3B8 /* xLibClientExtensions.swift */; };
+		91583D5F25367F7F0088C3B8 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D4F25367F7F0088C3B8 /* Errors.swift */; };
+		91583D6025367F7F0088C3B8 /* Auth0View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D5025367F7F0088C3B8 /* Auth0View.swift */; };
+		91583D6125367F7F0088C3B8 /* WanManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91583D5125367F7F0088C3B8 /* WanManager.swift */; };
 		9160D548250581DF00A2100C /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D546250581DF00A2100C /* Keychain.swift */; };
-		9160D549250581DF00A2100C /* JWT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D547250581DF00A2100C /* JWT.swift */; };
-		9160D54A250581DF00A2100C /* JWTDecode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D545250581DF00A2100C /* JWTDecode.swift */; };
-		9160D54C250581DF00A2100C /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D544250581DF00A2100C /* Errors.swift */; };
-		9160D54D250581DF00A2100C /* MockRadioManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9160D543250581DF00A2100C /* MockRadioManagerDelegate.swift */; };
 		9185317B252262570085EC51 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 9185317A252262570085EC51 /* README.md */; };
-		91BDFEF224EC45A600DEEFC1 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91BDFEF124EC45A600DEEFC1 /* Logger.swift */; };
 		91BDFEF524EC461500DEEFC1 /* ObjcExceptionBridging in Frameworks */ = {isa = PBXBuildFile; productRef = 91BDFEF424EC461500DEEFC1 /* ObjcExceptionBridging */; };
 		91BDFEF724EC461500DEEFC1 /* XCGLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 91BDFEF624EC461500DEEFC1 /* XCGLogger */; };
 /* End PBXBuildFile section */
@@ -67,24 +67,24 @@
 		91541C4C24E17500002FE61E /* FiltersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersView.swift; sourceTree = "<group>"; };
 		91541C5024E21DBB002FE61E /* Tester.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tester.swift; sourceTree = "<group>"; };
 		91541C7624E43469002FE61E /* NSScrollViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSScrollViewController.swift; sourceTree = "<group>"; };
-		91583D1725324ABE0088C3B8 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
-		91583D2E253640830088C3B8 /* xLibClientExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = xLibClientExtensions.swift; sourceTree = "<group>"; };
-		9160D52C25053B4F00A2100C /* StubView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StubView.swift; sourceTree = "<group>"; };
-		9160D52D25053B4F00A2100C /* Auth0View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Auth0View.swift; sourceTree = "<group>"; };
-		9160D52E25053B4F00A2100C /* PickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerView.swift; sourceTree = "<group>"; };
-		9160D53025053B5000A2100C /* PickerButtonsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerButtonsView.swift; sourceTree = "<group>"; };
-		9160D53125053B5000A2100C /* RadioListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadioListView.swift; sourceTree = "<group>"; };
-		9160D53225053B5000A2100C /* SmartLinkView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartLinkView.swift; sourceTree = "<group>"; };
-		9160D53325053B5000A2100C /* TestButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestButton.swift; sourceTree = "<group>"; };
-		9160D53D2505819800A2100C /* RadioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioManager.swift; sourceTree = "<group>"; };
-		9160D53F250581B500A2100C /* WanManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WanManager.swift; sourceTree = "<group>"; };
-		9160D543250581DF00A2100C /* MockRadioManagerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRadioManagerDelegate.swift; sourceTree = "<group>"; };
-		9160D544250581DF00A2100C /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
-		9160D545250581DF00A2100C /* JWTDecode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JWTDecode.swift; sourceTree = "<group>"; };
+		91583D4025367F7F0088C3B8 /* PickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerView.swift; sourceTree = "<group>"; };
+		91583D4125367F7F0088C3B8 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		91583D4325367F7F0088C3B8 /* PickerButtonsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerButtonsView.swift; sourceTree = "<group>"; };
+		91583D4425367F7F0088C3B8 /* RadioListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadioListView.swift; sourceTree = "<group>"; };
+		91583D4525367F7F0088C3B8 /* SmartLinkView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartLinkView.swift; sourceTree = "<group>"; };
+		91583D4625367F7F0088C3B8 /* TestButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestButton.swift; sourceTree = "<group>"; };
+		91583D4725367F7F0088C3B8 /* StubView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StubView.swift; sourceTree = "<group>"; };
+		91583D4825367F7F0088C3B8 /* LogView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
+		91583D4925367F7F0088C3B8 /* RadioManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadioManager.swift; sourceTree = "<group>"; };
+		91583D4B25367F7F0088C3B8 /* JWTDecode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWTDecode.swift; sourceTree = "<group>"; };
+		91583D4C25367F7F0088C3B8 /* JWT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWT.swift; sourceTree = "<group>"; };
+		91583D4D25367F7F0088C3B8 /* MockRadioManagerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockRadioManagerDelegate.swift; sourceTree = "<group>"; };
+		91583D4E25367F7F0088C3B8 /* xLibClientExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = xLibClientExtensions.swift; sourceTree = "<group>"; };
+		91583D4F25367F7F0088C3B8 /* Errors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
+		91583D5025367F7F0088C3B8 /* Auth0View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Auth0View.swift; sourceTree = "<group>"; };
+		91583D5125367F7F0088C3B8 /* WanManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WanManager.swift; sourceTree = "<group>"; };
 		9160D546250581DF00A2100C /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
-		9160D547250581DF00A2100C /* JWT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JWT.swift; sourceTree = "<group>"; };
 		9185317A252262570085EC51 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		91BDFEF124EC45A600DEEFC1 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,9 +105,10 @@
 		91541C0C24E02E7C002FE61E = {
 			isa = PBXGroup;
 			children = (
-				91541C1624E02E7C002FE61E /* Products */,
 				9185317A252262570085EC51 /* README.md */,
 				91541C1724E02E7C002FE61E /* xApi6000 */,
+				91583D3F25367F7F0088C3B8 /* xLibClient */,
+				91541C1624E02E7C002FE61E /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -128,10 +129,9 @@
 				91541C2424E02E7D002FE61E /* Info.plist */,
 				91541C2124E02E7D002FE61E /* Main.storyboard */,
 				91541C3324E02F69002FE61E /* Models */,
-				91541C1E24E02E7D002FE61E /* Preview Content */,
 				91541C2B24E02EB8002FE61E /* Views */,
+				91541C1E24E02E7D002FE61E /* Preview Content */,
 				91541C2524E02E7D002FE61E /* xApi6000.entitlements */,
-				91E0586824F2C26100BC8AD9 /* xLibClient */,
 			);
 			path = xApi6000;
 			sourceTree = "<group>";
@@ -178,43 +178,44 @@
 			path = SubViews;
 			sourceTree = "<group>";
 		};
-		9160D52F25053B5000A2100C /* SubViews */ = {
+		91583D3F25367F7F0088C3B8 /* xLibClient */ = {
 			isa = PBXGroup;
 			children = (
-				9160D53025053B5000A2100C /* PickerButtonsView.swift */,
-				9160D53125053B5000A2100C /* RadioListView.swift */,
-				9160D53225053B5000A2100C /* SmartLinkView.swift */,
-				9160D53325053B5000A2100C /* TestButton.swift */,
+				91583D5025367F7F0088C3B8 /* Auth0View.swift */,
+				91583D4125367F7F0088C3B8 /* Logger.swift */,
+				91583D4825367F7F0088C3B8 /* LogView.swift */,
+				91583D4025367F7F0088C3B8 /* PickerView.swift */,
+				91583D4925367F7F0088C3B8 /* RadioManager.swift */,
+				91583D4725367F7F0088C3B8 /* StubView.swift */,
+				91583D5125367F7F0088C3B8 /* WanManager.swift */,
+				91583D4225367F7F0088C3B8 /* SubViews */,
+				91583D4A25367F7F0088C3B8 /* Supporting */,
+			);
+			name = xLibClient;
+			path = xApi6000/xLibClient;
+			sourceTree = "<group>";
+		};
+		91583D4225367F7F0088C3B8 /* SubViews */ = {
+			isa = PBXGroup;
+			children = (
+				91583D4325367F7F0088C3B8 /* PickerButtonsView.swift */,
+				91583D4425367F7F0088C3B8 /* RadioListView.swift */,
+				91583D4525367F7F0088C3B8 /* SmartLinkView.swift */,
+				91583D4625367F7F0088C3B8 /* TestButton.swift */,
 			);
 			path = SubViews;
 			sourceTree = "<group>";
 		};
-		9160D541250581DF00A2100C /* Supporting */ = {
+		91583D4A25367F7F0088C3B8 /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
-				9160D544250581DF00A2100C /* Errors.swift */,
-				9160D547250581DF00A2100C /* JWT.swift */,
-				9160D545250581DF00A2100C /* JWTDecode.swift */,
-				9160D543250581DF00A2100C /* MockRadioManagerDelegate.swift */,
-				91583D2E253640830088C3B8 /* xLibClientExtensions.swift */,
+				91583D4F25367F7F0088C3B8 /* Errors.swift */,
+				91583D4C25367F7F0088C3B8 /* JWT.swift */,
+				91583D4B25367F7F0088C3B8 /* JWTDecode.swift */,
+				91583D4D25367F7F0088C3B8 /* MockRadioManagerDelegate.swift */,
+				91583D4E25367F7F0088C3B8 /* xLibClientExtensions.swift */,
 			);
 			path = Supporting;
-			sourceTree = "<group>";
-		};
-		91E0586824F2C26100BC8AD9 /* xLibClient */ = {
-			isa = PBXGroup;
-			children = (
-				9160D52D25053B4F00A2100C /* Auth0View.swift */,
-				91BDFEF124EC45A600DEEFC1 /* Logger.swift */,
-				91583D1725324ABE0088C3B8 /* LogView.swift */,
-				9160D52E25053B4F00A2100C /* PickerView.swift */,
-				9160D53D2505819800A2100C /* RadioManager.swift */,
-				9160D52C25053B4F00A2100C /* StubView.swift */,
-				9160D52F25053B5000A2100C /* SubViews */,
-				9160D541250581DF00A2100C /* Supporting */,
-				9160D53F250581B500A2100C /* WanManager.swift */,
-			);
-			path = xLibClient;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -301,34 +302,34 @@
 			files = (
 				91541C3F24E05078002FE61E /* TopButtonsView.swift in Sources */,
 				91541C4924E16E2E002FE61E /* StatusView.swift in Sources */,
-				91583D1825324ABE0088C3B8 /* LogView.swift in Sources */,
-				9160D54A250581DF00A2100C /* JWTDecode.swift in Sources */,
+				91583D5525367F7F0088C3B8 /* RadioListView.swift in Sources */,
+				91583D5425367F7F0088C3B8 /* PickerButtonsView.swift in Sources */,
+				91583D5D25367F7F0088C3B8 /* MockRadioManagerDelegate.swift in Sources */,
 				91541C7724E43469002FE61E /* NSScrollViewController.swift in Sources */,
-				91BDFEF224EC45A600DEEFC1 /* Logger.swift in Sources */,
+				91583D5825367F7F0088C3B8 /* StubView.swift in Sources */,
 				91541C4124E0510C002FE61E /* ObjectsView.swift in Sources */,
 				91541C2E24E02EE7002FE61E /* BottomButtonsView.swift in Sources */,
 				91541C5124E21DBB002FE61E /* Tester.swift in Sources */,
-				9160D53925053B5000A2100C /* SmartLinkView.swift in Sources */,
+				91583D5925367F7F0088C3B8 /* LogView.swift in Sources */,
 				91541C2F24E02EE7002FE61E /* MessagesView.swift in Sources */,
+				91583D5325367F7F0088C3B8 /* Logger.swift in Sources */,
 				91541C1B24E02E7C002FE61E /* ContentView.swift in Sources */,
-				9160D549250581DF00A2100C /* JWT.swift in Sources */,
-				91583D2F253640830088C3B8 /* xLibClientExtensions.swift in Sources */,
-				9160D53425053B5000A2100C /* StubView.swift in Sources */,
+				91583D5A25367F7F0088C3B8 /* RadioManager.swift in Sources */,
+				91583D5225367F7F0088C3B8 /* PickerView.swift in Sources */,
 				91541C3524E02FA1002FE61E /* AppExtensions.swift in Sources */,
 				91541C4724E0F187002FE61E /* SendView.swift in Sources */,
-				9160D53E2505819800A2100C /* RadioManager.swift in Sources */,
 				91541C4D24E17500002FE61E /* FiltersView.swift in Sources */,
-				9160D53825053B5000A2100C /* RadioListView.swift in Sources */,
-				9160D53725053B5000A2100C /* PickerButtonsView.swift in Sources */,
-				9160D540250581B500A2100C /* WanManager.swift in Sources */,
+				91583D5725367F7F0088C3B8 /* TestButton.swift in Sources */,
+				91583D5F25367F7F0088C3B8 /* Errors.swift in Sources */,
+				91583D5E25367F7F0088C3B8 /* xLibClientExtensions.swift in Sources */,
+				91583D5B25367F7F0088C3B8 /* JWTDecode.swift in Sources */,
+				91583D5C25367F7F0088C3B8 /* JWT.swift in Sources */,
+				91583D6125367F7F0088C3B8 /* WanManager.swift in Sources */,
+				91583D6025367F7F0088C3B8 /* Auth0View.swift in Sources */,
 				91541C1924E02E7C002FE61E /* AppDelegate.swift in Sources */,
+				91583D5625367F7F0088C3B8 /* SmartLinkView.swift in Sources */,
 				91541C4B24E16FF0002FE61E /* FilterView.swift in Sources */,
-				9160D53625053B5000A2100C /* PickerView.swift in Sources */,
-				9160D54C250581DF00A2100C /* Errors.swift in Sources */,
-				9160D53A25053B5000A2100C /* TestButton.swift in Sources */,
-				9160D53525053B5000A2100C /* Auth0View.swift in Sources */,
 				9160D548250581DF00A2100C /* Keychain.swift in Sources */,
-				9160D54D250581DF00A2100C /* MockRadioManagerDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -480,7 +481,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				MARKETING_VERSION = 0.9.7;
+				MARKETING_VERSION = 0.9.8;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApi6000;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -506,7 +507,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				MARKETING_VERSION = 0.9.7;
+				MARKETING_VERSION = 0.9.8;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApi6000;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

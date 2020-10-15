@@ -13,8 +13,6 @@ struct FilterView: View {
   var filterType : FilterType = .messages
   @EnvironmentObject var tester : Tester
   
-  
-  
   var body: some View {
     HStack {
       if filterType == .messages {
@@ -23,7 +21,6 @@ struct FilterView: View {
             Text($0.rawValue)
           }
         }.frame(width: 200, height: 20, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
-
         
       } else {
         Picker(selection: $tester.objectsFilterBy, label: Text("Filter " + filterType.rawValue)) {
