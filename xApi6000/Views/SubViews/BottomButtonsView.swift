@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct BottomButtonsView: View {
+  @EnvironmentObject var appDelegate : AppDelegate
   @EnvironmentObject var tester : Tester
   
   var body: some View {
@@ -20,7 +21,7 @@ struct BottomButtonsView: View {
 
       Spacer()
 
-      Toggle("LogViewer", isOn: $tester.logWindowIsOpen)
+      Toggle("LogViewer", isOn: $appDelegate.logWindowIsVisible)
         .frame(width: 150, alignment: .leading)
 
       Spacer()

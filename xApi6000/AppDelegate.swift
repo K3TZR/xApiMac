@@ -6,21 +6,26 @@
 //
 
 import Cocoa
+import xLib6000
 import SwiftUI
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
+
+  @Published var logWindowIsVisible = false { didSet{ showLogWindow(logWindowIsVisible) }}
 
   // ----------------------------------------------------------------------------
   // MARK: - Static properties
   
-  static let kAppName = "xApi6000"
+  static let kAppName       = "xApi6000"
+  static let kDomainName    = "net.k3tzr"  
 
   // ----------------------------------------------------------------------------
   // MARK: - Internal properties
   
-  var window: NSWindow!
-  
+  var window      : NSWindow!
+  var logWindow   : NSWindow!
+
   // ----------------------------------------------------------------------------
   // MARK: - Internal methods
   
@@ -28,7 +33,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     // Create the SwiftUI view that provides the window contents.
     let contentView = ContentView()
-      .environmentObject(Tester())
 
     // Create the window and set the content view.
     window = NSWindow(
@@ -39,8 +43,47 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     window.center()
     window.setFrameAutosaveName("Main Window")
     window.title = AppDelegate.kAppName + ", v" + Version().string
-    window.contentView = NSHostingView(rootView: contentView)
+    window.contentView = NSHostingView(rootView: contentView
+                                        .environmentObject(self)
+                                        .environmentObject(Tester()))
     window.makeKeyAndOrderFront(nil)
+    
+    let logger = Logger.sharedInstance
+    logger.config(domain: AppDelegate.kDomainName, appName: AppDelegate.kAppName.replacingSpaces(with: ""))
+
+    // give the Api access to our logger
+    Log.sharedInstance.delegate = logger
+
+    
+    // Create the log window
+    logWindow = NSWindow(
+      contentRect: NSRect(x: 0, y: 0, width: 100, height: 100),
+      styleMask: [.titled, .resizable, .miniaturizable, .fullSizeContentView],
+      backing: .buffered, defer: false)
+    
+    logWindow!.isReleasedWhenClosed = false
+    logWindow!.title = "Alternate Window"
+    logWindow!.contentView = NSHostingView(rootView: LogView()
+                                            .environmentObject(self)
+                                            .environmentObject(Logger.sharedInstance))
+    // give Logger a reference to the window
+    Logger.sharedInstance.logWindow = logWindow
+    
+    // initialize Logger with the default log
+    let defaultLogUrl = URL(fileURLWithPath: URL.appSupport.path + "/" + AppDelegate.kDomainName + "." + AppDelegate.kAppName + "/Logs/" + AppDelegate.kAppName + ".log")
+    Logger.sharedInstance.loadLog(at: defaultLogUrl)
+  }
+
+  func showLogWindow(_ show: Bool) {
+    if show {
+      logWindow!.orderFront(nil)
+      logWindow!.level = .floating
+      logWindow!.setFrameUsingName("LogWindowFrame")
+      
+    } else {
+      logWindow?.saveFrame(usingName: "LogWindowFrame")
+      logWindow?.orderOut(nil)
+    }
   }
 
   func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {

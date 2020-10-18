@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LogView: View {
-  let logViewerWindow : NSWindow?
+  @EnvironmentObject var appDelegate: AppDelegate
   @EnvironmentObject var logger: Logger
 
   let width : CGFloat = 1000
@@ -53,7 +53,7 @@ struct LogView: View {
         
         Button(action: {logger.loadLog() }) {Text("Load") }.padding(.trailing, 20)
         Button(action: {logger.saveLog() }) {Text("Save")}.padding(.trailing, 10)
-//        Button(action: {logger.openLogWindow = false}) {Text("Close")}.padding(.trailing, 20)
+        Button(action: {appDelegate.logWindowIsVisible = false}) {Text("Close")}.padding(.trailing, 20)
 
       }
       .padding(.bottom, 10)
@@ -64,6 +64,7 @@ struct LogView: View {
 
 struct LogView_Previews: PreviewProvider {
     static var previews: some View {
-      LogView(logViewerWindow: NSWindow()).environmentObject( Logger.sharedInstance)
+      LogView()
+        .environmentObject( Logger.sharedInstance)
     }
 }

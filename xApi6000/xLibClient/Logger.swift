@@ -38,6 +38,11 @@ public class Logger : LogHandler, ObservableObject {
   static let kMaxFileSize                   : UInt64 = 20_000_000
 
   // ----------------------------------------------------------------------------
+  // MARK: - Public properties
+
+  public var logWindow : NSWindow?
+
+  // ----------------------------------------------------------------------------
   // MARK: - Published properties
 
   @Published var filterBy         : LogFilter = .none   { didSet{filterLog() }}
@@ -45,9 +50,7 @@ public class Logger : LogHandler, ObservableObject {
   @Published var level            : LogLevel  = .debug  { didSet{filterLog() }}
   @Published var logLines         = [LogLine]()
   @Published var showTimestamps   = false               { didSet{filterLog() }}
-  
-  @Published var openLogWindow    = false               { didSet{ showLogView(openLogWindow) }}
-
+    
   // ----------------------------------------------------------------------------
   // MARK: - Internal properties
 
@@ -194,75 +197,69 @@ public class Logger : LogHandler, ObservableObject {
     public var text  = ""
   }
 
-
-  var logViewerWindow     : NSWindow?
-
   private var _openFileUrl        : URL?
   private var _logString          : String!
   private var _linesArray         = [String.SubSequence]()
 
-  
-  /// Open / Close the LogViewer window
-  /// - Parameter open:     open / close Bool
-  ///
-  func showLogView(_ shouldOpen: Bool) {
-    if shouldOpen {
-      var windowRef:NSWindow
-      windowRef = NSWindow(
-        contentRect: NSRect(x: 0, y: 0, width: 100, height: 100),
-        styleMask: [.titled, .resizable, .miniaturizable, .fullSizeContentView],
-        backing: .buffered, defer: false)
-      logViewerWindow = windowRef
-      windowRef.title = "Log Viewer"
-      windowRef.contentView = NSHostingView(rootView: LogView(logViewerWindow: windowRef).environmentObject( self))
-      windowRef.orderFront(nil)
-      
-      logViewerWindow!.setFrameUsingName("LogViewerWindow")
-      logViewerWindow!.level = .floating
-
-      loadDefaultLog()
-      filterLog()
+  func loadLog(at url: URL? = nil) {
+    
+    if let logUrl = url {
+      // read it & populate the textView
+      do {
+        logLines.removeAll()
+        
+        _logString = try String(contentsOf: logUrl, encoding: .ascii)
+        _linesArray = _logString.split(separator: "\n")
+        _openFileUrl = logUrl
+        logMessage("Log loaded: \(logUrl)", .debug,  #function, #file, #line)
+        
+        filterLog()
+        
+      } catch {
+        let alert = NSAlert()
+        alert.messageText = "Unable to load Log"
+        alert.informativeText = "Log file\n\n\(logUrl)\n\nNOT found"
+        alert.alertStyle = .critical
+        alert.addButton(withTitle: "Ok")
+        
+        let _ = alert.runModal()
+      }
       
     } else {
-      logViewerWindow?.saveFrame(usingName: "LogViewerWindow")
-      logViewerWindow?.close()
-    }
-  }
-
-  func loadLog() {
-    
-    // allow the user to select a Log file
-    let openPanel = NSOpenPanel()
-    openPanel.canChooseFiles = true
-    openPanel.canChooseDirectories = false
-    openPanel.allowsMultipleSelection = false
-    openPanel.allowedFileTypes = ["log"]
-    openPanel.directoryURL = URL(fileURLWithPath: URL.appSupport.path + "/" + _domain + "." + _appName + "/Logs")
-    
-    // open an Open Dialog
-    openPanel.beginSheetModal(for: logViewerWindow!) { [unowned self] (result: NSApplication.ModalResponse) in
       
-      // if the user selects Open
-      if result == NSApplication.ModalResponse.OK {
-        do {
-          self.logLines.removeAll()
-          
-          self._logString = try String(contentsOf: openPanel.url!, encoding: .ascii)
-          self._linesArray = self._logString.split(separator: "\n")
-          _openFileUrl = openPanel.url!
-
-          self.logMessage("Log loaded: \(openPanel.url!)", .debug,  #function, #file, #line)
-
-          filterLog()
-
-        } catch {
-          let alert = NSAlert()
-          alert.messageText = "Unable to load Log file"
-          alert.informativeText = "File\n\n\(openPanel.url!)\n\nNOT loaded"
-          alert.alertStyle = .critical
-          alert.addButton(withTitle: "Ok")
-          
-          let _ = alert.runModal()
+      // allow the user to select a Log file
+      let openPanel = NSOpenPanel()
+      openPanel.canChooseFiles = true
+      openPanel.canChooseDirectories = false
+      openPanel.allowsMultipleSelection = false
+      openPanel.allowedFileTypes = ["log"]
+      openPanel.directoryURL = URL(fileURLWithPath: URL.appSupport.path + "/" + _domain + "." + _appName + "/Logs")
+      
+      // open an Open Dialog
+      openPanel.beginSheetModal(for: logWindow!) { [unowned self] (result: NSApplication.ModalResponse) in
+        
+        // if the user selects Open
+        if result == NSApplication.ModalResponse.OK {
+          do {
+            self.logLines.removeAll()
+            
+            self._logString = try String(contentsOf: openPanel.url!, encoding: .ascii)
+            self._linesArray = self._logString.split(separator: "\n")
+            _openFileUrl = openPanel.url!
+            
+            self.logMessage("Log loaded: \(openPanel.url!)", .debug,  #function, #file, #line)
+            
+            filterLog()
+            
+          } catch {
+            let alert = NSAlert()
+            alert.messageText = "Unable to load Log file"
+            alert.informativeText = "File\n\n\(openPanel.url!)\n\nNOT loaded"
+            alert.alertStyle = .critical
+            alert.addButton(withTitle: "Ok")
+            
+            let _ = alert.runModal()
+          }
         }
       }
     }
@@ -277,7 +274,7 @@ public class Logger : LogHandler, ObservableObject {
     savePanel.directoryURL = URL(fileURLWithPath: "~/Desktop".expandingTilde)
     
     // open a Save Dialog
-    savePanel.beginSheetModal(for: logViewerWindow!) { [unowned self] (result: NSApplication.ModalResponse) in
+    savePanel.beginSheetModal(for: logWindow!) { [unowned self] (result: NSApplication.ModalResponse) in
       
       // if the user pressed Save
       if result == NSApplication.ModalResponse.OK {
@@ -299,32 +296,6 @@ public class Logger : LogHandler, ObservableObject {
         }
       }
     }
-  }
-
-  /// Load the current Log
-  ///
-  func loadDefaultLog() {
-    // get the url for the Logs
-    let defaultLogUrl = URL.appSupport.appendingPathComponent( _domain + "." + _appName + "/Logs/" + _appName + ".log")
-
-      // read it & populate the textView
-      do {
-        logLines.removeAll()
-        
-        _logString = try String(contentsOf: defaultLogUrl, encoding: .ascii)
-        _linesArray = _logString.split(separator: "\n")
-        _openFileUrl = defaultLogUrl
-        logMessage("Default Log loaded: \(defaultLogUrl)", .debug,  #function, #file, #line)
-
-      } catch {
-        let alert = NSAlert()
-        alert.messageText = "Unable to load Default Log"
-        alert.informativeText = "Log file\n\n\(defaultLogUrl)\n\nNOT found"
-        alert.alertStyle = .critical
-        alert.addButton(withTitle: "Ok")
-        
-        let _ = alert.runModal()
-      }
   }
   
   /// Filter the displayed Log

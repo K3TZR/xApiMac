@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+  @EnvironmentObject var appDelegate: AppDelegate
   @EnvironmentObject var tester: Tester
   
   let width : CGFloat = 975
@@ -28,7 +29,6 @@ struct ContentView: View {
         .frame(minWidth: width, idealWidth: width, maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, minHeight: 25, idealHeight: 25, maxHeight: 25, alignment: .leading)
       StubView(radioManager: tester.radioManager)
     }
-//    .frame(minWidth: 950, minHeight: 600)
   }
 }
 

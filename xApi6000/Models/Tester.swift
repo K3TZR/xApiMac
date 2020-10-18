@@ -62,9 +62,6 @@ struct AlertParams {
 
 final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     
-  static let kAppName       = "xApi6000"
-  static let kDomainName    = "net.k3tzr"
-  
   // ----------------------------------------------------------------------------
   // MARK: - Published properties
   
@@ -98,9 +95,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   @Published var objectsFilterBy      : FilterObjects   = .none { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterBy = objectsFilterBy.rawValue }}
   @Published var objectsFilterText    = ""                      { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterText = objectsFilterText}}
   @Published var objectsScrollTo      : CGPoint? = nil
-  
-  @Published var logWindowIsOpen      = false   { didSet {Logger.sharedInstance.showLogView(logWindowIsOpen)} }
-  
+      
   // ----------------------------------------------------------------------------
   // MARK: - Private properties
   
@@ -114,8 +109,6 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   private var _packets              : [DiscoveryPacket] { Discovery.sharedInstance.discoveryPackets }
   private var _previousCommand      = ""
   private var _startTimestamp       : Date?
-  
-  private let _kAppNameTrimmed      = kAppName.replacingSpaces(with: "")
   
   // ----------------------------------------------------------------------------
   // MARK: - Private properties with concurrency protection
@@ -162,13 +155,8 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     objectsFilterBy       = FilterObjects(rawValue: Defaults.objectsFilterBy) ?? .none
     objectsFilterText     = Defaults.objectsFilterText
     
-    // setup the Logger
-    let logger = Logger.sharedInstance
-    logger.config(domain: Tester.kDomainName, appName: Tester.kAppName.replacingSpaces(with: ""))
-    _log = logger.logMessage
-
-    // give the Api access to our logger
-    Log.sharedInstance.delegate = logger
+    // access the Logger
+    _log = Logger.sharedInstance.logMessage
 
     // is there a saved Client ID?
     if clientId == "" {
@@ -178,7 +166,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
       _log("Tester: ClientId created - \(clientId)", .debug,  #function, #file, #line)
     }
     // create a Radio Manager
-    radioManager = RadioManager(delegate: self, domain: "net.k3tzr", appName: Tester.kAppName)
+    radioManager = RadioManager(delegate: self, domain: "net.k3tzr", appName: AppDelegate.kAppName)
     
     // receive delegate actions from the Api
     _api.testerDelegate = self
@@ -753,17 +741,17 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     switch status {
     case (true, .inUse, 1):
       params.msg = "Radio is connected to one Station"
-      params.text = "Close the Station . . Or . . Disconnect " + _kAppNameTrimmed
+      params.text = "Close the Station . . Or . . Disconnect " + AppDelegate.kAppName
       params.button1 = "Close \(clients[0].station)"
-      params.button2 = "Disconnect " + _kAppNameTrimmed
+      params.button2 = "Disconnect " + AppDelegate.kAppName
       params.button3 = "Cancel"
 
     case (true, .inUse, 2):
       params.msg = "Radio is connected to multiple Stations"
-      params.text = "Close a Station . . Or . . Disconnect "  + _kAppNameTrimmed
-      params.button1 = (clients[0].station == _kAppNameTrimmed ? "---" : "Close \(clients[0].station)")
-      params.button2 = (clients[1].station == _kAppNameTrimmed ? "---" : "Close \(clients[1].station)")
-      params.button3 = "Disconnect " + _kAppNameTrimmed
+      params.text = "Close a Station . . Or . . Disconnect "  + AppDelegate.kAppName
+      params.button1 = (clients[0].station == AppDelegate.kAppName ? "---" : "Close \(clients[0].station)")
+      params.button2 = (clients[1].station == AppDelegate.kAppName ? "---" : "Close \(clients[1].station)")
+      params.button3 = "Disconnect " + AppDelegate.kAppName
       params.button4 = "Cancel"
 
     default:
