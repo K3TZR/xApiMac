@@ -4,9 +4,9 @@
 
 ##### Built on:
 *  macOS 10.15.7
-*  Xcode 12.0 
+*  Xcode 12.1 (12A7403) 
 *  Swift 5.3 / SwiftUI
-*  xLib6000 1.3.11
+*  xLib6000 1.4.0
 *  SwiftyUserDefaults 5.0.0
 *  XCGLogger 7.0.1
 
