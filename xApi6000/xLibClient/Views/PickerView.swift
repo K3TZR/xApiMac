@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+/// A View to allow the user to select a Radio / Station for connection
+///
 struct PickerView: View {
   @EnvironmentObject var radioManager: RadioManager
   

@@ -1,9 +1,9 @@
 //
 //  AppExtensions.swift
-//  xAPITester
+//  xApi6000
 //
 //  Created by Douglas Adams on 8/15/15.
-//  Copyright © 2018 Douglas Adams & Mario Illgen. All rights reserved.
+//  Copyright © 2018 Douglas Adams. All rights reserved.
 //
 
 import Cocoa
@@ -25,7 +25,8 @@ extension DefaultsKeys {
   var connectAsGui             : DefaultsKey<Bool>            { .init("connectAsGui", defaultValue: false) }
   var connectToFirstRadio      : DefaultsKey<Bool>            { .init("connectToFirstRadio", defaultValue: false) }
   var clientId                 : DefaultsKey<String>          { .init("clientId", defaultValue: "") }
-  var defaultConnection        : DefaultsKey<String>          { .init("defaultConnection", defaultValue: "local.1715-4055-6500-9722") }
+  var defaultConnection        : DefaultsKey<String>          { .init("defaultConnection", defaultValue: "") }
+  var defaultGuiConnection     : DefaultsKey<String>          { .init("defaultGuiConnection", defaultValue: "") }
   var enablePinging            : DefaultsKey<Bool>            { .init("enablePinging", defaultValue: false) }
   var messagesFilterText       : DefaultsKey<String>          { .init("messagesFilterText", defaultValue: "") }
   var messagesFilterBy         : DefaultsKey<String>          { .init("messagesFilterBy", defaultValue: "none") }

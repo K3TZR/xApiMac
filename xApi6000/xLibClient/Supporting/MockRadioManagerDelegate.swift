@@ -16,7 +16,9 @@ class MockRadioManagerDelegate : RadioManagerDelegate {
   var connectAsGui          = true
   var kAppNameTrimmed       = "AppName"
   var stationName           = "MyStation"
-  
+  var defaultConnection     = ""
+  var defaultGuiConnection  = ""
+
   // SmartLink related
   func smartLinkLogin()     { /* stub */ }
   func smartLinkLogout()    { /* stub */ }

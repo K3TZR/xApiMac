@@ -16,6 +16,7 @@ struct SendView: View {
       {Text("Send")
         .frame(width: 70, alignment: .center)
       }
+      .disabled(tester.isConnected == false)
       .padding(.leading, 10)
       .padding(.trailing, 20)
       TextField("Command to send", text: $tester.cmdToSend)
@@ -26,6 +27,7 @@ struct SendView: View {
         .frame(width: 110, alignment: .leading)
         .padding(.trailing, 10)
     }
+    .padding(.top, 10)
   }
 }
 

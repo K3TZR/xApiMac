@@ -102,6 +102,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		912F73CD253E050E0088B8DB /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				91583D5025367F7F0088C3B8 /* Auth0View.swift */,
+				91583D4825367F7F0088C3B8 /* LogView.swift */,
+				91583D4025367F7F0088C3B8 /* PickerView.swift */,
+				91583D4725367F7F0088C3B8 /* StubView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		91541C0C24E02E7C002FE61E = {
 			isa = PBXGroup;
 			children = (
@@ -181,13 +192,10 @@
 		91583D3F25367F7F0088C3B8 /* xLibClient */ = {
 			isa = PBXGroup;
 			children = (
-				91583D5025367F7F0088C3B8 /* Auth0View.swift */,
 				91583D4125367F7F0088C3B8 /* Logger.swift */,
-				91583D4825367F7F0088C3B8 /* LogView.swift */,
-				91583D4025367F7F0088C3B8 /* PickerView.swift */,
 				91583D4925367F7F0088C3B8 /* RadioManager.swift */,
-				91583D4725367F7F0088C3B8 /* StubView.swift */,
 				91583D5125367F7F0088C3B8 /* WanManager.swift */,
+				912F73CD253E050E0088B8DB /* Views */,
 				91583D4225367F7F0088C3B8 /* SubViews */,
 				91583D4A25367F7F0088C3B8 /* Supporting */,
 			);
@@ -481,7 +489,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApi6000;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -507,7 +515,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApi6000;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -551,7 +559,7 @@
 			repositoryURL = "https://github.com/K3TZR/xLib6000.git";
 			requirement = {
 				kind = exactVersion;
-				version = 1.3.11;
+				version = 1.4.0;
 			};
 		};
 		91BDFEF324EC461500DEEFC1 /* XCRemoteSwiftPackageReference "XCGLogger" */ = {

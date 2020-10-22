@@ -7,6 +7,9 @@
 
 import SwiftUI
 
+/// Image, textfields and button for the SmartLink portion of the Picker
+///   only shown if SmartLink is enabled
+///
 struct SmartLinkView: View {
   @EnvironmentObject var radioManager : RadioManager
   @Environment(\.presentationMode) var presentationMode

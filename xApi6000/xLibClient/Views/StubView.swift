@@ -7,6 +7,9 @@
 
 import SwiftUI
 
+/// A view to be inserted into the app's ContentView
+///     allows display of the Picker and Auth0 sheets (supplied by xLibClient)
+///
 struct StubView: View {
   @ObservedObject var radioManager: RadioManager
   

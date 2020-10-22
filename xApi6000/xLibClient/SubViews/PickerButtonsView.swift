@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+/// Picker buttons to Test, Close or Select
+///
 struct PickerButtonsView: View {
   @EnvironmentObject var radioManager : RadioManager
   @Environment(\.presentationMode) var presentationMode
@@ -26,8 +28,9 @@ struct PickerButtonsView: View {
       Button(action: {
         presentationMode.wrappedValue.dismiss()
         radioManager.connectToSelection()
-      }) {Text("Select")}
-        .padding(.trailing, 20)
+      }) {Text("Connect")}
+      .disabled(radioManager.pickerSelection.isEmpty)
+      .padding(.trailing, 20)
     }
     .padding(.bottom, 10)
   }

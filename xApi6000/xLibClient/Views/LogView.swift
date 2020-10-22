@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+/// A View to display the contents of the app's log
+///
 struct LogView: View {
   @EnvironmentObject var appDelegate: AppDelegate
   @EnvironmentObject var logger: Logger

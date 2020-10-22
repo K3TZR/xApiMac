@@ -11,13 +11,21 @@ import xLib6000
 
 typealias OpenCloseStatus = (isNewApi: Bool, status: ConnectionStatus, connectionCount: Int)
 
-struct PickerPacket : Identifiable {
-  var id          = 0
-  var packetIndex = 0
-  var type        : ConnectionType = .local
-  var nickname    = ""
-  var status      : ConnectionStatus = .available
-  var stations    = ""
+struct PickerPacket : Identifiable, Equatable {
+  var id                = 0
+  var packetIndex       = 0
+  var type              : ConnectionType = .local
+  var nickname          = ""
+  var status            : ConnectionStatus = .available
+  var stations          = ""
+  var serialNumber      = ""
+  var isDefault         = false
+  var connectionString  : String { "\(type == .wan ? "wan" : "local").\(serialNumber)" }
+
+  static func ==(lhs: PickerPacket, rhs: PickerPacket) -> Bool {
+    guard lhs.serialNumber != "" else { return false }
+    return lhs.connectionString == rhs.connectionString
+  }
 }
 
 enum ConnectionType : String {
@@ -87,6 +95,8 @@ protocol RadioManagerDelegate {
   var smartLinkAuth0Email   : String  {get set}
   var smartLinkEnabled      : Bool    {get}
   var stationName           : String  {get}     
+  var defaultConnection     : String  {get set}
+  var defaultGuiConnection  : String  {get set}
 }
 
 // ----------------------------------------------------------------------------
@@ -158,14 +168,6 @@ public final class RadioManager : ObservableObject {
     _domain = domain
     _appNameTrimmed = appName.replacingSpaces(with: "")
     
-//    // setup the Logger
-//    let logger = Logger.sharedInstance
-//    logger.config(domain: domain, appName: _appNameTrimmed)
-//    _log = logger.logMessage
-//
-//    // give the Api access to our logger
-//    Log.sharedInstance.delegate = logger
-
     // start Discovery
     let _ = Discovery.sharedInstance
     
@@ -241,7 +243,7 @@ public final class RadioManager : ObservableObject {
     
     // was a connection specified?
     if connection == "" {
-      // NO, where one or more radios found?
+      // NO, were one or more radios found?
       if packets.count > 0 {
         // YES, attempt a connection to the first
         connectTo(index: 0)
@@ -254,8 +256,14 @@ public final class RadioManager : ObservableObject {
       if let conn = parseConnection(connection) {
         // VALID, find the matching packet
         var foundIndex : Int? = nil
-        for (i, packet) in packets.enumerated() where  (packet.serialNumber == conn.serialNumber) && (packet.isWan == conn.isWan) {
-          foundIndex = i
+        for (i, packet) in pickerPackets.enumerated() {
+          if packet.serialNumber == conn.serialNumber && packet.type.rawValue == conn.type {
+            if delegate.connectAsGui {
+              foundIndex = i
+            } else if packet.stations == conn.station {
+              foundIndex = i
+            }
+          }
         }
         // is there a match?
         if let index = foundIndex {
@@ -521,14 +529,30 @@ public final class RadioManager : ObservableObject {
     var p = 0
     
     if delegate.connectAsGui {
+      // GUI connection
       for packet in packets {
-        pickerPackets.append( PickerPacket(id: i, packetIndex: i, type: packet.isWan ? .wan : .local, nickname: packet.nickname, status: ConnectionStatus(rawValue: packet.status.lowercased()) ?? .inUse, stations: packet.guiClientStations))
+        pickerPackets.append( PickerPacket(id: i,
+                                           packetIndex: i,
+                                           type: packet.isWan ? .wan : .local,
+                                           nickname: packet.nickname,
+                                           status: ConnectionStatus(rawValue: packet.status.lowercased()) ?? .inUse,
+                                           stations: packet.guiClientStations,
+                                           serialNumber: packet.serialNumber,
+                                           isDefault: packet.connectionString == delegate.defaultGuiConnection))
         i += 1
       }
     } else {
+      // Non-Gui connection
       for packet in packets {
         for client in packet.guiClients {
-          pickerPackets.append( PickerPacket(id: i, packetIndex: p, type: packet.isWan ? .wan : .local, nickname: packet.nickname, status: ConnectionStatus(rawValue: packet.status.lowercased()) ?? .inUse, stations: client.station))
+          pickerPackets.append( PickerPacket(id: i,
+                                             packetIndex: p,
+                                             type: packet.isWan ? .wan : .local,
+                                             nickname: packet.nickname,
+                                             status: ConnectionStatus(rawValue: packet.status.lowercased()) ?? .inUse,
+                                             stations: client.station,
+                                             serialNumber: packet.serialNumber,
+                                             isDefault: packet.connectionString + "." + client.station == delegate.defaultConnection))
           i += 1
         }
         p += 1
@@ -557,29 +581,47 @@ public final class RadioManager : ObservableObject {
   /// - Parameter connectionString:   a string of the form <type>.<serialNumber>
   /// - Returns:                      a tuple containing the parsed values (if any)
   ///
-  private func parseConnection(_ connectionString: String) -> (serialNumber: String, isWan: Bool)? {
+  private func parseConnection(_ connectionString: String) -> (type: String, serialNumber: String, station: String)? {
     // A Connection is stored as a String in the form:
-    //      "<type>.<serial number>"
+    //      "<type>.<serial number>"  OR  "<type>.<serial number>.<station>"
     //      where:
     //          <type>            "local" OR "wan", (wan meaning SmartLink)
     //          <serial number>   a serial number, e.g. 1234-5678-9012-3456
+    //          <station>         a Station name e.g "Windows" (only used for non-Gui connections)
     //
     // If the Type and period separator are omitted. "local" is assumed
     //
     
     // split by the "." (if any)
     let parts = connectionString.components(separatedBy: ".")
-    if parts.count == 2 {
+    
+    switch parts.count {
+    case 3:
       // <type>.<serial number>
-      return (parts[1], (parts[0] == "wan") ? true : false)
-      
-    } else if parts.count == 1 {
+      return (parts[0], parts[1], parts[2])
+    case 2:
+      // <type>.<serial number>
+      return (parts[0], parts[1], "")
+    case 1:
       // <serial number>, type defaults to local
-      return (parts[0], false)
-    } else {
+      return (parts[0], "local", "")
+    default:
       // unknown, not a valid connection string
       return nil
+
     }
+//
+//    if parts.count == 2 {
+//      // <type>.<serial number>
+//      return (parts[1], (parts[0] == "wan") ? true : false)
+//
+//    } else if parts.count == 1 {
+//      // <serial number>, type defaults to local
+//      return (parts[0], false)
+//    } else {
+//      // unknown, not a valid connection string
+//      return nil
+//    }
   }
   
   // ----------------------------------------------------------------------------

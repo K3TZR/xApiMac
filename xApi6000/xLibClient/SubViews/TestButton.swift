@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+/// Button with a red/green status indicator
+///
 struct TestButton: View {
   @EnvironmentObject var radioManager :RadioManager
 

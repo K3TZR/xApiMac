@@ -75,7 +75,14 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   @Published var cmdToSend            = ""
   @Published var connectAsGui         = false   { didSet {Defaults.connectAsGui = connectAsGui} }
   @Published var connectToFirstRadio  = false   { didSet {Defaults.connectToFirstRadio = connectToFirstRadio} }
-  @Published var defaultConnection    = ""      { didSet {Defaults.defaultConnection = defaultConnection} }
+  var defaultConnection : String {
+    get {Defaults.defaultConnection}
+    set {Defaults.defaultConnection = newValue}
+  }
+  var defaultGuiConnection : String {
+    get {Defaults.defaultGuiConnection}
+    set {Defaults.defaultGuiConnection = newValue}
+  }
   @Published var enablePinging        = false   { didSet {Defaults.enablePinging = enablePinging} }
   @Published var isConnected          = false
   @Published var showAllReplies       = false   { didSet {Defaults.showAllReplies = showAllReplies} }
@@ -141,7 +148,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     clientId              = Defaults.clientId
     connectAsGui          = Defaults.connectAsGui
     connectToFirstRadio   = Defaults.connectToFirstRadio
-    defaultConnection     = Defaults.defaultConnection
+//    defaultConnection     = Defaults.defaultConnection
     enablePinging         = Defaults.enablePinging
     showAllReplies        = Defaults.showAllReplies
     showPings             = Defaults.showPings
@@ -194,17 +201,25 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     //      2. first radio found (if connectToFirstRadio true)
     //      3. otherwise, show picker
     //
+    //    It is the responsibility of the app to determine this logic
+    //
     _startTimestamp = Date()
     if clearAtConnect { clear() }
     
     checkSmartLinkStatus()
     
-    if defaultConnection != "" {
-      // connect to default
+    if connectAsGui && defaultGuiConnection != "" {
+      // Gui connect to default
+      radioManager.connect(to: defaultGuiConnection)
+
+    } else if connectAsGui == false && defaultConnection != "" {
+      // Non-Gui connect to default
       radioManager.connect(to: defaultConnection)
+
     } else if connectToFirstRadio {
       // connect to first
       radioManager.connect()
+
     } else {
       // use the Picker
       radioManager.connectUsingPicker()
@@ -218,6 +233,14 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     DispatchQueue.main.async{ [self] in isConnected = false }
     if clearAtDisconnect { clear() }
     radioManager.disconnect()
+  }
+  
+  
+  /// Cause the Radio Picker to be displayed
+  ///
+  func showPicker() {
+    checkSmartLinkStatus()
+    radioManager.connectUsingPicker()
   }
   
   /// Clear the object and messages areas
@@ -664,6 +687,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
         alert.beginSheetModal(for: NSApplication.shared.mainWindow!, completionHandler: { _ in
         })
       }
+      showPicker()
     }
   }
   
@@ -685,7 +709,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   
   /// Called by RadioManager to request a decision during a connection attempt
   /// - Parameters:
-  ///   - status:   the status of the targeted Radio
+  ///   - status:   the status of the targeted Radio (isNewApi: Bool, status: ConnectionStatus, connectionCount: Int)
   ///   - clients:  an array of the Radio's GuiClients
   ///   - handler:  a callback closure
   ///
@@ -731,7 +755,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   
   /// Called by RadioManager to request a decision during a connection attempt
   /// - Parameters:
-  ///   - status:   the status of the targeted Radio
+  ///   - status:   the status of the targeted Radio (isNewApi: Bool, status: ConnectionStatus, connectionCount: Int)
   ///   - clients:  an array of the Radio's GuiClients
   ///   - handler:  a callback closure
   ///

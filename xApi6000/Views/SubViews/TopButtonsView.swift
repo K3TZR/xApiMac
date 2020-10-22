@@ -52,22 +52,33 @@ struct TopButtonsView: View {
             Text($0.name)
           }
         }
-        .frame(width: 300, height: 18, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+        .frame(width: 300, height: 18, alignment: .leading)
         .padding(.trailing, 10)
       }
       
       // Bottom row
-      .padding(.top, 10)
       HStack {
+        Button(action: {
+          tester.showPicker()
+        })
+        {Text("Picker")
+          .frame(width: 70, alignment: .center)
+        }
+        .disabled(tester.isConnected)
+        .sheet(isPresented: $tester.radioManager.showPickerSheet) {
+          PickerView().environmentObject(tester.radioManager)
+        }
+        .padding(.leading, 10)
+        .padding(.trailing, 20)
         Toggle("Show timestamps", isOn: $tester.showTimestamps)
           .frame(width: 150, alignment: .leading)
-          .padding(.leading, 133)
         Toggle("Show pings", isOn: $tester.showPings)
           .frame(width: 150, alignment: .leading)
         Toggle("SmartLink enabled", isOn: $tester.smartLinkEnabled)
           .frame(width: 150, alignment: .leading)
         Spacer()
       }
+      .padding(.trailing, 10)
     }
   }
 }

@@ -9,6 +9,8 @@
 import SwiftUI
 import WebKit
 
+/// A View to display the SmartLink logon screen (an Auth0 screen)
+///
 struct Auth0View: View {
   @EnvironmentObject var radioManager : RadioManager
   @Environment(\.presentationMode) var presentationMode

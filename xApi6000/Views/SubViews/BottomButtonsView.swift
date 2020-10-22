@@ -37,5 +37,6 @@ struct BottomButtonsView_Previews: PreviewProvider {
     static var previews: some View {
       BottomButtonsView()
         .environmentObject(Tester())
+        .environmentObject(AppDelegate())
     }
 }
