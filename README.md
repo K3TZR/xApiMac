@@ -30,6 +30,9 @@ Please send any bugs / comments / questions to support@k3tzr.net
 [![W6OP](https://img.shields.io/badge/W6OP-xVoiceKeyer,_xCW-informational)](https://w6op.com) A Mac-based Voice Keyer and a CW Keyer.  
 
 ---
+##### 1.0.2 Release Notes
+* preparation for removing xLibClient
+
 ##### 1.0.1 Release Notes
 * added context menu in Radio Picker (right-click) to set/reset default
 * added separate defaultConnection values, one for Gui, one for non-Gui connections
@@ -41,12 +44,6 @@ Please send any bugs / comments / questions to support@k3tzr.net
 * added AppDelegate as @EnvironmentObject in multiple places
 * now show the Picker when connection unsuccessful
 * many small adjustments to views
-
-##### 1.0.2 Release Notes
-* initial version
-
-##### 1.0.1 Release Notes
-* initial version
 
 ##### 1.0.0 Release Notes
 * initial version
