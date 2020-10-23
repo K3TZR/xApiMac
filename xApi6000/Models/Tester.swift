@@ -75,6 +75,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   @Published var cmdToSend            = ""
   @Published var connectAsGui         = false   { didSet {Defaults.connectAsGui = connectAsGui} }
   @Published var connectToFirstRadio  = false   { didSet {Defaults.connectToFirstRadio = connectToFirstRadio} }
+
   var defaultConnection : String {
     get {Defaults.defaultConnection}
     set {Defaults.defaultConnection = newValue}

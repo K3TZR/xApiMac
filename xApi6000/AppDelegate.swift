@@ -10,9 +10,7 @@ import xLib6000
 import SwiftUI
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
-
-  @Published var logWindowIsVisible = false { didSet{ showLogWindow(logWindowIsVisible) }}
+class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableObject {
 
   // ----------------------------------------------------------------------------
   // MARK: - Static properties
@@ -21,10 +19,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
   static let kDomainName    = "net.k3tzr"  
 
   // ----------------------------------------------------------------------------
+  // MARK: - Published properties
+  
+  @Published var logWindowIsVisible = false { didSet{ showLogWindow(logWindowIsVisible) }}
+
+  // ----------------------------------------------------------------------------
   // MARK: - Internal properties
   
   var window      : NSWindow!
-  var logWindow   : NSWindow!
+  var logWindow   : NSWindow?
 
   // ----------------------------------------------------------------------------
   // MARK: - Internal methods
@@ -49,7 +52,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     window.makeKeyAndOrderFront(nil)
     
     let logger = Logger.sharedInstance
-    logger.config(domain: AppDelegate.kDomainName, appName: AppDelegate.kAppName.replacingSpaces(with: ""))
+    logger.config(delegate: self, domain: AppDelegate.kDomainName, appName: AppDelegate.kAppName.replacingSpaces(with: ""))
 
     // give the Api access to our logger
     Log.sharedInstance.delegate = logger
@@ -66,19 +69,24 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     logWindow!.contentView = NSHostingView(rootView: LogView()
                                             .environmentObject(self)
                                             .environmentObject(Logger.sharedInstance))
-    // give Logger a reference to the window
-    Logger.sharedInstance.logWindow = logWindow
     
     // initialize Logger with the default log
     let defaultLogUrl = URL(fileURLWithPath: URL.appSupport.path + "/" + AppDelegate.kDomainName + "." + AppDelegate.kAppName + "/Logs/" + AppDelegate.kAppName + ".log")
     Logger.sharedInstance.loadLog(at: defaultLogUrl)
   }
 
+  func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+    true
+  }
+  
+  /// Show / Hide the Log window
+  /// - Parameter show:     show / hide
+  ///
   func showLogWindow(_ show: Bool) {
     if show {
-      logWindow!.orderFront(nil)
-      logWindow!.level = .floating
-      logWindow!.setFrameUsingName("LogWindowFrame")
+      logWindow?.orderFront(nil)
+      logWindow?.level = .floating
+      logWindow?.setFrameUsingName("LogWindowFrame")
       
     } else {
       logWindow?.saveFrame(usingName: "LogWindowFrame")
@@ -86,8 +94,5 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     }
   }
 
-  func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-    true
-  }
 }
 

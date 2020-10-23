@@ -45,7 +45,7 @@ struct Station : Identifiable {
 }
 
 // ----------------------------------------------------------------------------
-// RadioManager protocol definition
+// RadioManagerDelegate protocol definition
 // ----------------------------------------------------------------------------
 
 protocol RadioManagerDelegate {

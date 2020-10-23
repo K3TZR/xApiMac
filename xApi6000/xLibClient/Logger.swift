@@ -29,6 +29,20 @@ import SwiftUI
 //
 // ----------------------------------------------------------------------------
 
+// ----------------------------------------------------------------------------
+// LoggerDelegate protocol definition
+// ----------------------------------------------------------------------------
+
+public protocol LoggerDelegate {
+  
+  var logWindowIsVisible  : Bool      {get set}
+  var logWindow           : NSWindow? {get}
+}
+
+// ----------------------------------------------------------------------------
+// Logger class implementation
+// ----------------------------------------------------------------------------
+
 public class Logger : LogHandler, ObservableObject {
 
   // ----------------------------------------------------------------------------
@@ -40,7 +54,7 @@ public class Logger : LogHandler, ObservableObject {
   // ----------------------------------------------------------------------------
   // MARK: - Public properties
 
-  public var logWindow : NSWindow?
+  public var delegate : LoggerDelegate?
 
   // ----------------------------------------------------------------------------
   // MARK: - Published properties
@@ -74,11 +88,11 @@ public class Logger : LogHandler, ObservableObject {
   ///
   public static var sharedInstance = Logger()
   
-  private init() {
-  }
+  private init() {}
   
-  public func config(domain: String, appName: String) {
+  public func config(delegate: LoggerDelegate, domain: String, appName: String) {
 
+    self.delegate = delegate
     _domain = domain
     _appName = appName
     
@@ -137,7 +151,7 @@ public class Logger : LogHandler, ObservableObject {
     dateFormatter.locale = Locale.current
     log.dateFormatter = dateFormatter
   }
-  
+
   // ----------------------------------------------------------------------------
   // MARK: - LogHandlerDelegate methods
   
@@ -236,7 +250,7 @@ public class Logger : LogHandler, ObservableObject {
       openPanel.directoryURL = URL(fileURLWithPath: URL.appSupport.path + "/" + _domain + "." + _appName + "/Logs")
       
       // open an Open Dialog
-      openPanel.beginSheetModal(for: logWindow!) { [unowned self] (result: NSApplication.ModalResponse) in
+      openPanel.beginSheetModal(for: delegate!.logWindow!) { [unowned self] (result: NSApplication.ModalResponse) in
         
         // if the user selects Open
         if result == NSApplication.ModalResponse.OK {
@@ -274,7 +288,7 @@ public class Logger : LogHandler, ObservableObject {
     savePanel.directoryURL = URL(fileURLWithPath: "~/Desktop".expandingTilde)
     
     // open a Save Dialog
-    savePanel.beginSheetModal(for: logWindow!) { [unowned self] (result: NSApplication.ModalResponse) in
+    savePanel.beginSheetModal(for: delegate!.logWindow!) { [unowned self] (result: NSApplication.ModalResponse) in
       
       // if the user pressed Save
       if result == NSApplication.ModalResponse.OK {

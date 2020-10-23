@@ -42,6 +42,11 @@ Please send any bugs / comments / questions to support@k3tzr.net
 * now show the Picker when connection unsuccessful
 * many small adjustments to views
 
+##### 1.0.2 Release Notes
+* initial version
+
+##### 1.0.1 Release Notes
+* initial version
 
 ##### 1.0.0 Release Notes
 * initial version

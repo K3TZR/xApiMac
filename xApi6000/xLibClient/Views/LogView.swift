@@ -10,7 +10,6 @@ import SwiftUI
 /// A View to display the contents of the app's log
 ///
 struct LogView: View {
-  @EnvironmentObject var appDelegate: AppDelegate
   @EnvironmentObject var logger: Logger
 
   let width : CGFloat = 1000
@@ -55,7 +54,7 @@ struct LogView: View {
         
         Button(action: {logger.loadLog() }) {Text("Load") }.padding(.trailing, 20)
         Button(action: {logger.saveLog() }) {Text("Save")}.padding(.trailing, 10)
-        Button(action: {appDelegate.logWindowIsVisible = false}) {Text("Close")}.padding(.trailing, 20)
+        Button(action: {logger.delegate!.logWindowIsVisible = false}) {Text("Close")}.padding(.trailing, 20)
 
       }
       .padding(.bottom, 10)
