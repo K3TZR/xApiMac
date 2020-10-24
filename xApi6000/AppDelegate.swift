@@ -45,7 +45,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableOb
         backing: .buffered, defer: false)
     window.isReleasedWhenClosed = false
     window.center()
-    window.setFrameAutosaveName("Main Window")
+    window.setFrameAutosaveName(AppDelegate.kAppName + "WindowFrame")
     window.title = AppDelegate.kAppName + ", v" + Version().string
     window.contentView = NSHostingView(rootView: contentView
                                         .environmentObject(self)
@@ -66,7 +66,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableOb
       backing: .buffered, defer: false)
     
     logWindow!.isReleasedWhenClosed = false
-    logWindow!.title = "Alternate Window"
+    logWindow!.title = "Log Window"
     logWindow!.contentView = NSHostingView(rootView: LogView()
                                             .environmentObject(Logger.sharedInstance))
     
@@ -83,13 +83,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableOb
   /// - Parameter show:     show / hide
   ///
   func showLogWindow(_ show: Bool) {
+    let frameName = "LogWindowFrame"
+    
     if show {
       logWindow?.orderFront(nil)
       logWindow?.level = .floating
-      logWindow?.setFrameUsingName("LogWindowFrame")
+      logWindow?.setFrameUsingName(frameName)
       
     } else {
-      logWindow?.saveFrame(usingName: "LogWindowFrame")
+      logWindow?.saveFrame(usingName: frameName)
       logWindow?.orderOut(nil)
     }
   }

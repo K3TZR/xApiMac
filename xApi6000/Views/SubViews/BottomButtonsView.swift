@@ -14,21 +14,18 @@ struct BottomButtonsView: View {
   
   var body: some View {
     HStack {
-      Toggle("Clear at Connect", isOn: $tester.clearAtConnect)
-        .frame(width: 200)
-      Toggle("Clear at Disconnect", isOn: $tester.clearAtDisconnect)
-        .frame(width: 200)
+      Toggle("Clear at Connect", isOn: $tester.clearAtConnect).frame(width: 150)
+      Toggle("Clear at Disconnect", isOn: $tester.clearAtDisconnect).frame(width: 150)
 
       Spacer()
 
-      Toggle("LogViewer", isOn: $appDelegate.logWindowIsVisible)
-        .frame(width: 150, alignment: .leading)
+      Toggle("Log Window", isOn: $appDelegate.logWindowIsVisible).frame(width: 100, alignment: .leading)
 
       Spacer()
 
       Button(action: {self.tester.clear()}) {Text("Clear")}
     }
-    .padding(.horizontal, 20)
+    .padding(.trailing, 20)
     .padding(.top, 10)
   }
 }
