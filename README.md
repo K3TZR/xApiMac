@@ -6,8 +6,7 @@
 *  macOS 10.15.7
 *  Xcode 12.1 (12A7403) 
 *  Swift 5.3 / SwiftUI
-
-*  xLibClient 1.0.1
+*  xLibClient 1.0.2
 *  xLib6000 1.4.0
 *  SwiftyUserDefaults 5.0.0
 *  XCGLogger 7.0.1
@@ -32,6 +31,9 @@ Please send any bugs / comments / questions to support@k3tzr.net
 [![W6OP](https://img.shields.io/badge/W6OP-xVoiceKeyer,_xCW-informational)](https://w6op.com) A Mac-based Voice Keyer and a CW Keyer.  
 
 ---
+##### 1.0.5 Release Notes
+* incorporated xLibClient 1.0.2
+
 ##### 1.0.4 Release Notes
 * changed Log Window title to "Log Window"
 
