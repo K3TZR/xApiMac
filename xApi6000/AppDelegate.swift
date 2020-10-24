@@ -8,6 +8,7 @@
 import Cocoa
 import xLib6000
 import SwiftUI
+import xLibClient
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableObject {
@@ -67,7 +68,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableOb
     logWindow!.isReleasedWhenClosed = false
     logWindow!.title = "Alternate Window"
     logWindow!.contentView = NSHostingView(rootView: LogView()
-                                            .environmentObject(self)
                                             .environmentObject(Logger.sharedInstance))
     
     // initialize Logger with the default log

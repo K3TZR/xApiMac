@@ -7,25 +7,26 @@
 //
 
 import SwiftUI
+import xLibClient
 
 struct TopButtonsView: View {
   @EnvironmentObject var tester : Tester
   
-  func insertChoice(_ item: String, into stations: [Station]) -> [Station] {
-    var choices = [Station]()
-
-    choices.append( Station(id: 0, name: item, clientId: nil))
-    for station in stations {
-      choices.append( Station(id: station.id + 1, name: station.name, clientId: station.clientId) )
-    }
-    return choices
-  }
+//  func insertChoice(_ item: String, into stations: [Station]) -> [Station] {
+//    var choices = [Station]()
+//
+//    choices.append( Station(id: 0, name: item, clientId: nil))
+//    for station in stations {
+//      choices.append( Station(id: station.id + 1, name: station.name, clientId: station.clientId) )
+//    }
+//    return choices
+//  }
 
   var body: some View {
     
     VStack {
       
-      let stationChoices = insertChoice("All", into: tester.radioManager.stations)
+//      let stationChoices = insertChoice("All", into: tester.radioManager.stations)
 
       HStack {
         // Top row
@@ -48,7 +49,7 @@ struct TopButtonsView: View {
           .frame(width: 150, alignment: .leading)
         Spacer()
         Picker(selection: $tester.radioManager.stationSelection, label: Text("Show Station")) {
-          ForEach(stationChoices, id: \.id) {
+          ForEach(tester.radioManager.stations, id: \.id) {
             Text($0.name)
           }
         }

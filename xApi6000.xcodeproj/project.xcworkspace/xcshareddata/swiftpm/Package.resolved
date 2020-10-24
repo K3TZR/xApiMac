@@ -27,6 +27,15 @@
           "revision": "2d799725463f089ad561699616c5d2c68623166d",
           "version": "1.4.0"
         }
+      },
+      {
+        "package": "xLibClient",
+        "repositoryURL": "https://github.com/K3TZR/xLibClient.git",
+        "state": {
+          "branch": null,
+          "revision": "4f971c4b74f8c4e7bdbc188683becc790b4b2cee",
+          "version": "1.0.0"
+        }
       }
     ]
   },

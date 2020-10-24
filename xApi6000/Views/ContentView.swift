@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import xLibClient
 
 struct ContentView: View {
   @EnvironmentObject var appDelegate: AppDelegate
