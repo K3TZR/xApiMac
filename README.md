@@ -22,7 +22,11 @@ Please send any bugs / comments / questions to support@k3tzr.net
 
 ##### Credits
 [xLib6000](https://github.com/K3TZR/xLib6000.git)
+
+[xLibClient](https://github.com/K3TZR/xLibClient.git)
+
 [SwiftyUserDefaults](https://github.com/sunshinejr/SwiftyUserDefaults.git)
+
 [XCGLogger](https://github.com/DaveWoodCom/XCGLogger.git)
 
 ##### Other software
