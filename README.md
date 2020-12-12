@@ -8,7 +8,7 @@
 *  Swift 5.3 / SwiftUI
 
 ##### Runs on:
-* macOS 10.15 and higher
+* macOS 11.0 (Big Sur) and higher
 
 ##### Builds
 Compiled [RELEASE builds](https://github.com/K3TZR/xApi6000/releases)  will be created at relatively stable points, please use them.  If you require a DEBUG build you will have to build from sources. 
@@ -31,6 +31,10 @@ Please send any bugs / comments / questions to support@k3tzr.net
 [![W6OP](https://img.shields.io/badge/W6OP-xVoiceKeyer,_xCW-informational)](https://w6op.com) A Mac-based Voice Keyer and a CW Keyer.  
 
 ---
+##### 1.0.7 Release Notes
+* name changed to xApiMac
+* corrected startTimestamp bug
+
 ##### 1.0.6 Release Notes
 * Deployment target changed to macOS 11.0
 * uses latest xLib6000 (which does not contain xClient_macOS or xClient_iOS)

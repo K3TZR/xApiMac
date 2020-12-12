@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -23,19 +23,19 @@
 		91859185257E80D400C7D6F5 /* FiltersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859177257E80D400C7D6F5 /* FiltersView.swift */; };
 		91859186257E80D400C7D6F5 /* TopButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859178257E80D400C7D6F5 /* TopButtonsView.swift */; };
 		91859187257E80D400C7D6F5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859179257E80D400C7D6F5 /* ContentView.swift */; };
-		91859188257E80D400C7D6F5 /* Tester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9185917B257E80D400C7D6F5 /* Tester.swift */; };
 		91859189257E80D400C7D6F5 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9185917C257E80D400C7D6F5 /* Keychain.swift */; };
 		91874C032585519A00D80F05 /* xClientMac in Frameworks */ = {isa = PBXBuildFile; productRef = 91874C022585519A00D80F05 /* xClientMac */; };
+		91874C1C2585620600D80F05 /* Tester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91874C1B2585620600D80F05 /* Tester.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		91541C1524E02E7C002FE61E /* xApi6000.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = xApi6000.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		91541C1524E02E7C002FE61E /* xApiMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = xApiMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91541C1824E02E7C002FE61E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		91541C1C24E02E7D002FE61E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		91541C1F24E02E7D002FE61E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		91541C2224E02E7D002FE61E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		91541C2424E02E7D002FE61E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		91541C2524E02E7D002FE61E /* xApi6000.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = xApi6000.entitlements; sourceTree = "<group>"; };
+		91541C2524E02E7D002FE61E /* xApiMac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = xApiMac.entitlements; sourceTree = "<group>"; };
 		91541C3424E02FA1002FE61E /* AppExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppExtensions.swift; sourceTree = "<group>"; };
 		9185317A252262570085EC51 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		9185916F257E80D400C7D6F5 /* ObjectsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjectsView.swift; sourceTree = "<group>"; };
@@ -46,8 +46,8 @@
 		91859177257E80D400C7D6F5 /* FiltersView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FiltersView.swift; sourceTree = "<group>"; };
 		91859178257E80D400C7D6F5 /* TopButtonsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopButtonsView.swift; sourceTree = "<group>"; };
 		91859179257E80D400C7D6F5 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		9185917B257E80D400C7D6F5 /* Tester.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tester.swift; sourceTree = "<group>"; };
 		9185917C257E80D400C7D6F5 /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		91874C1B2585620600D80F05 /* Tester.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tester.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,7 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				9185317A252262570085EC51 /* README.md */,
-				91541C1724E02E7C002FE61E /* xApi6000 */,
+				91541C1724E02E7C002FE61E /* xApiMac */,
 				91541C1624E02E7C002FE61E /* Products */,
 				9185913F257C5A5700C7D6F5 /* Frameworks */,
 			);
@@ -77,12 +77,12 @@
 		91541C1624E02E7C002FE61E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				91541C1524E02E7C002FE61E /* xApi6000.app */,
+				91541C1524E02E7C002FE61E /* xApiMac.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		91541C1724E02E7C002FE61E /* xApi6000 */ = {
+		91541C1724E02E7C002FE61E /* xApiMac */ = {
 			isa = PBXGroup;
 			children = (
 				9185917A257E80D400C7D6F5 /* Models */,
@@ -93,9 +93,9 @@
 				91541C2424E02E7D002FE61E /* Info.plist */,
 				91541C2124E02E7D002FE61E /* Main.storyboard */,
 				91541C1E24E02E7D002FE61E /* Preview Content */,
-				91541C2524E02E7D002FE61E /* xApi6000.entitlements */,
+				91541C2524E02E7D002FE61E /* xApiMac.entitlements */,
 			);
-			path = xApi6000;
+			path = xApiMac;
 			sourceTree = "<group>";
 		};
 		91541C1E24E02E7D002FE61E /* Preview Content */ = {
@@ -139,7 +139,7 @@
 		9185917A257E80D400C7D6F5 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				9185917B257E80D400C7D6F5 /* Tester.swift */,
+				91874C1B2585620600D80F05 /* Tester.swift */,
 				9185917C257E80D400C7D6F5 /* Keychain.swift */,
 			);
 			path = Models;
@@ -148,9 +148,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		91541C1424E02E7C002FE61E /* xApi6000 */ = {
+		91541C1424E02E7C002FE61E /* xApiMac */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 91541C2824E02E7D002FE61E /* Build configuration list for PBXNativeTarget "xApi6000" */;
+			buildConfigurationList = 91541C2824E02E7D002FE61E /* Build configuration list for PBXNativeTarget "xApiMac" */;
 			buildPhases = (
 				91541C1124E02E7C002FE61E /* Sources */,
 				91541C1224E02E7C002FE61E /* Frameworks */,
@@ -160,14 +160,14 @@
 			);
 			dependencies = (
 			);
-			name = xApi6000;
+			name = xApiMac;
 			packageProductDependencies = (
 				91391F9D2545CE9400B48A27 /* SwiftyUserDefaults */,
 				91391FA92547710100B48A27 /* xLib6000 */,
 				91874C022585519A00D80F05 /* xClientMac */,
 			);
 			productName = xApi6000;
-			productReference = 91541C1524E02E7C002FE61E /* xApi6000.app */;
+			productReference = 91541C1524E02E7C002FE61E /* xApiMac.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -184,8 +184,8 @@
 					};
 				};
 			};
-			buildConfigurationList = 91541C1024E02E7C002FE61E /* Build configuration list for PBXProject "xApi6000" */;
-			compatibilityVersion = "Xcode 9.3";
+			buildConfigurationList = 91541C1024E02E7C002FE61E /* Build configuration list for PBXProject "xApiMac" */;
+			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -202,7 +202,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				91541C1424E02E7C002FE61E /* xApi6000 */,
+				91541C1424E02E7C002FE61E /* xApiMac */,
 			);
 		};
 /* End PBXProject section */
@@ -231,8 +231,8 @@
 				9185917E257E80D400C7D6F5 /* FilterView.swift in Sources */,
 				91859183257E80D400C7D6F5 /* MessagesView.swift in Sources */,
 				91859185257E80D400C7D6F5 /* FiltersView.swift in Sources */,
-				91859188257E80D400C7D6F5 /* Tester.swift in Sources */,
 				91541C3524E02FA1002FE61E /* AppExtensions.swift in Sources */,
+				91874C1C2585620600D80F05 /* Tester.swift in Sources */,
 				91541C1924E02E7C002FE61E /* AppDelegate.swift in Sources */,
 				91859187257E80D400C7D6F5 /* ContentView.swift in Sources */,
 				9185917F257E80D400C7D6F5 /* SendView.swift in Sources */,
@@ -375,22 +375,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = xApi6000/xApi6000.entitlements;
+				CODE_SIGN_ENTITLEMENTS = xApiMac/xApiMac.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_ASSET_PATHS = "\"xApi6000/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"xApiMac/Preview Content\"";
 				DEVELOPMENT_TEAM = EE5B8TYXGA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = xApi6000/Info.plist;
+				INFOPLIST_FILE = xApiMac/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 1.0.6;
-				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApi6000;
+				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 			};
@@ -401,22 +401,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = xApi6000/xApi6000.entitlements;
+				CODE_SIGN_ENTITLEMENTS = xApiMac/xApiMac.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_ASSET_PATHS = "\"xApi6000/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"xApiMac/Preview Content\"";
 				DEVELOPMENT_TEAM = EE5B8TYXGA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = xApi6000/Info.plist;
+				INFOPLIST_FILE = xApiMac/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 1.0.6;
-				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApi6000;
+				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 			};
@@ -425,7 +425,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		91541C1024E02E7C002FE61E /* Build configuration list for PBXProject "xApi6000" */ = {
+		91541C1024E02E7C002FE61E /* Build configuration list for PBXProject "xApiMac" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				91541C2624E02E7D002FE61E /* Debug */,
@@ -434,7 +434,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		91541C2824E02E7D002FE61E /* Build configuration list for PBXNativeTarget "xApi6000" */ = {
+		91541C2824E02E7D002FE61E /* Build configuration list for PBXNativeTarget "xApiMac" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				91541C2924E02E7D002FE61E /* Debug */,
