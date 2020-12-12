@@ -1,4 +1,4 @@
-### xApi_macOS [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://en.wikipedia.org/wiki/MIT_License)
+### xApiMac [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://en.wikipedia.org/wiki/MIT_License)
 
 #### API Explorer for Flex (TM) 6000 series radios (SwiftUI macOS version)
 
