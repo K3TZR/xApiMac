@@ -5,7 +5,7 @@
 //  Derived from https://www.thetopsites.net/article/58571702.shtml
 //
 
-import Cocoa
+//import Cocoa
 import SwiftUI
 
 struct ScrollableView<Content:View>: NSViewControllerRepresentable {

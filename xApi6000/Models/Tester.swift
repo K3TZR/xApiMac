@@ -5,11 +5,10 @@
 //  Created by Douglas Adams on 8/9/20.
 //
 
-import Cocoa
 import xLib6000
 import SwiftyUserDefaults
 import SwiftUI
-import xLibClient
+import xClientMac
 
 typealias ObjectTuple = (color: NSColor, text: String)
 
@@ -46,17 +45,6 @@ enum FilterMessages : String, CaseIterable {
   case S0
 }
 
-struct AlertParams {
-  var style : NSAlert.Style = .informational
-  var msg = ""
-  var text = ""
-  var button1 = ""
-  var button2 = ""
-  var button3 = ""
-  var button4 = ""
-  var handler : (NSApplication.ModalResponse) -> Void
-}
-
 // ----------------------------------------------------------------------------
 // MARK: - Class definition
 // ----------------------------------------------------------------------------
@@ -68,7 +56,6 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   
   @Published var radioManager         : RadioManager!
   
-  // Defaults
   @Published var clearAtConnect       = false   { didSet {Defaults.clearAtConnect = clearAtConnect} }
   @Published var clearAtDisconnect    = false   { didSet {Defaults.clearAtDisconnect = clearAtDisconnect} }
   @Published var clearOnSend          = false   { didSet {Defaults.clearOnSend = clearOnSend} }
@@ -76,23 +63,15 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   @Published var cmdToSend            = ""
   @Published var connectAsGui         = false   { didSet {Defaults.connectAsGui = connectAsGui} }
   @Published var connectToFirstRadio  = false   { didSet {Defaults.connectToFirstRadio = connectToFirstRadio} }
-
-  var defaultConnection : String {
-    get {Defaults.defaultConnection}
-    set {Defaults.defaultConnection = newValue}
-  }
-  var defaultGuiConnection : String {
-    get {Defaults.defaultGuiConnection}
-    set {Defaults.defaultGuiConnection = newValue}
-  }
   @Published var enablePinging        = false   { didSet {Defaults.enablePinging = enablePinging} }
+  @Published var fontSize             = 12      { didSet {Defaults.fontSize = fontSize} }
   @Published var isConnected          = false
   @Published var showAllReplies       = false   { didSet {Defaults.showAllReplies = showAllReplies} }
   @Published var showPings            = false   { didSet {Defaults.showPings = showPings} }
   @Published var showTimestamps       = false   { didSet {Defaults.showTimestamps = showTimestamps} }
   @Published var smartLinkAuth0Email  = ""      { didSet {Defaults.smartLinkAuth0Email = smartLinkAuth0Email} }
-  @Published var smartLinkEnabled     = false   { didSet {Defaults.smartLinkEnabled = smartLinkEnabled} }
-  @Published var smartLinkWasLoggedIn = false   { didSet {Defaults.smartLinkWasLoggedIn = smartLinkWasLoggedIn} }
+  @Published var smartLinkEnabled     = false   { didSet {Defaults.smartLinkEnabled = smartLinkEnabled ; if smartLinkEnabled == false {radioManager.removeSmartLinkRadios()}} }
+//  @Published var smartLinkWasLoggedIn = false   { didSet {Defaults.smartLinkWasLoggedIn = smartLinkWasLoggedIn} }
   @Published var stationName          = ""
 
   @Published var filteredMessages     = [Message]()
@@ -104,7 +83,20 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   @Published var objectsFilterBy      : FilterObjects   = .none { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterBy = objectsFilterBy.rawValue }}
   @Published var objectsFilterText    = ""                      { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterText = objectsFilterText}}
   @Published var objectsScrollTo      : CGPoint? = nil
-      
+  
+
+  // ----------------------------------------------------------------------------
+  // MARK: - Internal properties
+  
+  var defaultConnection : String {
+    get { return Defaults.defaultConnection }
+    set { Defaults.defaultConnection = newValue }
+  }
+  var defaultGuiConnection : String {
+    get { return Defaults.defaultGuiConnection }
+    set { Defaults.defaultGuiConnection = newValue }
+  }
+
   // ----------------------------------------------------------------------------
   // MARK: - Private properties
   
@@ -150,22 +142,27 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     clientId              = Defaults.clientId
     connectAsGui          = Defaults.connectAsGui
     connectToFirstRadio   = Defaults.connectToFirstRadio
-//    defaultConnection     = Defaults.defaultConnection
     enablePinging         = Defaults.enablePinging
+    fontSize              = Defaults.fontSize
     showAllReplies        = Defaults.showAllReplies
     showPings             = Defaults.showPings
     showTimestamps        = Defaults.showTimestamps
     smartLinkAuth0Email   = Defaults.smartLinkAuth0Email
     smartLinkEnabled      = Defaults.smartLinkEnabled
-    smartLinkWasLoggedIn  = Defaults.smartLinkWasLoggedIn
+//    smartLinkWasLoggedIn  = Defaults.smartLinkWasLoggedIn
     
     messagesFilterBy      = FilterMessages(rawValue: Defaults.messagesFilterBy) ?? .none
     messagesFilterText    = Defaults.messagesFilterText
     objectsFilterBy       = FilterObjects(rawValue: Defaults.objectsFilterBy) ?? .none
     objectsFilterText     = Defaults.objectsFilterText
-    
-    // access the Logger
+
+    // initialize and configure the Logger
+    let logger = Logger.sharedInstance
+    logger.config(delegate: NSApp.delegate as! AppDelegate, domain: AppDelegate.kDomainName, appName: AppDelegate.kAppName.replacingSpaces(with: ""))
     _log = Logger.sharedInstance.logMessage
+
+    // give the Api access to our logger
+    Log.sharedInstance.delegate = logger
 
     // is there a saved Client ID?
     if clientId == "" {
@@ -175,7 +172,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
       _log("Tester: ClientId created - \(clientId)", .debug,  #function, #file, #line)
     }
     // create a Radio Manager
-    radioManager = RadioManager(delegate: self, domain: "net.k3tzr", appName: AppDelegate.kAppName)
+    radioManager = RadioManager(delegate: self, domain: AppDelegate.kDomainName, appName: AppDelegate.kAppName)
     
     // receive delegate actions from the Api
     _api.testerDelegate = self
@@ -193,61 +190,16 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
       stopTester()
     }
   }
-  
-  /// Start the Tester
-  ///
-  func startTester() {
-    // Start connection
-    //    Order of attempts:
-    //      1. default (if defaultConnection non-blank)
-    //      2. first radio found (if connectToFirstRadio true)
-    //      3. otherwise, show picker
-    //
-    //    It is the responsibility of the app to determine this logic
-    //
-    _startTimestamp = Date()
-    if clearAtConnect { clear() }
-    
-    checkSmartLinkStatus()
-    
-    if connectAsGui && defaultGuiConnection != "" {
-      // Gui connect to default
-      radioManager.connect(to: defaultGuiConnection)
 
-    } else if connectAsGui == false && defaultConnection != "" {
-      // Non-Gui connect to default
-      radioManager.connect(to: defaultConnection)
-
-    } else if connectToFirstRadio {
-      // connect to first
-      radioManager.connect()
-
-    } else {
-      // use the Picker
-      radioManager.connectUsingPicker()
-    }
-  }
-  
-  /// Stop the Tester
-  ///
-  func stopTester() {
-    // Stop connection
-    DispatchQueue.main.async{ [self] in isConnected = false }
-    if clearAtDisconnect { clear() }
-    radioManager.disconnect()
-  }
-  
-  
   /// Cause the Radio Picker to be displayed
   ///
-  func showPicker() {
-    checkSmartLinkStatus()
-    radioManager.connectUsingPicker()
-  }
-  
+//  func showPicker() {
+//    radioManager.showPicker()
+//  }
+
   /// Clear the object and messages areas
   ///
-  func clear() {
+  func clearObjectsAndMessages() {
     DispatchQueue.main.async {  [self] in
       _messageNumber = 0
       messages.removeAll()
@@ -261,89 +213,108 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   
   /// Send a command to the Radio
   ///
-  func send() {
-    guard cmdToSend != "" else { return }
+  func sendCommand(_ command: String) {
+    guard command != "" else { return }
     
     // send the command to the Radio via TCP
-    let _ = _api.radio!.sendCommand( cmdToSend )
+    let _ = _api.radio!.sendCommand( command )
     
-    if cmdToSend != _previousCommand { _commandHistory.append(cmdToSend) }
+    if command != _previousCommand { _commandHistory.append(command) }
     
-    _previousCommand = cmdToSend
+    _previousCommand = command
     _commandsIndex = _commandHistory.count - 1
     
     // optionally clear the Command field
-    if clearOnSend { cmdToSend = "" }
+    if clearOnSend { DispatchQueue.main.async { self.cmdToSend = "" }}
   }
-  
-  // ----------------------------------------------------------------------------
-  // MARK: - Internal methods (SmartLink related)
-  
-  /// Initiate a login to SmartLink
+
+  /// Adjust the font size larger or smaller (within limits)
   ///
-  func smartLinkLogin() {
-    if radioManager.smartLinkIsLoggedIn {
-      smartLinkLogout()
+  /// - Parameter larger:           larger?
+  ///
+  func fontSize(larger: Bool) {
+    // incr / decr the size
+    var newSize =  Defaults.fontSize + (larger ? +1 : -1)
+    // subject to limits
+    if larger {
+      if newSize > Defaults.fontMaxSize { newSize = Defaults.fontMaxSize }
     } else {
-      _log("Tester: SmartLink Login initiated", .debug,  #function, #file, #line)
-      radioManager.smartLinkLogin(with: smartLinkAuth0Email)
+      if newSize < Defaults.fontMinSize { newSize = Defaults.fontMinSize }
+    }
+    fontSize = newSize
+  }
+
+  // ----------------------------------------------------------------------------
+  // MARK: -  Private methods (common to Messages and Objects)
+  
+  /// Start the Tester
+  ///
+  private func startTester() {
+    // Start connection
+    //    Order of attempts:
+    //      1. default (if defaultConnection non-blank)
+    //      2. first radio found (if connectToFirstRadio true)
+    //      3. otherwise, show picker
+    //
+    //    It is the responsibility of the app to determine this logic
+    //
+    _startTimestamp = Date()
+    if clearAtConnect { clearObjectsAndMessages() }
+    
+    if connectAsGui && defaultGuiConnection != "" {
+      // Gui connect to default
+      radioManager.connect(to: defaultGuiConnection)
+
+    } else if connectAsGui == false && defaultConnection != "" {
+      // Non-Gui connect to default
+      radioManager.connect(to: defaultConnection)
+
+    } else if connectToFirstRadio {
+      // connect to first
+      radioManager.connectToFirstFound()
+
+    } else {
+      // use the Picker
+      radioManager.showPicker()
     }
   }
   
-  /// Initiate a logout from SmartLink
+  /// Stop the Tester
   ///
-  func smartLinkLogout() {
-    _log("Tester: SmartLink Logout initiated", .debug,  #function, #file, #line)
-    radioManager.smartLinkLogout()
+  private func stopTester() {
+    // Stop connection
+    DispatchQueue.main.async{ [self] in isConnected = false }
+    if clearAtDisconnect { clearObjectsAndMessages() }
+    radioManager.disconnect()
   }
-  
-  // RefreshToken callbacks
-  //    NOTE: The RefreshToken can be stored in any secure way, using Keychain
-  //    as done here is one possibility
 
-  /// Get a stored refresh token
-  /// - Parameters:
-  ///   - service:    a service name
-  ///   - account:    an account name
-  /// - Returns:      a refreshToken (if any)
+  /// Filter the message and object collections
   ///
-  func refreshTokenGet(service: String, account: String) -> String? {
-    return MyKeychain.get(service, account: account)
-  }
-  
-  /// Set a stored refresh token
-  /// - Parameters:
-  ///   - service:        a service name
-  ///   - account:        an account name
-  ///   - refreshToken:   the token to be stored
-  /// - Returns:      a refreshToken (if any)
-  func refreshTokenSet(service: String, account: String, refreshToken: String) {
-    MyKeychain.set(service, account: account, data: refreshToken)
-  }
-  
-  /// Delete a stored refresh token
-  /// - Parameters:
-  ///   - service:    a service name
-  ///   - account:    an account name
-  /// - Returns:      a refreshToken (if any)
+  /// - Parameter type:     object type
   ///
-  func refreshTokenDelete(service: String, account: String) {
-    MyKeychain.delete(service, account: account)
-  }
-  
-  /// Receives the results of the SmartLInk Test
-  /// - Parameters:
-  ///   - status:   success / failure
-  ///   - msg:      a string describing the result
-  ///
-  func smartLinkTestResults(status: Bool, msg: String) {
-    // if failed, show the user
-    if status == false {
-      var alertData = AlertParams(handler: { _ in })
-      alertData.style = .critical
-      alertData.msg = "SmartLink Test failed"
-      alertData.text = msg
-      displayAlert(alertData)
+  private func filterCollection(of type: FilterType) {
+    if type == .messages {
+      switch messagesFilterBy {
+
+      case .none:       filteredMessages = messages
+      case .prefix:     filteredMessages =  messages.filter { $0.text.contains("|" + messagesFilterText) }
+      case .includes:   filteredMessages =  messages.filter { $0.text.contains(messagesFilterText) }
+      case .excludes:   filteredMessages =  messages.filter { !$0.text.contains(messagesFilterText) }
+      case .command:    filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "C" }
+      case .S0:         filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(2) == "S0" }
+      case .status:     filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "S" && $0.text.dropFirst(10).prefix(1) != "0"}
+      case .reply:      filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "R" }
+
+      }
+    }
+    else {
+      switch objectsFilterBy {
+
+      case .none:       filteredObjects = objects
+      case .prefix:     filteredObjects = objects.filter { $0.line.text.contains("|" + objectsFilterText) }
+      case .includes:   filteredObjects = objects.filter { $0.line.text.contains(objectsFilterText) }
+      case .excludes:   filteredObjects = objects.filter { !$0.line.text.contains(objectsFilterText) }
+      }
     }
   }
 
@@ -353,7 +324,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   /// Add an entry to the messages collection
   /// - Parameter text:       the text of the entry
   ///
-  private func appendMessage(_ text: String) {
+  private func populateMessages(_ text: String) {
     DispatchQueue.main.async { [self] in
       
       // guard that a session has been started
@@ -379,10 +350,10 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     let components = commandSuffix.components(separatedBy: "|")
     
     // ignore incorrectly formatted replies
-    guard components.count >= 2 else { appendMessage("ERROR: R\(commandSuffix)") ; return }
+    guard components.count >= 2 else { populateMessages("ERROR: R\(commandSuffix)") ; return }
     
     if showAllReplies || components[1] != "0" || (components.count >= 3 && components[2] != "") {
-      appendMessage("R\(commandSuffix)")
+      populateMessages("R\(commandSuffix)")
     }
   }
 
@@ -391,7 +362,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   
   /// Add an entry to the messages collection
   /// - Parameters:
-  ///   - color:        an NSColor for the text
+  ///   - color:        an UIColor for the text
   ///   - text:         the text of the entry
   ///
   private func appendObject(_ color: NSColor, _ text: String) {
@@ -422,7 +393,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
       self.objects.removeAll()
       var color = NSColor.systemGreen
       
-      self.appendObject(color, "Radio          name = \(radio.nickname)  model = \(radio.packet.model)  ip = \(radio.packet.publicIp)" +
+      self.appendObject(color, "Radio (\(radio.packet.isWan ? "SmartLink" : "Local"))  name = \(radio.nickname)  model = \(radio.packet.model)  version = \(radio.packet.firmwareVersion)  ip = \(radio.packet.publicIp)" +
                           "  atu = \(Api.sharedInstance.radio!.atuPresent ? "Yes" : "No")  gps = \(Api.sharedInstance.radio!.gpsPresent ? "Yes" : "No")" +
                           "  scu's = \(Api.sharedInstance.radio!.numberOfScus)")
       
@@ -431,22 +402,20 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
       // what verion is the Radio?
       if radio.version.isNewApi {
         
-
         // newApi
         for packet in _packets where packet == radioManager.activePacket {
           for guiClient in packet.guiClients {
             
-            if  radioManager.stationSelection == 0 || (radioManager.stationSelection > 0 && radioManager.stations[radioManager.stationSelection - 1].name == guiClient.station) {
               activeHandle = guiClient.handle
               
               color = NSColor.systemRed
               if connectAsGui == false && guiClient.clientId != nil && guiClient.clientId == radio.boundClientId { color = NSColor.systemPurple }
-              
+              if connectAsGui == true  && guiClient.handle == _api.connectionHandle { color = NSColor.systemPurple }
+
               self.appendObject(color, "Gui Client     station = \(guiClient.station.padTo(15))  handle = \(guiClient.handle.hex)  id = \(guiClient.clientId ?? "unknown")  localPtt = \(guiClient.isLocalPtt ? "Yes" : "No ")  available = \(radio.packet.status.lowercased() == "available" ? "Yes" : "No ")  program = \(guiClient.program)")
               
               self.addSubsidiaryObjects(activeHandle, radio, NSColor.textColor)
               self.appendObject(NSColor.systemBlue, "-------------------------------------------------------------------------------------------------------------------------------------------------------------------")
-            }
           }
         }
         
@@ -486,8 +455,8 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
       }
       // other Meters (non "slc")
       let sortedMeters = radio.meters.sorted(by: {
-        ( $0.value.source.prefix(3), Int($0.value.group.suffix(3), radix: 10)!, $0.value.id ) <
-          ( $1.value.source.prefix(3), Int($1.value.group.suffix(3), radix: 10)!, $1.value.id )
+        ( $0.value.source.prefix(3), Int($0.value.group.suffix(3), radix: 10) ?? 0, $0.value.id ) <
+          ( $1.value.source.prefix(3), Int($1.value.group.suffix(3), radix: 10) ?? 0, $1.value.id )
       })
       for (_, meter) in sortedMeters where !meter.source.hasPrefix("slc") {
         self.appendObject(color, "Meter          source = \(meter.source.prefix(3))  group = \(("00" + meter.group).suffix(3))  id = \(String(format: "%03d", meter.id))  name = \(meter.name.padTo(12))  units = \(meter.units.padTo(5))  low = \(String(format: "% 7.2f", meter.low))  high = \(String(format: "% 7.2f", meter.high))  fps = \(String(format: "% 3d", meter.fps))  desc = \(meter.desc)  ")
@@ -584,83 +553,40 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   }
   
   // ----------------------------------------------------------------------------
-  // MARK: - Misc methods
-  
-  /// Login to the SmartLink server (if appropriate)
-  ///
-  private func checkSmartLinkStatus() {
-    if smartLinkEnabled && radioManager.smartLinkIsLoggedIn == false {
-      // SmartLink enabled but not logged in, attempt to make a SmartLink server login
-      radioManager.smartLinkLogin(with: smartLinkAuth0Email)
-    
-    } else if smartLinkEnabled == false && radioManager.smartLinkIsLoggedIn {
-      // SmartLink disabled and logged in, SmartLink server logout
-      radioManager.smartLinkDisable()
-    }
-  }
-
-  /// Filter the message and object collections
-  ///
-  /// - Parameter type:     object type
-  ///
-  private func filterCollection(of type: FilterType) {
-    if type == .messages {
-      switch messagesFilterBy {
-
-      case .none:       filteredMessages = messages
-      case .prefix:     filteredMessages =  messages.filter { $0.text.contains("|" + messagesFilterText) }
-      case .includes:   filteredMessages =  messages.filter { $0.text.contains(messagesFilterText) }
-      case .excludes:   filteredMessages =  messages.filter { !$0.text.contains(messagesFilterText) }
-      case .command:    filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "C" }
-      case .S0:         filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(2) == "S0" }
-      case .status:     filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "S" && $0.text.dropFirst(10).prefix(1) != "0"}
-      case .reply:      filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "R" }
-
-      }
-      //      let lastLine = filteredMessages.count
-      //      messagesScrollTo = CGPoint(x: 0, y: (lastLine * 18) + 18)
-    }
-    else {
-      switch objectsFilterBy {
-
-      case .none:       filteredObjects = objects
-      case .prefix:     filteredObjects = objects.filter { $0.line.text.contains("|" + objectsFilterText) }
-      case .includes:   filteredObjects = objects.filter { $0.line.text.contains(objectsFilterText) }
-      case .excludes:   filteredObjects = objects.filter { !$0.line.text.contains(objectsFilterText) }
-      }
-      //      objectsScrollTo = CGPoint(x: 0, y: 0)
-    }
-  }
-  
-  /// DIsplay an alert using the supplied parameters
-  /// - Parameter data:     a struct containing the needed data
-  ///
-  private func displayAlert(_ data: AlertParams) {
-    DispatchQueue.main.async {
-      let alert = NSAlert()
-      alert.alertStyle = data.style
-      alert.messageText = data.msg
-      alert.informativeText = data.text
-      if data.button1 != "" { alert.addButton(withTitle: data.button1) }
-      if data.button2 != "" { alert.addButton(withTitle: data.button2) }
-      if data.button3 != "" { alert.addButton(withTitle: data.button3) }
-      if data.button4 != "" { alert.addButton(withTitle: data.button4) }
-      
-      alert.beginSheetModal(for: NSApplication.shared.mainWindow!, completionHandler: data.handler )}
-  }
-
-  // ----------------------------------------------------------------------------
   // MARK: - RadioManagerDelegate
+    
+  // RefreshToken callbacks
+  //    NOTE: The RefreshToken can be stored in any secure way, using Keychain
+  //    as done here is one possibility
 
-//  let kAppNameTrimmed: String = kAppName.replacingSpaces(with: "")
-  
-  /// Called asynchronously by RadioManager to indicate success / failure for a SmartLink server connection attempt
-  /// - Parameter state:      true if connected
+  /// Get a stored refresh token
+  /// - Parameters:
+  ///   - service:    a service name
+  ///   - account:    an account name
+  /// - Returns:      a refreshToken (if any)
   ///
-  func smartLinkLoginState(_ state: Bool) {
-    // remember the current state
-    smartLinkWasLoggedIn = state
-    _log("Tester: SmartLink \(state ? "Login" : "Logout")", .debug,  #function, #file, #line)
+  func refreshTokenGet(service: String, account: String) -> String? {
+    return MyKeychain.get(service, account: account)
+  }
+  
+  /// Set a stored refresh token
+  /// - Parameters:
+  ///   - service:        a service name
+  ///   - account:        an account name
+  ///   - refreshToken:   the token to be stored
+  /// - Returns:      a refreshToken (if any)
+  func refreshTokenSet(service: String, account: String, refreshToken: String) {
+    MyKeychain.set(service, account: account, data: refreshToken)
+  }
+  
+  /// Delete a stored refresh token
+  /// - Parameters:
+  ///   - service:    a service name
+  ///   - account:    an account name
+  /// - Returns:      a refreshToken (if any)
+  ///
+  func refreshTokenDelete(service: String, account: String) {
+    MyKeychain.delete(service, account: account)
   }
   
   /// Called asynchronously by RadioManager to indicate success / failure for a Radio connection attempt
@@ -678,18 +604,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     } else {
       // NO
       _log("Tester: Connection failed to \(connection), \(msg)", .debug,  #function, #file, #line)
-      DispatchQueue.main.async { [self] in
-        isConnected = false
-        let alert = NSAlert()
-        alert.alertStyle = .warning
-        alert.messageText = msg
-        alert.informativeText = "Connection string = \(connection)"
-        
-        // tell the user
-        alert.beginSheetModal(for: NSApplication.shared.mainWindow!, completionHandler: { _ in
-        })
-      }
-      showPicker()
+      radioManager.showPicker()
     }
   }
   
@@ -697,94 +612,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   /// - Parameter msg:      explanation
   ///
   func disconnectionState(_ text: String) {
-    
-    DispatchQueue.main.async { [self] in isConnected = false }
-    
-    if text != RadioManager.kUserInitiated {
-      var params = AlertParams(handler: { _ in })
-      params.style = .warning
-      params.msg = "Radio was disconnected"
-      params.text = text
-      displayAlert(params)
-    }
-  }
-  
-  /// Called by RadioManager to request a decision during a connection attempt
-  /// - Parameters:
-  ///   - status:   the status of the targeted Radio (isNewApi: Bool, status: ConnectionStatus, connectionCount: Int)
-  ///   - clients:  an array of the Radio's GuiClients
-  ///   - handler:  a callback closure
-  ///
-  func openStatus(_ status: OpenCloseStatus, _ clients: [GuiClient], handler: @escaping (NSApplication.ModalResponse) -> Void ) {
-    var params = AlertParams(handler: handler)
-
-    switch status {
-    
-    case (false, .inUse, 1):
-      params.msg = "Radio is connected to another Client"
-      params.text = "Close the other Client?"
-      params.button1 = "Close this client"
-      params.button2 = "Cancel"
-    
-    case (false, .available, _):
-      params.handler( NSApplication.ModalResponse.OK )
-      return
-
-    case (true, .available, 0):
-      params.handler( NSApplication.ModalResponse.OK )
-      return
-    
-    case (true, .available, 1):
-      params.msg = "Radio is connected to Station: \(clients[0].station)"
-      params.text = "Close the Station . . Or . . Connect using Multiflex"
-      params.button1 = "Close \(clients[0].station)"
-      params.button2 = "Multiflex Connect"
-    
-    case (true, .inUse, 2):
-      params.msg = "Radio is connected to multiple Stations"
-      params.text = "Close one of the Stations"
-      params.button1 = "Close \(clients[0].station)"
-      params.button2 = "Close \(clients[1].station)"
-      params.button3 = "Remote Control"
-      params.button4 = "Cancel"
-
-    default:
-      return
-    }
-    // use an Alert to obtain a decision
-    displayAlert(params)
-  }
-  
-  /// Called by RadioManager to request a decision during a connection attempt
-  /// - Parameters:
-  ///   - status:   the status of the targeted Radio (isNewApi: Bool, status: ConnectionStatus, connectionCount: Int)
-  ///   - clients:  an array of the Radio's GuiClients
-  ///   - handler:  a callback closure
-  ///
-  func closeStatus(_ status: OpenCloseStatus, _ clients: [GuiClient], handler: @escaping (NSApplication.ModalResponse) -> Void ) {
-    var params = AlertParams(handler: handler)
-
-    switch status {
-    case (true, .inUse, 1):
-      params.msg = "Radio is connected to one Station"
-      params.text = "Close the Station . . Or . . Disconnect " + AppDelegate.kAppName
-      params.button1 = "Close \(clients[0].station)"
-      params.button2 = "Disconnect " + AppDelegate.kAppName
-      params.button3 = "Cancel"
-
-    case (true, .inUse, 2):
-      params.msg = "Radio is connected to multiple Stations"
-      params.text = "Close a Station . . Or . . Disconnect "  + AppDelegate.kAppName
-      params.button1 = (clients[0].station == AppDelegate.kAppName ? "---" : "Close \(clients[0].station)")
-      params.button2 = (clients[1].station == AppDelegate.kAppName ? "---" : "Close \(clients[1].station)")
-      params.button3 = "Disconnect " + AppDelegate.kAppName
-      params.button4 = "Cancel"
-
-    default:
-      return
-    }
-    // use an Alert to obtain a decision
-    displayAlert(params)
+    DispatchQueue.main.async { self.isConnected = false }
   }
 
   // ----------------------------------------------------------------------------
@@ -795,8 +623,8 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
   /// - Parameter text:       text of the command
   ///
   public func sentMessage(_ text: String) {
-    if !text.hasSuffix("|ping") { appendMessage(text) }
-    if text.hasSuffix("|ping") && showPings { appendMessage(text) }
+    if !text.hasSuffix("|ping") { populateMessages(text) }
+    if text.hasSuffix("|ping") && showPings { populateMessages(text) }
   }
   /// Process a received message
   ///
@@ -809,13 +637,13 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     // switch on the first character
     switch text[text.startIndex] {
     
-    case "C":   appendMessage(text)       // Commands
-    case "H":   appendMessage(text)       // Handle type
-    case "M":   appendMessage(text)       // Message Type
+    case "C":   populateMessages(text)       // Commands
+    case "H":   populateMessages(text)       // Handle type
+    case "M":   populateMessages(text)       // Message Type
     case "R":   parseReplyMessage(suffix) // Reply Type
-    case "S":   appendMessage(text)       // Status type
-    case "V":   appendMessage(text)       // Version Type
-    default:    appendMessage("ERROR: Unknown Message, \(text[text.startIndex] as! CVarArg)") // Unknown Type
+    case "S":   populateMessages(text)       // Status type
+    case "V":   populateMessages(text)       // Version Type
+    default:    populateMessages("ERROR: Unknown Message, \(text[text.startIndex] as! CVarArg)") // Unknown Type
     }
     refreshObjects()
   }

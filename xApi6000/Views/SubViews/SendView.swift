@@ -9,25 +9,20 @@ import SwiftUI
 
 struct SendView: View {
   @EnvironmentObject var tester : Tester
-
+  
   var body: some View {
     HStack {
-      Button(action: {self.tester.send()})
-      {Text("Send")
-        .frame(width: 70, alignment: .center)
-      }
+      Button(action: {self.tester.sendCommand(tester.cmdToSend)}) {
+        Text("Send").frame(width: 70, alignment: .center)
+      }.padding(.horizontal)
       .disabled(tester.isConnected == false)
-      .padding(.leading, 10)
-      .padding(.trailing, 20)
-      TextField("Command to send", text: $tester.cmdToSend)
-        .frame(width: 650, alignment: .leading)
-        .padding(.trailing, 20)
-      Spacer()
-      Toggle("Clear on Send", isOn: $tester.clearOnSend)
-        .frame(width: 110, alignment: .leading)
-        .padding(.trailing, 10)
+      HStack {
+        TextField("Command to send", text: $tester.cmdToSend).frame(width: 550, alignment: .leading)
+        Toggle("Clear on Send", isOn: $tester.clearOnSend).frame(width: 110, alignment: .leading)
+      }
+//      .border(Color.black)
     }
-    .padding(.top, 10)
+    .padding(.trailing, 10)
   }
 }
 

@@ -6,9 +6,9 @@
 //
 
 import Cocoa
-import xLib6000
 import SwiftUI
-import xLibClient
+import xLib6000
+import xClientMac
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableObject {
@@ -16,7 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableOb
   // ----------------------------------------------------------------------------
   // MARK: - Static properties
   
-  static let kAppName       = "xApi6000"
+  static let kAppName       = "xApi_macOS"
   static let kDomainName    = "net.k3tzr"  
 
   // ----------------------------------------------------------------------------
@@ -29,6 +29,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableOb
   
   var window      : NSWindow!
   var logWindow   : NSWindow?
+  lazy var tester = Tester()
 
   // ----------------------------------------------------------------------------
   // MARK: - Internal methods
@@ -37,7 +38,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableOb
     
     // Create the SwiftUI view that provides the window contents.
     let contentView = ContentView()
-
+    
     // Create the window and set the content view.
     window = NSWindow(
         contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
@@ -49,15 +50,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableOb
     window.title = AppDelegate.kAppName + ", v" + Version().string
     window.contentView = NSHostingView(rootView: contentView
                                         .environmentObject(self)
-                                        .environmentObject(Tester()))
+                                        .environmentObject(tester))
     window.makeKeyAndOrderFront(nil)
     
-    let logger = Logger.sharedInstance
-    logger.config(delegate: self, domain: AppDelegate.kDomainName, appName: AppDelegate.kAppName.replacingSpaces(with: ""))
-
-    // give the Api access to our logger
-    Log.sharedInstance.delegate = logger
-
+//    let logger = Logger.sharedInstance
+//    logger.config(delegate: self, domain: AppDelegate.kDomainName, appName: AppDelegate.kAppName.replacingSpaces(with: ""))
+//
+//    // give the Api access to our logger
+//    Log.sharedInstance.delegate = logger
     
     // Create the log window
     logWindow = NSWindow(
@@ -86,6 +86,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableOb
     let frameName = "LogWindowFrame"
     
     if show {
+      updateLoggerFont()
+
       logWindow?.orderFront(nil)
       logWindow?.level = .floating
       logWindow?.setFrameUsingName(frameName)
@@ -95,6 +97,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableOb
       logWindow?.orderOut(nil)
     }
   }
+  
+  /// Refresh the Logger view when a font change occurs
+  ///
+  private func updateLoggerFont() {
+    Logger.sharedInstance.fontSize = tester.fontSize
+    Logger.sharedInstance.refresh()
+  }
+  
+  // ----------------------------------------------------------------------------
+  // MARK: - Menu IBAction methods
+  
+  @IBAction func logViewer(_ sender: Any) {
+    logWindowIsVisible.toggle()
+  }
 
+  @IBAction func larger(_ sender: Any) {
+    tester.fontSize(larger: true)
+    updateLoggerFont()
+  }
+  
+  @IBAction func smaller(_ sender: Any) {
+    tester.fontSize(larger: false)
+    updateLoggerFont()
+  }
 }
 

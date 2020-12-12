@@ -10,18 +10,17 @@ import SwiftUI
 struct FiltersView: View {
   var body: some View {
     HStack {
-      StatusView()
       FilterView(filterType: .objects)
       Spacer()
       FilterView(filterType: .messages)
-        .padding(.trailing, 10)
     }
+    .padding(.horizontal, 10)
   }
 }
 
 struct FiltersView_Previews: PreviewProvider {
-    static var previews: some View {
-        FiltersView()
-          .environmentObject(Tester())
-    }
+  static var previews: some View {
+    FiltersView()
+      .environmentObject(Tester())
+  }
 }

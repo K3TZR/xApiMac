@@ -28,6 +28,10 @@ extension DefaultsKeys {
   var defaultConnection        : DefaultsKey<String>          { .init("defaultConnection", defaultValue: "") }
   var defaultGuiConnection     : DefaultsKey<String>          { .init("defaultGuiConnection", defaultValue: "") }
   var enablePinging            : DefaultsKey<Bool>            { .init("enablePinging", defaultValue: false) }
+  var fontMaxSize              : DefaultsKey<Int>             { .init("fontMaxSize", defaultValue: 20) }
+  var fontMinSize              : DefaultsKey<Int>             { .init("fontMinSize", defaultValue: 8) }
+  var fontName                 : DefaultsKey<String>          { .init("fontName", defaultValue: "Monaco") }
+  var fontSize                 : DefaultsKey<Int>             { .init("fontSize", defaultValue: 12) }
   var messagesFilterText       : DefaultsKey<String>          { .init("messagesFilterText", defaultValue: "") }
   var messagesFilterBy         : DefaultsKey<String>          { .init("messagesFilterBy", defaultValue: "none") }
   var objectsFilterText        : DefaultsKey<String>          { .init("objectsFilterText", defaultValue: "") }
@@ -37,7 +41,7 @@ extension DefaultsKeys {
   var showTimestamps           : DefaultsKey<Bool>            { .init("showTimestamps", defaultValue: false) }
   var smartLinkAuth0Email      : DefaultsKey<String>          { .init("smartLinkAuth0Email", defaultValue: "") }
   var smartLinkEnabled         : DefaultsKey<Bool>            { .init("smartLinkEnabled", defaultValue: true) }
-  var smartLinkWasLoggedIn     : DefaultsKey<Bool>            { .init("smartLinkWasLoggedIn", defaultValue: false) }
+//  var smartLinkWasLoggedIn     : DefaultsKey<Bool>            { .init("smartLinkWasLoggedIn", defaultValue: false) }
   var useLowBw                 : DefaultsKey<Bool>            { .init("useLowBw", defaultValue: false) }
 }
 
@@ -115,6 +119,6 @@ extension String {
   /// - Returns:          a padded string
   ///
   func padTo(_ len: Int, with padCharacter: String = " ") -> String {
-      String((self + "               ").prefix(15))
+      String((self + "               ").prefix(len))
   }
 }

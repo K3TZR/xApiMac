@@ -35,7 +35,7 @@ struct FilterView: View {
         .frame(width: 200, alignment: .leading)
     }
     .padding(10)
-    .border(Color.gray, width: 0.5)
+//    .border(Color.gray, width: 0.5)
   }
 }
 

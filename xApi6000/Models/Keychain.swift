@@ -8,7 +8,7 @@
 
 import Foundation
 import Security
-import xLibClient
+import xClientMac
 
 // ----------------------------------------------------------------------------
 // MARK: - Class definition
@@ -21,7 +21,7 @@ final class MyKeychain {
 
   static func set(_ service: String, account: String, data: String) {
     var item: SecKeychainItem? = nil
-    
+
     var status = SecKeychainFindGenericPassword(
       nil,
       UInt32(service.utf8.count),
@@ -31,12 +31,12 @@ final class MyKeychain {
       nil,
       nil,
       &item)
-    
+
     if status != noErr && status != errSecItemNotFound {
       Logger.sharedInstance.logMessage("Error finding keychain item to modify: \(status), \(SecCopyErrorMessageString(status, nil) ?? "" as CFString)", .debug,  #function, #file, #line)
       return
     }
-    
+
     if item != nil {
       status = SecKeychainItemModifyContent(item!, nil, UInt32(data.utf8.count), data)
     } else {
@@ -50,7 +50,7 @@ final class MyKeychain {
         data,
         nil)
     }
-    
+
     if status != noErr {
       Logger.sharedInstance.logMessage("Error setting keychain item: \(SecCopyErrorMessageString(status, nil) ?? "" as CFString)", .debug,  #function, #file, #line)
     }
@@ -59,7 +59,7 @@ final class MyKeychain {
   static func get(_ service: String, account: String) -> String? {
     var passwordLength: UInt32 = 0
     var password: UnsafeMutableRawPointer? = nil
-    
+
     let status = SecKeychainFindGenericPassword(
       nil,
       UInt32(service.utf8.count),
@@ -69,7 +69,7 @@ final class MyKeychain {
       &passwordLength,
       &password,
       nil)
-    
+
     if status == errSecSuccess {
       guard password != nil else { return nil }
       let result = NSString(bytes: password!, length: Int(passwordLength), encoding: String.Encoding.utf8.rawValue) as String?
@@ -82,7 +82,7 @@ final class MyKeychain {
   
   static func delete(_ service: String, account: String) {
     var item: SecKeychainItem? = nil
-    
+
     var status = SecKeychainFindGenericPassword(
       nil,
       UInt32(service.utf8.count),
@@ -92,19 +92,19 @@ final class MyKeychain {
       nil,
       nil,
       &item)
-    
+
     if status == errSecItemNotFound {
       return
     }
-    
+
     if status != noErr {
       Logger.sharedInstance.logMessage("Error finding keychain item to delete: \(SecCopyErrorMessageString(status, nil) ?? "" as CFString)", .debug,  #function, #file, #line)
     }
-    
+
     if item != nil {
       status = SecKeychainItemDelete(item!)
     }
-    
+
     if status != noErr {
       Logger.sharedInstance.logMessage("Error deleting keychain item: \(SecCopyErrorMessageString(status, nil) ?? "" as CFString)", .debug,  #function, #file, #line)
     }

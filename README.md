@@ -1,15 +1,11 @@
-### xApi6000 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://en.wikipedia.org/wiki/MIT_License)
+### xApi_macOS [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://en.wikipedia.org/wiki/MIT_License)
 
-#### API Explorer for Flex (TM) 6000 series radios (SwiftUI version)
+#### API Explorer for Flex (TM) 6000 series radios (SwiftUI macOS version)
 
 ##### Built on:
-*  macOS 10.15.7
-*  Xcode 12.1 (12A7403) 
+*  macOS 11.0.1
+*  Xcode 12.2 (12B45b) 
 *  Swift 5.3 / SwiftUI
-*  xLibClient 1.0.2
-*  xLib6000 1.4.0
-*  SwiftyUserDefaults 5.0.0
-*  XCGLogger 7.0.1
 
 ##### Runs on:
 * macOS 10.15 and higher
@@ -23,7 +19,7 @@ Please send any bugs / comments / questions to support@k3tzr.net
 ##### Credits
 [xLib6000](https://github.com/K3TZR/xLib6000.git)
 
-[xLibClient](https://github.com/K3TZR/xLibClient.git)
+[xClientMac](https://github.com/K3TZR/xClientMac.git)
 
 [SwiftyUserDefaults](https://github.com/sunshinejr/SwiftyUserDefaults.git)
 
@@ -35,6 +31,12 @@ Please send any bugs / comments / questions to support@k3tzr.net
 [![W6OP](https://img.shields.io/badge/W6OP-xVoiceKeyer,_xCW-informational)](https://w6op.com) A Mac-based Voice Keyer and a CW Keyer.  
 
 ---
+##### 1.0.6 Release Notes
+* Deployment target changed to macOS 11.0
+* uses latest xLib6000 (which does not contain xClient_macOS or xClient_iOS)
+* uses xClientMac standalone package
+* major rework throughout as a result of testing
+
 ##### 1.0.5 Release Notes
 * incorporated xLibClient 1.0.2
 

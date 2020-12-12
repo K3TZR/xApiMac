@@ -7,79 +7,50 @@
 //
 
 import SwiftUI
-import xLibClient
+import xClientMac
 
 struct TopButtonsView: View {
   @EnvironmentObject var tester : Tester
   
-//  func insertChoice(_ item: String, into stations: [Station]) -> [Station] {
-//    var choices = [Station]()
-//
-//    choices.append( Station(id: 0, name: item, clientId: nil))
-//    for station in stations {
-//      choices.append( Station(id: station.id + 1, name: station.name, clientId: station.clientId) )
-//    }
-//    return choices
-//  }
-
   var body: some View {
     
-    VStack {
-      
-//      let stationChoices = insertChoice("All", into: tester.radioManager.stations)
-
+    VStack(alignment: .leading) {
       HStack {
         // Top row
-        Button(action: {
-          tester.startStopTester()
-        })
-        {Text(tester.isConnected ? "Disconnect" : "Connect")
-          .frame(width: 70, alignment: .center)
-        }
+        Button(action: {tester.startStopTester()}) {
+          Text(tester.isConnected ? "Disconnect" : "Connect" ).frame(width: 70, alignment: .center)
+        }.padding(.horizontal)
         .sheet(isPresented: $tester.radioManager.showPickerSheet) {
           PickerView().environmentObject(tester.radioManager)
         }
-        .padding(.leading, 10)
-        .padding(.trailing, 20)
-        Toggle("Connect as Gui", isOn: $tester.connectAsGui)
-          .frame(width: 150, alignment: .leading)
-        Toggle("Enable pinging", isOn: $tester.enablePinging)
-          .frame(width: 150, alignment: .leading)
-        Toggle("Show ALL replies", isOn: $tester.showAllReplies)
-          .frame(width: 150, alignment: .leading)
-        Spacer()
-        Picker(selection: $tester.radioManager.stationSelection, label: Text("Show Station")) {
-          ForEach(tester.radioManager.stations, id: \.id) {
-            Text($0.name)
+        HStack (spacing: 20){
+          Text("Enable -->").frame(width: 80, alignment: .leading)
+          Toggle("Gui", isOn: $tester.connectAsGui).frame(width: 80, alignment: .leading)
+          Toggle("Pinging", isOn: $tester.enablePinging).frame(width: 80, alignment: .leading)
+          Toggle("SmartLink", isOn: $tester.smartLinkEnabled).frame(width: 80, alignment: .leading)
+          
+          Spacer()
+          
+          Button(action: {tester.radioManager.showPicker()}) {
+            Text("Picker").frame(width: 70, alignment: .center)
+          }.padding(.trailing, 10)
+          .disabled(tester.isConnected)
+          .sheet(isPresented: $tester.radioManager.showPickerSheet) {
+            PickerView().environmentObject(tester.radioManager)
           }
         }
-        .frame(width: 300, height: 18, alignment: .leading)
-        .padding(.trailing, 10)
+        .padding(5)
+//        .border(Color(.textColor))
       }
       
       // Bottom row
-      HStack {
-        Button(action: {
-          tester.showPicker()
-        })
-        {Text("Picker")
-          .frame(width: 70, alignment: .center)
-        }
-        .disabled(tester.isConnected)
-        .sheet(isPresented: $tester.radioManager.showPickerSheet) {
-          PickerView().environmentObject(tester.radioManager)
-        }
-        .padding(.leading, 10)
-        .padding(.trailing, 20)
-        Toggle("Show timestamps", isOn: $tester.showTimestamps)
-          .frame(width: 150, alignment: .leading)
-        Toggle("Show pings", isOn: $tester.showPings)
-          .frame(width: 150, alignment: .leading)
-        Toggle("SmartLink enabled", isOn: $tester.smartLinkEnabled)
-          .frame(width: 150, alignment: .leading)
-        Spacer()
+      HStack(spacing: 20) {
+        Text("Show -->").frame(width: 80, alignment: .leading).padding(.leading, 130)
+          Toggle("Times", isOn: $tester.showTimestamps).frame(width: 80, alignment: .leading)
+          Toggle("Pings", isOn: $tester.showPings).frame(width: 80, alignment: .leading)
+          Toggle("Replies", isOn: $tester.showAllReplies).frame(width: 80, alignment: .leading)
+//        .border(Color(.textColor))
       }
-      .padding(.trailing, 10)
     }
   }
 }
