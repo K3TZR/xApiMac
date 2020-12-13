@@ -547,40 +547,6 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     // ----------------------------------------------------------------------------
     // MARK: - RadioManagerDelegate
     
-    // RefreshToken callbacks
-    //    NOTE: The RefreshToken can be stored in any secure way, using Keychain
-    //    as done here is one possibility
-    
-    /// Get a stored refresh token
-    /// - Parameters:
-    ///   - service:    a service name
-    ///   - account:    an account name
-    /// - Returns:      a refreshToken (if any)
-    ///
-    func refreshTokenGet(service: String, account: String) -> String? {
-        return MyKeychain.get(service, account: account)
-    }
-    
-    /// Set a stored refresh token
-    /// - Parameters:
-    ///   - service:        a service name
-    ///   - account:        an account name
-    ///   - refreshToken:   the token to be stored
-    /// - Returns:      a refreshToken (if any)
-    func refreshTokenSet(service: String, account: String, refreshToken: String) {
-        MyKeychain.set(service, account: account, data: refreshToken)
-    }
-    
-    /// Delete a stored refresh token
-    /// - Parameters:
-    ///   - service:    a service name
-    ///   - account:    an account name
-    /// - Returns:      a refreshToken (if any)
-    ///
-    func refreshTokenDelete(service: String, account: String) {
-        MyKeychain.delete(service, account: account)
-    }
-    
     /// Called asynchronously by RadioManager to indicate success / failure for a Radio connection attempt
     /// - Parameters:
     ///   - state:          true if connected

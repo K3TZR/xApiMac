@@ -1,6 +1,6 @@
 //
 //  FiltersView.swift
-//  xApi6000
+//  xApiMac
 //
 //  Created by Douglas Adams on 8/10/20.
 //

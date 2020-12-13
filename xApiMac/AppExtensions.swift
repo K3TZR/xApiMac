@@ -1,6 +1,6 @@
 //
 //  AppExtensions.swift
-//  xApi6000
+//  xApiMac
 //
 //  Created by Douglas Adams on 8/15/15.
 //  Copyright © 2018 Douglas Adams. All rights reserved.

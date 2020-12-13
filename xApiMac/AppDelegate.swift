@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  xApi6000
+//  xApiMac
 //
 //  Created by Douglas Adams on 8/9/20.
 //

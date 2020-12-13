@@ -1,6 +1,6 @@
 //
 //  MessagesView.swift
-//  xApi6000
+//  xApiMac
 //
 //  Created by Douglas Adams on 7/28/20.
 //  Copyright © 2020 Douglas Adams. All rights reserved.

@@ -23,7 +23,6 @@
 		91859185257E80D400C7D6F5 /* FiltersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859177257E80D400C7D6F5 /* FiltersView.swift */; };
 		91859186257E80D400C7D6F5 /* TopButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859178257E80D400C7D6F5 /* TopButtonsView.swift */; };
 		91859187257E80D400C7D6F5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859179257E80D400C7D6F5 /* ContentView.swift */; };
-		91859189257E80D400C7D6F5 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9185917C257E80D400C7D6F5 /* Keychain.swift */; };
 		91874C032585519A00D80F05 /* xClientMac in Frameworks */ = {isa = PBXBuildFile; productRef = 91874C022585519A00D80F05 /* xClientMac */; };
 		91874C1C2585620600D80F05 /* Tester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91874C1B2585620600D80F05 /* Tester.swift */; };
 /* End PBXBuildFile section */
@@ -46,7 +45,6 @@
 		91859177257E80D400C7D6F5 /* FiltersView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FiltersView.swift; sourceTree = "<group>"; };
 		91859178257E80D400C7D6F5 /* TopButtonsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopButtonsView.swift; sourceTree = "<group>"; };
 		91859179257E80D400C7D6F5 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		9185917C257E80D400C7D6F5 /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		91874C1B2585620600D80F05 /* Tester.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tester.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -140,7 +138,6 @@
 			isa = PBXGroup;
 			children = (
 				91874C1B2585620600D80F05 /* Tester.swift */,
-				9185917C257E80D400C7D6F5 /* Keychain.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -237,7 +234,6 @@
 				91859187257E80D400C7D6F5 /* ContentView.swift in Sources */,
 				9185917F257E80D400C7D6F5 /* SendView.swift in Sources */,
 				9185917D257E80D400C7D6F5 /* ObjectsView.swift in Sources */,
-				91859189257E80D400C7D6F5 /* Keychain.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,7 +385,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.0.6;
+				MARKETING_VERSION = 1.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -415,7 +411,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.0.6;
+				MARKETING_VERSION = 1.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
