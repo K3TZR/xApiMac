@@ -19,30 +19,30 @@ typealias NC = NotificationCenter
 
 extension DefaultsKeys {
     
-    var clearAtConnect           : DefaultsKey<Bool>            { .init("clearAtConnect", defaultValue: false) }
-    var clearAtDisconnect        : DefaultsKey<Bool>            { .init("clearAtDisconnect", defaultValue: false) }
-    var clearOnSend              : DefaultsKey<Bool>            { .init("clearOnSend", defaultValue: false) }
-    var connectAsGui             : DefaultsKey<Bool>            { .init("connectAsGui", defaultValue: false) }
-    var connectToFirstRadio      : DefaultsKey<Bool>            { .init("connectToFirstRadio", defaultValue: false) }
-    var clientId                 : DefaultsKey<String>          { .init("clientId", defaultValue: "") }
-    var defaultConnection        : DefaultsKey<String>          { .init("defaultConnection", defaultValue: "") }
-    var defaultGuiConnection     : DefaultsKey<String>          { .init("defaultGuiConnection", defaultValue: "") }
-    var enablePinging            : DefaultsKey<Bool>            { .init("enablePinging", defaultValue: false) }
-    var fontMaxSize              : DefaultsKey<Int>             { .init("fontMaxSize", defaultValue: 20) }
-    var fontMinSize              : DefaultsKey<Int>             { .init("fontMinSize", defaultValue: 8) }
-    var fontName                 : DefaultsKey<String>          { .init("fontName", defaultValue: "Monaco") }
-    var fontSize                 : DefaultsKey<Int>             { .init("fontSize", defaultValue: 12) }
-    var messagesFilterText       : DefaultsKey<String>          { .init("messagesFilterText", defaultValue: "") }
-    var messagesFilterBy         : DefaultsKey<String>          { .init("messagesFilterBy", defaultValue: "none") }
-    var objectsFilterText        : DefaultsKey<String>          { .init("objectsFilterText", defaultValue: "") }
-    var objectsFilterBy          : DefaultsKey<String>          { .init("objectsFilterBy", defaultValue: "none") }
-    var showAllReplies           : DefaultsKey<Bool>            { .init("showAllReplies", defaultValue: false) }
-    var showPings                : DefaultsKey<Bool>            { .init("showPings", defaultValue: false) }
-    var showTimestamps           : DefaultsKey<Bool>            { .init("showTimestamps", defaultValue: false) }
-    var smartLinkAuth0Email      : DefaultsKey<String>          { .init("smartLinkAuth0Email", defaultValue: "") }
-    var smartLinkEnabled         : DefaultsKey<Bool>            { .init("smartLinkEnabled", defaultValue: true) }
-    //  var smartLinkWasLoggedIn     : DefaultsKey<Bool>            { .init("smartLinkWasLoggedIn", defaultValue: false) }
-    var useLowBw                 : DefaultsKey<Bool>            { .init("useLowBw", defaultValue: false) }
+    var clearAtConnect          : DefaultsKey<Bool>     { .init("clearAtConnect", defaultValue: false) }
+    var clearAtDisconnect       : DefaultsKey<Bool>     { .init("clearAtDisconnect", defaultValue: false) }
+    var clearOnSend             : DefaultsKey<Bool>     { .init("clearOnSend", defaultValue: false) }
+    var enableGui               : DefaultsKey<Bool>     { .init("enableGui", defaultValue: false) }
+    var connectToFirstRadio     : DefaultsKey<Bool>     { .init("connectToFirstRadio", defaultValue: false) }
+    var clientId                : DefaultsKey<String>   { .init("clientId", defaultValue: "") }
+    var defaultConnection       : DefaultsKey<String>   { .init("defaultConnection", defaultValue: "") }
+    var defaultGuiConnection    : DefaultsKey<String>   { .init("defaultGuiConnection", defaultValue: "") }
+    var enablePinging           : DefaultsKey<Bool>     { .init("enablePinging", defaultValue: false) }
+    var fontMaxSize             : DefaultsKey<Int>      { .init("fontMaxSize", defaultValue: 20) }
+    var fontMinSize             : DefaultsKey<Int>      { .init("fontMinSize", defaultValue: 8) }
+    var fontName                : DefaultsKey<String>   { .init("fontName", defaultValue: "Monaco") }
+    var fontSize                : DefaultsKey<Int>      { .init("fontSize", defaultValue: 12) }
+    var messagesFilterText      : DefaultsKey<String>   { .init("messagesFilterText", defaultValue: "") }
+    var messagesFilterBy        : DefaultsKey<String>   { .init("messagesFilterBy", defaultValue: "none") }
+    var objectsFilterText       : DefaultsKey<String>   { .init("objectsFilterText", defaultValue: "") }
+    var objectsFilterBy         : DefaultsKey<String>   { .init("objectsFilterBy", defaultValue: "none") }
+    var showReplies             : DefaultsKey<Bool>     { .init("showReplies", defaultValue: false) }
+    var showPings               : DefaultsKey<Bool>     { .init("showPings", defaultValue: false) }
+    var showTimestamps          : DefaultsKey<Bool>     { .init("showTimestamps", defaultValue: false) }
+    var smartLinkAuth0Email     : DefaultsKey<String>   { .init("smartLinkAuth0Email", defaultValue: "") }
+    var enableSmartLink         : DefaultsKey<Bool>     { .init("enableSmartLink", defaultValue: true) }
+    var showLogWindow           : DefaultsKey<Bool>     { .init("showLogWindow", defaultValue: false) }
+    var useLowBw                : DefaultsKey<Bool>     { .init("useLowBw", defaultValue: false) }
 }
 
 /// Struct to hold a Semantic Version number

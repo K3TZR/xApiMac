@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		91391F9E2545CE9400B48A27 /* SwiftyUserDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = 91391F9D2545CE9400B48A27 /* SwiftyUserDefaults */; };
-		91391FAA2547710100B48A27 /* xLib6000 in Frameworks */ = {isa = PBXBuildFile; productRef = 91391FA92547710100B48A27 /* xLib6000 */; };
 		91541C1924E02E7C002FE61E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91541C1824E02E7C002FE61E /* AppDelegate.swift */; };
 		91541C1D24E02E7D002FE61E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 91541C1C24E02E7D002FE61E /* Assets.xcassets */; };
 		91541C2024E02E7D002FE61E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 91541C1F24E02E7D002FE61E /* Preview Assets.xcassets */; };
@@ -21,10 +19,10 @@
 		91859181257E80D400C7D6F5 /* BottomButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859173257E80D400C7D6F5 /* BottomButtonsView.swift */; };
 		91859183257E80D400C7D6F5 /* MessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859175257E80D400C7D6F5 /* MessagesView.swift */; };
 		91859185257E80D400C7D6F5 /* FiltersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859177257E80D400C7D6F5 /* FiltersView.swift */; };
-		91859186257E80D400C7D6F5 /* TopButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859178257E80D400C7D6F5 /* TopButtonsView.swift */; };
 		91859187257E80D400C7D6F5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859179257E80D400C7D6F5 /* ContentView.swift */; };
 		91874C032585519A00D80F05 /* xClientMac in Frameworks */ = {isa = PBXBuildFile; productRef = 91874C022585519A00D80F05 /* xClientMac */; };
 		91874C1C2585620600D80F05 /* Tester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91874C1B2585620600D80F05 /* Tester.swift */; };
+		91CCF46D2592D7F00063757A /* TopButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CCF46C2592D7F00063757A /* TopButtonsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,9 +41,9 @@
 		91859173257E80D400C7D6F5 /* BottomButtonsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomButtonsView.swift; sourceTree = "<group>"; };
 		91859175257E80D400C7D6F5 /* MessagesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesView.swift; sourceTree = "<group>"; };
 		91859177257E80D400C7D6F5 /* FiltersView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FiltersView.swift; sourceTree = "<group>"; };
-		91859178257E80D400C7D6F5 /* TopButtonsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopButtonsView.swift; sourceTree = "<group>"; };
 		91859179257E80D400C7D6F5 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		91874C1B2585620600D80F05 /* Tester.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tester.swift; sourceTree = "<group>"; };
+		91CCF46C2592D7F00063757A /* TopButtonsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopButtonsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,9 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				91391F9E2545CE9400B48A27 /* SwiftyUserDefaults in Frameworks */,
 				91874C032585519A00D80F05 /* xClientMac in Frameworks */,
-				91391FAA2547710100B48A27 /* xLib6000 in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -123,13 +119,13 @@
 		9185916E257E80D400C7D6F5 /* SubViews */ = {
 			isa = PBXGroup;
 			children = (
+				91CCF46C2592D7F00063757A /* TopButtonsView.swift */,
 				9185916F257E80D400C7D6F5 /* ObjectsView.swift */,
 				91859170257E80D400C7D6F5 /* FilterView.swift */,
 				91859171257E80D400C7D6F5 /* SendView.swift */,
 				91859173257E80D400C7D6F5 /* BottomButtonsView.swift */,
 				91859175257E80D400C7D6F5 /* MessagesView.swift */,
 				91859177257E80D400C7D6F5 /* FiltersView.swift */,
-				91859178257E80D400C7D6F5 /* TopButtonsView.swift */,
 			);
 			path = SubViews;
 			sourceTree = "<group>";
@@ -159,8 +155,6 @@
 			);
 			name = xApiMac;
 			packageProductDependencies = (
-				91391F9D2545CE9400B48A27 /* SwiftyUserDefaults */,
-				91391FA92547710100B48A27 /* xLib6000 */,
 				91874C022585519A00D80F05 /* xClientMac */,
 			);
 			productName = xApi6000;
@@ -191,8 +185,6 @@
 			);
 			mainGroup = 91541C0C24E02E7C002FE61E;
 			packageReferences = (
-				91391F9C2545CE9400B48A27 /* XCRemoteSwiftPackageReference "SwiftyUserDefaults" */,
-				91391FA82547710100B48A27 /* XCRemoteSwiftPackageReference "xLib6000" */,
 				91874C012585519A00D80F05 /* XCRemoteSwiftPackageReference "xClientMac" */,
 			);
 			productRefGroup = 91541C1624E02E7C002FE61E /* Products */;
@@ -223,7 +215,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				91859186257E80D400C7D6F5 /* TopButtonsView.swift in Sources */,
+				91CCF46D2592D7F00063757A /* TopButtonsView.swift in Sources */,
 				91859181257E80D400C7D6F5 /* BottomButtonsView.swift in Sources */,
 				9185917E257E80D400C7D6F5 /* FilterView.swift in Sources */,
 				91859183257E80D400C7D6F5 /* MessagesView.swift in Sources */,
@@ -385,7 +377,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.0.8;
+				MARKETING_VERSION = 1.0.9;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -411,7 +403,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.0.8;
+				MARKETING_VERSION = 1.0.9;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -442,43 +434,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		91391F9C2545CE9400B48A27 /* XCRemoteSwiftPackageReference "SwiftyUserDefaults" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sunshinejr/SwiftyUserDefaults.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.0;
-			};
-		};
-		91391FA82547710100B48A27 /* XCRemoteSwiftPackageReference "xLib6000" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/K3TZR/xLib6000.git";
-			requirement = {
-				kind = exactVersion;
-				version = 1.6.4;
-			};
-		};
 		91874C012585519A00D80F05 /* XCRemoteSwiftPackageReference "xClientMac" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/K3TZR/xClientMac.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.9.1;
+				minimumVersion = 0.9.5;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		91391F9D2545CE9400B48A27 /* SwiftyUserDefaults */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 91391F9C2545CE9400B48A27 /* XCRemoteSwiftPackageReference "SwiftyUserDefaults" */;
-			productName = SwiftyUserDefaults;
-		};
-		91391FA92547710100B48A27 /* xLib6000 */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 91391FA82547710100B48A27 /* XCRemoteSwiftPackageReference "xLib6000" */;
-			productName = xLib6000;
-		};
 		91874C022585519A00D80F05 /* xClientMac */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 91874C012585519A00D80F05 /* XCRemoteSwiftPackageReference "xClientMac" */;

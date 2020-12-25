@@ -11,7 +11,7 @@ import xLib6000
 import xClientMac
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableObject {
+class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDelegate {
     
     // ----------------------------------------------------------------------------
     // MARK: - Static properties
@@ -22,14 +22,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableOb
     // ----------------------------------------------------------------------------
     // MARK: - Published properties
     
-    @Published var logWindowIsVisible = false { didSet{ showLogWindow(logWindowIsVisible) }}
+    var showLogWindow = false { didSet{ updateLogWindow(showLogWindow) }}
     
     // ----------------------------------------------------------------------------
     // MARK: - Internal properties
     
-    var window      : NSWindow!
-    var logWindow   : NSWindow?
-    lazy var tester = Tester()
+    var window          : NSWindow!
+    var logWindow       : NSWindow?
+    lazy var tester     = Tester()
     
     // ----------------------------------------------------------------------------
     // MARK: - Internal methods
@@ -67,7 +67,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableOb
         
         logWindow!.isReleasedWhenClosed = false
         logWindow!.title = "Log Window"
-        logWindow!.contentView = NSHostingView(rootView: LogView()
+        logWindow!.contentView = NSHostingView(rootView: LoggerView()
                                                 .environmentObject(Logger.sharedInstance))
         
         // initialize Logger with the default log
@@ -82,12 +82,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableOb
     /// Show / Hide the Log window
     /// - Parameter show:     show / hide
     ///
-    func showLogWindow(_ show: Bool) {
+    private func updateLogWindow(_ show: Bool) {
         let frameName = "LogWindowFrame"
         
         if show {
-            updateLoggerFont()
-            
             logWindow?.orderFront(nil)
             logWindow?.level = .floating
             logWindow?.setFrameUsingName(frameName)
@@ -102,14 +100,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, LoggerDelegate, ObservableOb
     ///
     private func updateLoggerFont() {
         Logger.sharedInstance.fontSize = tester.fontSize
-        Logger.sharedInstance.refresh()
+        Logger.sharedInstance.refreshLog()
     }
     
     // ----------------------------------------------------------------------------
     // MARK: - Menu IBAction methods
     
     @IBAction func logViewer(_ sender: Any) {
-        logWindowIsVisible.toggle()
+        showLogWindow.toggle()
     }
     
     @IBAction func larger(_ sender: Any) {

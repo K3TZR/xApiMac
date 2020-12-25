@@ -1,6 +1,6 @@
 //
 //  TopButtonsView.swift
-//  xApiMac
+//  xApiIos
 //
 //  Created by Douglas Adams on 7/28/20.
 //  Copyright © 2020 Douglas Adams. All rights reserved.
@@ -10,54 +10,60 @@ import SwiftUI
 import xClientMac
 
 struct TopButtonsView: View {
-  @EnvironmentObject var tester : Tester
-  
-  var body: some View {
+    @EnvironmentObject var tester : Tester
     
-    VStack(alignment: .leading) {
-      HStack {
-        // Top row
-        Button(action: {tester.startStopTester()}) {
-          Text(tester.isConnected ? "Disconnect" : "Connect" ).frame(width: 70, alignment: .center)
-        }.padding(.horizontal)
-        .sheet(isPresented: $tester.radioManager.showPickerSheet) {
-          PickerView().environmentObject(tester.radioManager)
+    var body: some View {
+        
+        VStack(alignment: .leading) {
+            HStack (spacing: 40){
+                // Top row
+                Button(action: {tester.startStop()} ) {
+                    Text(tester.isConnected ? "Stop" : "Start" )
+                }
+                .help("Using the Default connection type")
+                .padding(.bottom, 30)
+                
+                VStack (alignment: .leading) {
+                    Toggle(isOn: $tester.enableGui) {
+                        Text("Connect as Gui")}
+                    Toggle(isOn: $tester.showTimestamps) {
+                        Text("Show Times")}.padding(.bottom, 10)
+                }
+                
+                VStack (alignment: .leading) {
+                    Toggle(isOn: $tester.connectToFirstRadio) {
+                        Text("Connect to First Radio")}
+                    Toggle(isOn: $tester.showPings) {
+                        Text("Show Pings")}.padding(.bottom, 10)
+                }
+                
+                VStack (alignment: .leading) {
+                    Toggle(isOn: $tester.enablePinging) {
+                        Text("Enable pinging")}
+                    Toggle(isOn: $tester.showReplies) {
+                        Text("Show Replies")}.padding(.bottom, 10)
+                }
+                
+                Toggle(isOn: $tester.enableSmartLink) {
+                    Text("Enable SmartLink")}.padding(.bottom, 30)
+                
+                Spacer()
+                
+                Button(action: {tester.resetDefault()}) {
+                    Text("Reset Default")                    
+                }
+                .help("Clear all default(s)")
+                .padding(.bottom, 30)
+            }
         }
-        HStack (spacing: 20){
-          Text("Enable -->").frame(width: 80, alignment: .leading)
-          Toggle("Gui", isOn: $tester.connectAsGui).frame(width: 80, alignment: .leading)
-          Toggle("Pinging", isOn: $tester.enablePinging).frame(width: 80, alignment: .leading)
-          Toggle("SmartLink", isOn: $tester.smartLinkEnabled).frame(width: 80, alignment: .leading)
-          
-          Spacer()
-          
-          Button(action: {tester.radioManager.showPicker()}) {
-            Text("Picker").frame(width: 70, alignment: .center)
-          }.padding(.trailing, 10)
-          .disabled(tester.isConnected)
-          .sheet(isPresented: $tester.radioManager.showPickerSheet) {
-            PickerView().environmentObject(tester.radioManager)
-          }
-        }
-        .padding(5)
-//        .border(Color(.textColor))
-      }
-      
-      // Bottom row
-      HStack(spacing: 20) {
-        Text("Show -->").frame(width: 80, alignment: .leading).padding(.leading, 130)
-          Toggle("Times", isOn: $tester.showTimestamps).frame(width: 80, alignment: .leading)
-          Toggle("Pings", isOn: $tester.showPings).frame(width: 80, alignment: .leading)
-          Toggle("Replies", isOn: $tester.showAllReplies).frame(width: 80, alignment: .leading)
-//        .border(Color(.textColor))
-      }
+        .padding(.top, 10)
     }
-  }
 }
 
 struct TopButtonsView_Previews: PreviewProvider {
-  static var previews: some View {
-    TopButtonsView()
-      .environmentObject(Tester())
-  }
+    static var previews: some View {
+        TopButtonsView()
+            .environmentObject(Tester())
+            .previewLayout(.fixed(width: 2160 / 2.0, height: 1620 / 2.0))
+    }
 }

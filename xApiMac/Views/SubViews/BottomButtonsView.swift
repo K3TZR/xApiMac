@@ -9,31 +9,35 @@
 import SwiftUI
 
 struct BottomButtonsView: View {
-  @EnvironmentObject var tester : Tester
-  @EnvironmentObject var appDelegate : AppDelegate
-  
-  var body: some View {
+    @EnvironmentObject var tester : Tester
+    @EnvironmentObject var appDelegate : AppDelegate
     
-    VStack(alignment: .leading, spacing: 0, content: {
-      HStack (spacing: 10){
-        Text("Clear on -->").frame(width: 80, alignment: .leading)
-        Toggle("Connect", isOn: $tester.clearAtConnect).frame(width: 90, alignment: .leading)
-        Toggle("Disconnect", isOn: $tester.clearAtDisconnect).frame(width: 90, alignment: .leading)
-        Spacer()
-        Toggle("Log Window", isOn: $appDelegate.logWindowIsVisible).frame(width: 100, alignment: .leading)
-        Spacer()
-        Button(action: {self.tester.clearObjectsAndMessages()}) {Text("Clear")}
-      }
-    })
-    .padding(.horizontal, 20)
-//    .border(Color(.textColor))
-  }
+    var body: some View {
+        
+        VStack(alignment: .leading, spacing: 0, content: {
+            
+            HStack (spacing: 30){
+                Stepper("Font Size", value: $tester.fontSize, in: 8...24).frame(width: 175)
+
+                Toggle("Clear on Connect", isOn: $tester.clearAtConnect)
+                Toggle("Clear on Disconnect", isOn: $tester.clearAtDisconnect)
+                
+                Spacer()
+                
+                Button( action: {appDelegate.showLogWindow.toggle()}) {Text("Open/Close Log Window")}
+                
+                Spacer()
+                
+                Button(action: {self.tester.clearObjectsAndMessages()}) {Text("Clear Now")}
+            }
+        })
+    }
 }
 
 struct BottomButtonsView_Previews: PreviewProvider {
     static var previews: some View {
-      BottomButtonsView()
-        .environmentObject(Tester())
-        .environmentObject(AppDelegate())
+        BottomButtonsView()
+            .environmentObject(Tester())
+            .environmentObject(AppDelegate())
     }
 }

@@ -49,7 +49,13 @@ enum FilterMessages : String, CaseIterable {
 // MARK: - Class definition
 // ----------------------------------------------------------------------------
 
-final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
+final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {    
+    
+    // ----------------------------------------------------------------------------
+    // MARK: - Static properties
+    
+    public static let kDomainName = "net.k3tzr"
+    public static let kAppName = "xApiMac"
     
     // ----------------------------------------------------------------------------
     // MARK: - Published properties
@@ -61,16 +67,16 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     @Published var clearOnSend          = false   { didSet {Defaults.clearOnSend = clearOnSend} }
     @Published var clientId             = ""      { didSet {Defaults.clientId = clientId} }
     @Published var cmdToSend            = ""
-    @Published var connectAsGui         = false   { didSet {Defaults.connectAsGui = connectAsGui} }
+    @Published var enableGui            = false   { didSet {Defaults.enableGui = enableGui} }
+    @Published var enableSmartLink      = false   { didSet {Defaults.enableSmartLink = enableSmartLink ; if enableSmartLink == false {radioManager.removeSmartLinkRadios()}} }
     @Published var connectToFirstRadio  = false   { didSet {Defaults.connectToFirstRadio = connectToFirstRadio} }
     @Published var enablePinging        = false   { didSet {Defaults.enablePinging = enablePinging} }
     @Published var fontSize             = 12      { didSet {Defaults.fontSize = fontSize} }
     @Published var isConnected          = false
-    @Published var showAllReplies       = false   { didSet {Defaults.showAllReplies = showAllReplies} }
+    @Published var showReplies          = false   { didSet {Defaults.showReplies = showReplies} }
     @Published var showPings            = false   { didSet {Defaults.showPings = showPings} }
     @Published var showTimestamps       = false   { didSet {Defaults.showTimestamps = showTimestamps} }
     @Published var smartLinkAuth0Email  = ""      { didSet {Defaults.smartLinkAuth0Email = smartLinkAuth0Email} }
-    @Published var smartLinkEnabled     = false   { didSet {Defaults.smartLinkEnabled = smartLinkEnabled ; if smartLinkEnabled == false {radioManager.removeSmartLinkRadios()}} }
     @Published var stationName          = ""
     
     @Published var filteredMessages     = [Message]()
@@ -83,6 +89,8 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     @Published var objectsFilterText    = ""                      { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterText = objectsFilterText}}
     @Published var objectsScrollTo      : CGPoint? = nil
     
+    @Published var smartLinkIsLoggedIn  = false
+    @Published var smartLinkTestStatus  = false
     
     // ----------------------------------------------------------------------------
     // MARK: - Internal properties
@@ -139,15 +147,15 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
         clearAtDisconnect     = Defaults.clearAtDisconnect
         clearOnSend           = Defaults.clearOnSend
         clientId              = Defaults.clientId
-        connectAsGui          = Defaults.connectAsGui
+        enableGui             = Defaults.enableGui
         connectToFirstRadio   = Defaults.connectToFirstRadio
         enablePinging         = Defaults.enablePinging
         fontSize              = Defaults.fontSize
-        showAllReplies        = Defaults.showAllReplies
+        showReplies           = Defaults.showReplies
         showPings             = Defaults.showPings
         showTimestamps        = Defaults.showTimestamps
         smartLinkAuth0Email   = Defaults.smartLinkAuth0Email
-        smartLinkEnabled      = Defaults.smartLinkEnabled
+        enableSmartLink       = Defaults.enableSmartLink
         
         messagesFilterBy      = FilterMessages(rawValue: Defaults.messagesFilterBy) ?? .none
         messagesFilterText    = Defaults.messagesFilterText
@@ -155,12 +163,11 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
         objectsFilterText     = Defaults.objectsFilterText
         
         // initialize and configure the Logger
-        let logger = Logger.sharedInstance
-        logger.config(delegate: NSApp.delegate as! AppDelegate, domain: AppDelegate.kDomainName, appName: AppDelegate.kAppName.replacingSpaces(with: ""))
         _log = Logger.sharedInstance.logMessage
+//        Logger.sharedInstance.config(delegate: NSApp.delegate as! LoggerDelegate, domain: Tester.kDomainName, appName: Tester.kAppName)
         
         // give the Api access to our logger
-        Log.sharedInstance.delegate = logger
+        LogProxy.sharedInstance.delegate = Logger.sharedInstance
         
         // is there a saved Client ID?
         if clientId == "" {
@@ -181,11 +188,11 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     
     /// Start / Stop the Tester
     ///
-    func startStopTester() {
+    func startStop() {
         if isConnected == false {
-            startTester()
+            start()
         } else {
-            stopTester()
+            stop()
             _startTimestamp = nil
         }
     }
@@ -221,6 +228,26 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
         if clearOnSend { DispatchQueue.main.async { self.cmdToSend = "" }}
     }
     
+    func smartLinkLogInOut() {
+        if smartLinkIsLoggedIn {
+            radioManager.smartLinkLogout()
+        } else {
+            radioManager.smartLinkLogin()
+        }
+    }
+    
+    func smartLinkTest() {
+        radioManager.smartLinkTest()
+    }
+    
+    func resetDefault() {
+        radioManager.resetDefault()
+    }
+    
+    func showPicker() {
+        radioManager.showPicker()
+    }
+    
     /// Adjust the font size larger or smaller (within limits)
     ///
     /// - Parameter larger:           larger?
@@ -242,7 +269,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     
     /// Start the Tester
     ///
-    private func startTester() {
+    private func start() {
         // Start connection
         //    Order of attempts:
         //      1. default (if defaultConnection non-blank)
@@ -253,17 +280,17 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
         //
         if clearAtConnect { clearObjectsAndMessages() }
         
-        if connectAsGui && defaultGuiConnection != "" {
+        if connectToFirstRadio {
+            // connect to first
+            radioManager.connectToFirstFound()
+            
+        } else if enableGui && defaultGuiConnection != ""{
             // Gui connect to default
             radioManager.connect(to: defaultGuiConnection)
             
-        } else if connectAsGui == false && defaultConnection != "" {
+        } else if enableGui == false && defaultConnection != "" {
             // Non-Gui connect to default
             radioManager.connect(to: defaultConnection)
-            
-        } else if connectToFirstRadio {
-            // connect to first
-            radioManager.connectToFirstFound()
             
         } else {
             // use the Picker
@@ -273,7 +300,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     
     /// Stop the Tester
     ///
-    private func stopTester() {
+    private func stop() {
         // Stop connection
         DispatchQueue.main.async{ [self] in isConnected = false }
         if clearAtDisconnect { clearObjectsAndMessages() }
@@ -319,7 +346,6 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
         DispatchQueue.main.async { [self] in
             
             // guard that a session has been started
-//            guard _startTimestamp != nil else { return }
             if _startTimestamp == nil { _startTimestamp = Date() }
             
             // add the Timestamp to the Text
@@ -344,7 +370,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
         // ignore incorrectly formatted replies
         guard components.count >= 2 else { populateMessages("ERROR: R\(commandSuffix)") ; return }
         
-        if showAllReplies || components[1] != "0" || (components.count >= 3 && components[2] != "") {
+        if showReplies || components[1] != "0" || (components.count >= 3 && components[2] != "") {
             populateMessages("R\(commandSuffix)")
         }
     }
@@ -401,8 +427,8 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
                         activeHandle = guiClient.handle
                         
                         color = NSColor.systemRed
-                        if connectAsGui == false && guiClient.clientId != nil && guiClient.clientId == radio.boundClientId { color = NSColor.systemPurple }
-                        if connectAsGui == true  && guiClient.handle == _api.connectionHandle { color = NSColor.systemPurple }
+                        if enableGui == false && guiClient.clientId != nil && guiClient.clientId == radio.boundClientId { color = NSColor.systemPurple }
+                        if enableGui == true  && guiClient.handle == _api.connectionHandle { color = NSColor.systemPurple }
                         
                         self.appendObject(color, "Gui Client     station = \(guiClient.station.padTo(15))  handle = \(guiClient.handle.hex)  id = \(guiClient.clientId ?? "unknown")  localPtt = \(guiClient.isLocalPtt ? "Yes" : "No ")  available = \(radio.packet.status.lowercased() == "available" ? "Yes" : "No ")  program = \(guiClient.program)")
                         
@@ -562,7 +588,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
         } else {
             // NO
             _log("Tester: Connection failed to \(connection), \(msg)", .debug,  #function, #file, #line)
-            radioManager.showPicker()
+            radioManager.showPicker( message: "Connection failed to  -> \(connection) <-  \(msg)")
         }
     }
     

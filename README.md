@@ -31,8 +31,11 @@ Please send any bugs / comments / questions to support@k3tzr.net
 [![W6OP](https://img.shields.io/badge/W6OP-xVoiceKeyer,_xCW-informational)](https://w6op.com) A Mac-based Voice Keyer and a CW Keyer.  
 
 ---
+##### 1.0.9 Release Notes
+* major reorganization & cleanup
+
 ##### 1.0.8 Release Notes
-* removed KeyChain.swift (functionality moved to xCLientMac)
+* removed KeyChain.swift (functionality moved to xClientMac)
 * removed RadioManagerDelegate calls to KeyChain methods
 * corrected comments
 
