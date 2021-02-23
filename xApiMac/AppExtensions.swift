@@ -40,7 +40,7 @@ extension DefaultsKeys {
     var showPings               : DefaultsKey<Bool>     { .init("showPings", defaultValue: false) }
     var showTimestamps          : DefaultsKey<Bool>     { .init("showTimestamps", defaultValue: false) }
     var smartLinkAuth0Email     : DefaultsKey<String>   { .init("smartLinkAuth0Email", defaultValue: "") }
-    var enableSmartLink         : DefaultsKey<Bool>     { .init("enableSmartLink", defaultValue: true) }
+    var smartLinkEnabled        : DefaultsKey<Bool>     { .init("smartLinkEnabled", defaultValue: true) }
     var showLogWindow           : DefaultsKey<Bool>     { .init("showLogWindow", defaultValue: false) }
     var useLowBw                : DefaultsKey<Bool>     { .init("useLowBw", defaultValue: false) }
 }
@@ -120,5 +120,14 @@ extension String {
     ///
     func padTo(_ len: Int, with padCharacter: String = " ") -> String {
         String((self + "               ").prefix(len))
+    }
+}
+
+extension NSMenuItem {
+    /// Boolean equivalent of an NSMenuItem state property
+    ///
+    var boolState: Bool {
+        get { return self.state == NSControl.StateValue.on ? true : false }
+        set { self.state = (newValue == true ? NSControl.StateValue.on : NSControl.StateValue.off) }
     }
 }

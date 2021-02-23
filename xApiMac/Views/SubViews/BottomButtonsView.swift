@@ -9,35 +9,31 @@
 import SwiftUI
 
 struct BottomButtonsView: View {
-    @EnvironmentObject var tester : Tester
-    @EnvironmentObject var appDelegate : AppDelegate
-    
-    var body: some View {
-        
-        VStack(alignment: .leading, spacing: 0, content: {
-            
-            HStack (spacing: 30){
-                Stepper("Font Size", value: $tester.fontSize, in: 8...24).frame(width: 175)
+    @ObservedObject var tester: Tester
 
-                Toggle("Clear on Connect", isOn: $tester.clearAtConnect)
-                Toggle("Clear on Disconnect", isOn: $tester.clearAtDisconnect)
-                
+    var body: some View {
+
+        VStack(alignment: .leading) {
+            HStack {
+                Stepper("Font Size", value: $tester.fontSize, in: 8...24).frame(width: 175)
                 Spacer()
-                
-                Button( action: {appDelegate.showLogWindow.toggle()}) {Text("Open/Close Log Window")}
-                
+                HStack {
+                    Toggle("Clear on Connect", isOn: $tester.clearAtConnect).frame(width: 190)
+                    Toggle("Clear on Disconnect", isOn: $tester.clearAtDisconnect).frame(width: 215)
+                }
                 Spacer()
-                
-                Button(action: {self.tester.clearObjectsAndMessages()}) {Text("Clear Now")}
+                Button("Clear Now", action: { tester.clearObjectsAndMessages() })
+
+                Spacer()
+                Button("Log Window", action: { tester.showLogWindow() })
             }
-        })
+        }
     }
 }
 
 struct BottomButtonsView_Previews: PreviewProvider {
+
     static var previews: some View {
-        BottomButtonsView()
-            .environmentObject(Tester())
-            .environmentObject(AppDelegate())
+        BottomButtonsView(tester: Tester())
     }
 }

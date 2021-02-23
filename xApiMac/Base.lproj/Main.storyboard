@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -21,6 +21,11 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="VOq-y0-SEH"/>
+                                        <menuItem title="SmartLink" keyEquivalent="S" id="StK-0K-M2f">
+                                            <connections>
+                                                <action selector="smartLinkMenu:" target="Voe-Tx-rLC" id="OEq-Ka-mJZ"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem title="Log Viewer" keyEquivalent="L" id="InY-I1-Mf0">
                                             <connections>
                                                 <action selector="logViewer:" target="Voe-Tx-rLC" id="qCZ-pL-QPF"/>
@@ -137,7 +142,11 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="xApi6000" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="xApiMac" customModuleProvider="target">
+                    <connections>
+                        <outlet property="smartLinkMenuItem" destination="StK-0K-M2f" id="rKr-ZO-kfL"/>
+                    </connections>
+                </customObject>
                 <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>

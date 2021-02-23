@@ -1,6 +1,6 @@
 //
 //  TopButtonsView.swift
-//  xApiIos
+//  xApiMac
 //
 //  Created by Douglas Adams on 7/28/20.
 //  Copyright © 2020 Douglas Adams. All rights reserved.
@@ -10,60 +10,63 @@ import SwiftUI
 import xClientMac
 
 struct TopButtonsView: View {
-    @EnvironmentObject var tester : Tester
-    
+    @ObservedObject var tester: Tester
+    @ObservedObject var radioManager: RadioManager
+
+    var smartLinkButtonText: String {
+        if radioManager.delegate.smartLinkEnabled == false {
+            return "Disabled"
+        } else {
+            return radioManager.smartLinkIsLoggedIn ? "Logout" : "Login"
+        }
+    }
+
     var body: some View {
         
-        VStack(alignment: .leading) {
-            HStack (spacing: 40){
-                // Top row
-                Button(action: {tester.startStop()} ) {
-                    Text(tester.isConnected ? "Stop" : "Start" )
+    
+        HStack(spacing: 30) {
+            Button(radioManager.isConnected ? "Stop" : "Start") {
+                if radioManager.isConnected {
+                    radioManager.stop()
+                } else {
+                    radioManager.start()
                 }
-                .help("Using the Default connection type")
-                .padding(.bottom, 30)
-                
-                VStack (alignment: .leading) {
-                    Toggle(isOn: $tester.enableGui) {
-                        Text("Connect as Gui")}
-                    Toggle(isOn: $tester.showTimestamps) {
-                        Text("Show Times")}.padding(.bottom, 10)
-                }
-                
-                VStack (alignment: .leading) {
-                    Toggle(isOn: $tester.connectToFirstRadio) {
-                        Text("Connect to First Radio")}
-                    Toggle(isOn: $tester.showPings) {
-                        Text("Show Pings")}.padding(.bottom, 10)
-                }
-                
-                VStack (alignment: .leading) {
-                    Toggle(isOn: $tester.enablePinging) {
-                        Text("Enable pinging")}
-                    Toggle(isOn: $tester.showReplies) {
-                        Text("Show Replies")}.padding(.bottom, 10)
-                }
-                
-                Toggle(isOn: $tester.enableSmartLink) {
-                    Text("Enable SmartLink")}.padding(.bottom, 30)
-                
-                Spacer()
-                
-                Button(action: {tester.resetDefault()}) {
-                    Text("Reset Default")                    
-                }
-                .help("Clear all default(s)")
-                .padding(.bottom, 30)
             }
+            .frame(width: 50, alignment: .leading)
+            .help("Using the Default connection type")
+            
+            Toggle("As Gui", isOn: $tester.enableGui)
+            Toggle("Show Times", isOn: $tester.showTimestamps)
+            Toggle("Show Pings", isOn: $tester.showPings)
+            Toggle("Show Replies", isOn: $tester.showReplies)
+            
+            Spacer()
+            
+            HStack {
+                Text("SmartLink")
+                Button(smartLinkButtonText) {
+                    if radioManager.smartLinkIsLoggedIn {
+                        radioManager.smartLinkLogout()
+                    } else {
+                        radioManager.smartLinkLogin()
+                    }
+                }
+            }
+            .frame(width: 250)
+            .disabled(radioManager.delegate.smartLinkEnabled == false || radioManager.isConnected)
+            
+            Spacer()
+            
+            Button("Defaults") {
+                radioManager.chooseDefaults()
+            }
+            .disabled(radioManager.isConnected)
         }
-        .padding(.top, 10)
     }
 }
 
 struct TopButtonsView_Previews: PreviewProvider {
     static var previews: some View {
-        TopButtonsView()
-            .environmentObject(Tester())
-            .previewLayout(.fixed(width: 2160 / 2.0, height: 1620 / 2.0))
+        ContentView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate) )
     }
 }

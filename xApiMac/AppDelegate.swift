@@ -16,8 +16,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
     // ----------------------------------------------------------------------------
     // MARK: - Static properties
     
-    static let kAppName       = "xApiMac"
-    static let kDomainName    = "net.k3tzr"  
+    static let kAppName = "xApiMac"
+    static let kDomainName = "net.k3tzr"
     
     // ----------------------------------------------------------------------------
     // MARK: - Published properties
@@ -27,18 +27,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
     // ----------------------------------------------------------------------------
     // MARK: - Internal properties
     
-    var window          : NSWindow!
-    var logWindow       : NSWindow?
-    lazy var tester     = Tester()
+    @IBOutlet private weak var smartLinkMenuItem: NSMenuItem!
+    
+    var window: NSWindow!
+    var logWindow: NSWindow?
+    var tester = Tester()
     
     // ----------------------------------------------------------------------------
     // MARK: - Internal methods
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         
+        // instantiate the app and give it access to the RadioManager
+        let radioManager = RadioManager(delegate: tester as RadioManagerDelegate)
+
         // Create the SwiftUI view that provides the window contents.
-        let contentView = ContentView()
-        
+        let contentView = ContentView(tester: tester, radioManager: radioManager)
+
         // Create the window and set the content view.
         window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
@@ -73,6 +78,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
         // initialize Logger with the default log
         let defaultLogUrl = URL(fileURLWithPath: URL.appSupport.path + "/" + AppDelegate.kDomainName + "." + AppDelegate.kAppName + "/Logs/" + AppDelegate.kAppName + ".log")
         Logger.sharedInstance.loadLog(at: defaultLogUrl)
+        
+        smartLinkMenuItem.boolState = tester.smartLinkEnabled
     }
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
@@ -106,6 +113,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
     // ----------------------------------------------------------------------------
     // MARK: - Menu IBAction methods
     
+    @IBAction func smartLinkMenu(_ sender: NSMenuItem) {
+        sender.boolState.toggle()
+        tester.smartLink(enabled: sender.boolState)
+    }
+
     @IBAction func logViewer(_ sender: Any) {
         showLogWindow.toggle()
     }

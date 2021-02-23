@@ -7,39 +7,42 @@
 
 import SwiftUI
 
-
-
 struct FilterView: View {
-    var filterType : FilterType = .messages
-    @EnvironmentObject var tester : Tester
-    
+    let filterType: FilterType
+    @ObservedObject var tester: Tester
+
     var body: some View {
+
         HStack {
             if filterType == .messages {
-                Picker(selection: $tester.messagesFilterBy, label: Text("Filter " + filterType.rawValue)) {
+                Picker("Filter messages by", selection: $tester.messagesFilterBy) {
                     ForEach(FilterMessages.allCases, id: \.self) {
                         Text($0.rawValue)
                     }
-                }.frame(width: 200, height: 20, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
-                
+                }.frame(width: 250)
+
             } else {
-                Picker(selection: $tester.objectsFilterBy, label: Text("Filter " + filterType.rawValue)) {
+                Picker("Filter objects by", selection: $tester.objectsFilterBy) {
                     ForEach(FilterObjects.allCases, id: \.self) {
                         Text($0.rawValue)
                     }
-                }.frame(width: 200, height: 20, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
-                
+                }.frame(width: 250)
+
             }
             TextField("Filter text", text: filterType == .messages ? $tester.messagesFilterText : $tester.objectsFilterText)
-                .background(Color(.gray))
-            //        .frame(width: 200, alignment: .leading)
+//                .background(Color(.lightGray))
+//                .autocapitalization(.none)
+                .modifier(ClearButton(text: filterType == .messages ? $tester.messagesFilterText : $tester.objectsFilterText))
         }
+        .pickerStyle(MenuPickerStyle())
     }
 }
 
 struct FilterView_Previews: PreviewProvider {
+
     static var previews: some View {
-        FilterView()
-            .environmentObject(Tester())
+        FilterView(filterType: .messages, tester: Tester())
+//            .environmentObject(Tester())
+//            .previewLayout(.fixed(width: 2160 / 2.0, height: 1620 / 2.0))
     }
 }

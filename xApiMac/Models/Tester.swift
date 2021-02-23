@@ -49,14 +49,7 @@ enum FilterMessages : String, CaseIterable {
 // MARK: - Class definition
 // ----------------------------------------------------------------------------
 
-final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {    
-    
-    // ----------------------------------------------------------------------------
-    // MARK: - Static properties
-    
-    public static let kDomainName = "net.k3tzr"
-    public static let kAppName = "xApiMac"
-    
+final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {    
     // ----------------------------------------------------------------------------
     // MARK: - Published properties
     
@@ -67,16 +60,17 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     @Published var clearOnSend          = false   { didSet {Defaults.clearOnSend = clearOnSend} }
     @Published var clientId             = ""      { didSet {Defaults.clientId = clientId} }
     @Published var cmdToSend            = ""
-    @Published var enableGui            = false   { didSet {Defaults.enableGui = enableGui} }
-    @Published var enableSmartLink      = false   { didSet {Defaults.enableSmartLink = enableSmartLink ; if enableSmartLink == false {radioManager.removeSmartLinkRadios()}} }
     @Published var connectToFirstRadio  = false   { didSet {Defaults.connectToFirstRadio = connectToFirstRadio} }
+    @Published var enableGui            = false   { didSet {Defaults.enableGui = enableGui} }
     @Published var enablePinging        = false   { didSet {Defaults.enablePinging = enablePinging} }
     @Published var fontSize             = 12      { didSet {Defaults.fontSize = fontSize} }
     @Published var isConnected          = false
-    @Published var showReplies          = false   { didSet {Defaults.showReplies = showReplies} }
     @Published var showPings            = false   { didSet {Defaults.showPings = showPings} }
+    @Published var showReplies          = false   { didSet {Defaults.showReplies = showReplies} }
     @Published var showTimestamps       = false   { didSet {Defaults.showTimestamps = showTimestamps} }
     @Published var smartLinkAuth0Email  = ""      { didSet {Defaults.smartLinkAuth0Email = smartLinkAuth0Email} }
+    @Published var smartLinkUserImage: NSImage?
+    @Published var smartLinkTestStatus  = false
     @Published var stationName          = ""
     
     @Published var filteredMessages     = [Message]()
@@ -87,20 +81,19 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     @Published var filteredObjects      = [Object]()
     @Published var objectsFilterBy      : FilterObjects   = .none { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterBy = objectsFilterBy.rawValue }}
     @Published var objectsFilterText    = ""                      { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterText = objectsFilterText}}
-    @Published var objectsScrollTo      : CGPoint? = nil
     
-    @Published var smartLinkIsLoggedIn  = false
-    @Published var smartLinkTestStatus  = false
     
+    @Published var smartLinkEnabled = false { didSet {Defaults.smartLinkEnabled = smartLinkEnabled} }
+
     // ----------------------------------------------------------------------------
     // MARK: - Internal properties
     
-    var defaultConnection : String {
-        get { return Defaults.defaultConnection }
+    var defaultConnection: String {
+        get { Defaults.defaultConnection }
         set { Defaults.defaultConnection = newValue }
     }
-    var defaultGuiConnection : String {
-        get { return Defaults.defaultGuiConnection }
+    var defaultGuiConnection: String {
+        get { Defaults.defaultGuiConnection }
         set { Defaults.defaultGuiConnection = newValue }
     }
     
@@ -129,45 +122,41 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
         get { return _objectQ.sync { _objects } }
         set { _objectQ.sync(flags: .barrier) { _objects = newValue } } }
     
-    private var replyHandlers: [SequenceNumber: ReplyTuple] {
-        get { return _objectQ.sync { _replyHandlers } }
-        set { _objectQ.sync(flags: .barrier) { _replyHandlers = newValue } } }
-    
     // Backing store, do not use
     private var _messages       = [Message]()
     private var _objects        = [Object]()
-    private var _replyHandlers  = [SequenceNumber: ReplyTuple]()
     
     // ----------------------------------------------------------------------------
     // MARK: - Initialization
     
     init() {
         // restore Defaults
-        clearAtConnect        = Defaults.clearAtConnect
-        clearAtDisconnect     = Defaults.clearAtDisconnect
-        clearOnSend           = Defaults.clearOnSend
-        clientId              = Defaults.clientId
-        enableGui             = Defaults.enableGui
-        connectToFirstRadio   = Defaults.connectToFirstRadio
-        enablePinging         = Defaults.enablePinging
-        fontSize              = Defaults.fontSize
-        showReplies           = Defaults.showReplies
-        showPings             = Defaults.showPings
-        showTimestamps        = Defaults.showTimestamps
-        smartLinkAuth0Email   = Defaults.smartLinkAuth0Email
-        enableSmartLink       = Defaults.enableSmartLink
-        
-        messagesFilterBy      = FilterMessages(rawValue: Defaults.messagesFilterBy) ?? .none
-        messagesFilterText    = Defaults.messagesFilterText
-        objectsFilterBy       = FilterObjects(rawValue: Defaults.objectsFilterBy) ?? .none
-        objectsFilterText     = Defaults.objectsFilterText
+        clearAtConnect       = Defaults.clearAtConnect
+        clearAtDisconnect    = Defaults.clearAtDisconnect
+        clearOnSend          = Defaults.clearOnSend
+        clientId             = Defaults.clientId
+        connectToFirstRadio  = Defaults.connectToFirstRadio
+        enableGui            = Defaults.enableGui
+        enablePinging        = Defaults.enablePinging
+        fontSize             = Defaults.fontSize
+        showPings            = Defaults.showPings
+        showReplies          = Defaults.showReplies
+        showTimestamps       = Defaults.showTimestamps
+        smartLinkAuth0Email  = Defaults.smartLinkAuth0Email
+        smartLinkEnabled     = Defaults.smartLinkEnabled
+
+        messagesFilterBy     = FilterMessages(rawValue: Defaults.messagesFilterBy) ?? .none
+        messagesFilterText   = Defaults.messagesFilterText
+        objectsFilterBy      = FilterObjects(rawValue: Defaults.objectsFilterBy) ?? .none
+        objectsFilterText    = Defaults.objectsFilterText
         
         // initialize and configure the Logger
         _log = Logger.sharedInstance.logMessage
-//        Logger.sharedInstance.config(delegate: NSApp.delegate as! LoggerDelegate, domain: Tester.kDomainName, appName: Tester.kAppName)
         
         // give the Api access to our logger
         LogProxy.sharedInstance.delegate = Logger.sharedInstance
+        
+        if Defaults.showLogWindow { showLogWindow() }
         
         // is there a saved Client ID?
         if clientId == "" {
@@ -176,15 +165,54 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
             Defaults.clientId = clientId
             _log("Tester: ClientId created - \(clientId)", .debug,  #function, #file, #line)
         }
+        defaultConnection     = Defaults.defaultConnection
+        defaultGuiConnection  = Defaults.defaultGuiConnection
+
+        addObservations()
+
         // create a Radio Manager
-        radioManager = RadioManager(delegate: self, domain: AppDelegate.kDomainName, appName: AppDelegate.kAppName)
+        radioManager = RadioManager(delegate: self)
         
         // receive delegate actions from the Api
         _api.testerDelegate = self
     }
     
+    /// A command  was sent to the Radio
+    ///
+    func sent(command: String) {
+        guard command.isEmpty else { return }
+
+        if command != _previousCommand { _commandHistory.append(command) }
+
+        _previousCommand = command
+        _commandsIndex = _commandHistory.count - 1
+
+        // optionally clear the Command field
+        if clearOnSend { DispatchQueue.main.async { self.cmdToSend = "" }}
+    }
+
     // ----------------------------------------------------------------------------
     // MARK: -  Internal methods (Tester related)
+       
+    func smartLink(enabled: Bool) {
+        _log("Tester: SmartLink \(enabled ? "enabled" : "disabled")", .debug,  #function, #file, #line)
+
+        Defaults.smartLinkEnabled = enabled
+        if enabled && !radioManager.smartLinkIsLoggedIn {
+            _log("Tester: SmartLink login initiated", .debug,  #function, #file, #line)
+            radioManager.smartLinkLogin()
+        } else if !enabled && radioManager.smartLinkIsLoggedIn {
+            _log("Tester: SmartLink logout initiated", .debug,  #function, #file, #line)
+            radioManager.smartLinkLogout()
+        }
+    }
+    
+    func showLogWindow() {
+        Defaults.showLogWindow = true
+        if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
+            appDelegate.showLogWindow.toggle()
+        }
+    }
     
     /// Start / Stop the Tester
     ///
@@ -226,26 +254,6 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
         
         // optionally clear the Command field
         if clearOnSend { DispatchQueue.main.async { self.cmdToSend = "" }}
-    }
-    
-    func smartLinkLogInOut() {
-        if smartLinkIsLoggedIn {
-            radioManager.smartLinkLogout()
-        } else {
-            radioManager.smartLinkLogin()
-        }
-    }
-    
-    func smartLinkTest() {
-        radioManager.smartLinkTest()
-    }
-    
-    func resetDefault() {
-        radioManager.resetDefault()
-    }
-    
-    func showPicker() {
-        radioManager.showPicker()
     }
     
     /// Adjust the font size larger or smaller (within limits)
@@ -294,7 +302,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
             
         } else {
             // use the Picker
-            radioManager.showPicker()
+            radioManager.showSheet(.picker)
         }
     }
     
@@ -391,7 +399,6 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     /// Redraw the Objects
     ///
     private func refreshObjects() {
-        
         DispatchQueue.main.async { [self] in
             populateObjects()
             self.filterCollection(of: .objects)
@@ -411,7 +418,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
             self.objects.removeAll()
             var color = NSColor.systemGreen
             
-            self.appendObject(color, "Radio (\(radio.packet.isWan ? "SmartLink" : "Local"))  name = \(radio.nickname)  model = \(radio.packet.model)  version = \(radio.packet.firmwareVersion)  ip = \(radio.packet.publicIp)" +
+            self.appendObject(color, "Radio (\(radio.packet.isWan ? "SmartLink" : "Local"))  name = \(radio.nickname)  model = \(radio.packet.model)  serial = \(radio.packet.serialNumber)  version = \(radio.packet.firmwareVersion)  ip = \(radio.packet.publicIp)" +
                                 "  atu = \(Api.sharedInstance.radio!.atuPresent ? "Yes" : "No")  gps = \(Api.sharedInstance.radio!.gpsPresent ? "Yes" : "No")" +
                                 "  scu's = \(Api.sharedInstance.radio!.numberOfScus)")
             
@@ -571,6 +578,19 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     }
     
     // ----------------------------------------------------------------------------
+    // MARK: - Observations
+
+    private func addObservations() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.showMainView), name: Notification.Name("showMainView"), object: nil)
+    }
+
+    @objc private func showMainView(notification: NSNotification){
+        if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
+            appDelegate.showLogWindow = false
+        }
+    }
+
+    // ----------------------------------------------------------------------------
     // MARK: - RadioManagerDelegate
     
     /// Called asynchronously by RadioManager to indicate success / failure for a Radio connection attempt
@@ -582,14 +602,14 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
         // was the connection successful?
         if state {
             // YES
-            DispatchQueue.main.async { [self] in isConnected = true }
             _log("Tester: Connection to \(connection) established", .debug,  #function, #file, #line)
             
         } else {
             // NO
             _log("Tester: Connection failed to \(connection), \(msg)", .debug,  #function, #file, #line)
-            radioManager.showPicker( message: "Connection failed to  -> \(connection) <-  \(msg)")
+            radioManager.showSheet(.picker, messages: ["Connection failed to  -> \(connection) <-  \(msg)"])
         }
+        DispatchQueue.main.async { [self] in isConnected = state }
     }
     
     /// Called by RadioManager when a disconnection occurs
@@ -598,6 +618,15 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
     func disconnectionState(_ text: String) {
         DispatchQueue.main.async { self.isConnected = false }
     }
+    
+    public func willConnect() {
+        if clearAtConnect { clearObjectsAndMessages() }
+    }
+    
+    public func willDisconnect() {
+        if clearAtDisconnect { clearObjectsAndMessages() }
+    }
+
     
     // ----------------------------------------------------------------------------
     // MARK: - ApiDelegate methods
@@ -624,7 +653,7 @@ final class Tester : ApiDelegate, ObservableObject, RadioManagerDelegate {
         case "C":   populateMessages(text)       // Commands
         case "H":   populateMessages(text)       // Handle type
         case "M":   populateMessages(text)       // Message Type
-        case "R":   parseReplyMessage(suffix) // Reply Type
+        case "R":   parseReplyMessage(suffix)    // Reply Type
         case "S":   populateMessages(text)       // Status type
         case "V":   populateMessages(text)       // Version Type
         default:    populateMessages("ERROR: Unknown Message, \(text[text.startIndex] as! CVarArg)") // Unknown Type
