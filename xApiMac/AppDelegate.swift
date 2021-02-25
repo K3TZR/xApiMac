@@ -32,19 +32,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
     var window: NSWindow!
     var logWindow: NSWindow?
     var tester = Tester()
+    var radioManager: RadioManager!
     
     // ----------------------------------------------------------------------------
     // MARK: - Internal methods
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         
-        // instantiate the app and give it access to the RadioManager
-        let radioManager = RadioManager(delegate: tester as RadioManagerDelegate)
+        // instantiate the RadioManager and give it access to the app (i.e. Tester)
+        radioManager = RadioManager(delegate: tester as RadioManagerDelegate)
 
         // Create the SwiftUI view that provides the window contents.
         let contentView = ContentView(tester: tester, radioManager: radioManager)
 
-        // Create the window and set the content view.
+        // Create the main window
         window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
@@ -58,12 +59,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
                                             .environmentObject(tester))
         window.makeKeyAndOrderFront(nil)
         
-        //    let logger = Logger.sharedInstance
-        //    logger.config(delegate: self, domain: AppDelegate.kDomainName, appName: AppDelegate.kAppName.replacingSpaces(with: ""))
-        //
-        //    // give the Api access to our logger
-        //    Log.sharedInstance.delegate = logger
-        
         // Create the log window
         logWindow = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 100, height: 100),
@@ -74,7 +69,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
         logWindow!.title = "Log Window"
         logWindow!.contentView = NSHostingView(rootView: LoggerView()
                                                 .environmentObject(Logger.sharedInstance))
-        
         // initialize Logger with the default log
         let defaultLogUrl = URL(fileURLWithPath: URL.appSupport.path + "/" + AppDelegate.kDomainName + "." + AppDelegate.kAppName + "/Logs/" + AppDelegate.kAppName + ".log")
         Logger.sharedInstance.loadLog(at: defaultLogUrl)
@@ -113,11 +107,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
     // ----------------------------------------------------------------------------
     // MARK: - Menu IBAction methods
     
-    @IBAction func smartLinkMenu(_ sender: NSMenuItem) {
+    @IBAction func smartLinkMenu(sender: NSMenuItem) {
         sender.boolState.toggle()
-        tester.smartLink(enabled: sender.boolState)
+        radioManager.smartLink(enabled: sender.boolState)
     }
-
+    
     @IBAction func logViewer(_ sender: Any) {
         showLogWindow.toggle()
     }

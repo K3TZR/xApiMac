@@ -2,15 +2,6 @@
   "object": {
     "pins": [
       {
-        "package": "Auth0",
-        "repositoryURL": "https://github.com/auth0/Auth0.swift.git",
-        "state": {
-          "branch": null,
-          "revision": "87733a662ae7f6186530bd63e0952d5522cf6715",
-          "version": "1.31.0"
-        }
-      },
-      {
         "package": "CocoaAsyncSocket",
         "repositoryURL": "https://github.com/robbiehanson/CocoaAsyncSocket",
         "state": {
@@ -56,15 +47,6 @@
         }
       },
       {
-        "package": "OHHTTPStubs",
-        "repositoryURL": "https://github.com/AliSoftware/OHHTTPStubs.git",
-        "state": {
-          "branch": null,
-          "revision": "12f19662426d0434d6c330c6974d53e2eb10ecd9",
-          "version": "9.1.0"
-        }
-      },
-      {
         "package": "Quick",
         "repositoryURL": "https://github.com/Quick/Quick.git",
         "state": {
@@ -74,21 +56,12 @@
         }
       },
       {
-        "package": "SimpleKeychain",
-        "repositoryURL": "https://github.com/auth0/SimpleKeychain.git",
-        "state": {
-          "branch": null,
-          "revision": "e926cea8e656da3a3c38f0db7b5db8370cbd0625",
-          "version": "0.12.2"
-        }
-      },
-      {
         "package": "SwiftyUserDefaults",
         "repositoryURL": "https://github.com/sunshinejr/SwiftyUserDefaults.git",
         "state": {
           "branch": null,
-          "revision": "28c8805314e67683f727c3376e69cbd4b8b590bb",
-          "version": "5.1.0"
+          "revision": "f66bcd04088582c8fbb5cb8554d577e303bae396",
+          "version": "5.3.0"
         }
       },
       {
@@ -105,8 +78,8 @@
         "repositoryURL": "https://github.com/K3TZR/xClientMac.git",
         "state": {
           "branch": null,
-          "revision": "9ed471e7c9913d3b2fb00f0e0823b05ce2879080",
-          "version": "0.9.7"
+          "revision": "24ea8ea4bf012a5f5815748db9ad05d26b5bf690",
+          "version": "1.0.0"
         }
       },
       {

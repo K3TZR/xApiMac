@@ -45,15 +45,9 @@ enum FilterMessages : String, CaseIterable {
     case S0
 }
 
-// ----------------------------------------------------------------------------
-// MARK: - Class definition
-// ----------------------------------------------------------------------------
-
 final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {    
     // ----------------------------------------------------------------------------
     // MARK: - Published properties
-    
-    @Published var radioManager         : RadioManager!
     
     @Published var clearAtConnect       = false   { didSet {Defaults.clearAtConnect = clearAtConnect} }
     @Published var clearAtDisconnect    = false   { didSet {Defaults.clearAtDisconnect = clearAtDisconnect} }
@@ -69,6 +63,7 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
     @Published var showReplies          = false   { didSet {Defaults.showReplies = showReplies} }
     @Published var showTimestamps       = false   { didSet {Defaults.showTimestamps = showTimestamps} }
     @Published var smartLinkAuth0Email  = ""      { didSet {Defaults.smartLinkAuth0Email = smartLinkAuth0Email} }
+    @Published var smartLinkEnabled     = false   { didSet {Defaults.smartLinkEnabled = smartLinkEnabled} }
     @Published var smartLinkUserImage: NSImage?
     @Published var smartLinkTestStatus  = false
     @Published var stationName          = ""
@@ -82,8 +77,7 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
     @Published var objectsFilterBy      : FilterObjects   = .none { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterBy = objectsFilterBy.rawValue }}
     @Published var objectsFilterText    = ""                      { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterText = objectsFilterText}}
     
-    
-    @Published var smartLinkEnabled = false { didSet {Defaults.smartLinkEnabled = smartLinkEnabled} }
+    var activePacket: DiscoveryPacket?
 
     // ----------------------------------------------------------------------------
     // MARK: - Internal properties
@@ -170,13 +164,13 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
 
         addObservations()
 
-        // create a Radio Manager
-        radioManager = RadioManager(delegate: self)
-        
         // receive delegate actions from the Api
         _api.testerDelegate = self
     }
     
+    // ----------------------------------------------------------------------------
+    // MARK: -  Internal methods (Tester related)
+           
     /// A command  was sent to the Radio
     ///
     func sent(command: String) {
@@ -191,37 +185,10 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
         if clearOnSend { DispatchQueue.main.async { self.cmdToSend = "" }}
     }
 
-    // ----------------------------------------------------------------------------
-    // MARK: -  Internal methods (Tester related)
-       
-    func smartLink(enabled: Bool) {
-        _log("Tester: SmartLink \(enabled ? "enabled" : "disabled")", .debug,  #function, #file, #line)
-
-        Defaults.smartLinkEnabled = enabled
-        if enabled && !radioManager.smartLinkIsLoggedIn {
-            _log("Tester: SmartLink login initiated", .debug,  #function, #file, #line)
-            radioManager.smartLinkLogin()
-        } else if !enabled && radioManager.smartLinkIsLoggedIn {
-            _log("Tester: SmartLink logout initiated", .debug,  #function, #file, #line)
-            radioManager.smartLinkLogout()
-        }
-    }
-    
     func showLogWindow() {
         Defaults.showLogWindow = true
         if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
             appDelegate.showLogWindow.toggle()
-        }
-    }
-    
-    /// Start / Stop the Tester
-    ///
-    func startStop() {
-        if isConnected == false {
-            start()
-        } else {
-            stop()
-            _startTimestamp = nil
         }
     }
     
@@ -257,7 +224,6 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
     }
     
     /// Adjust the font size larger or smaller (within limits)
-    ///
     /// - Parameter larger:           larger?
     ///
     func fontSize(larger: Bool) {
@@ -274,49 +240,8 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
     
     // ----------------------------------------------------------------------------
     // MARK: -  Private methods (common to Messages and Objects)
-    
-    /// Start the Tester
-    ///
-    private func start() {
-        // Start connection
-        //    Order of attempts:
-        //      1. default (if defaultConnection non-blank)
-        //      2. first radio found (if connectToFirstRadio true)
-        //      3. otherwise, show picker
-        //
-        //    It is the responsibility of the app to determine this logic
-        //
-        if clearAtConnect { clearObjectsAndMessages() }
         
-        if connectToFirstRadio {
-            // connect to first
-            radioManager.connectToFirstFound()
-            
-        } else if enableGui && defaultGuiConnection != ""{
-            // Gui connect to default
-            radioManager.connect(to: defaultGuiConnection)
-            
-        } else if enableGui == false && defaultConnection != "" {
-            // Non-Gui connect to default
-            radioManager.connect(to: defaultConnection)
-            
-        } else {
-            // use the Picker
-            radioManager.showSheet(.picker)
-        }
-    }
-    
-    /// Stop the Tester
-    ///
-    private func stop() {
-        // Stop connection
-        DispatchQueue.main.async{ [self] in isConnected = false }
-        if clearAtDisconnect { clearObjectsAndMessages() }
-        radioManager.disconnect()
-    }
-    
     /// Filter the message and object collections
-    ///
     /// - Parameter type:     object type
     ///
     private func filterCollection(of type: FilterType) {
@@ -428,7 +353,7 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
             if radio.version.isNewApi {
                 
                 // newApi
-                for packet in _packets where packet == radioManager.activePacket {
+                for packet in _packets where packet.isWan == activePacket?.isWan {
                     for guiClient in packet.guiClients {
                         
                         activeHandle = guiClient.handle
@@ -592,33 +517,7 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
 
     // ----------------------------------------------------------------------------
     // MARK: - RadioManagerDelegate
-    
-    /// Called asynchronously by RadioManager to indicate success / failure for a Radio connection attempt
-    /// - Parameters:
-    ///   - state:          true if connected
-    ///   - connection:     the connection string attempted
-    ///
-    func connectionState(_ state: Bool, _ connection: String, _ msg: String = "") {
-        // was the connection successful?
-        if state {
-            // YES
-            _log("Tester: Connection to \(connection) established", .debug,  #function, #file, #line)
-            
-        } else {
-            // NO
-            _log("Tester: Connection failed to \(connection), \(msg)", .debug,  #function, #file, #line)
-            radioManager.showSheet(.picker, messages: ["Connection failed to  -> \(connection) <-  \(msg)"])
-        }
-        DispatchQueue.main.async { [self] in isConnected = state }
-    }
-    
-    /// Called by RadioManager when a disconnection occurs
-    /// - Parameter msg:      explanation
-    ///
-    func disconnectionState(_ text: String) {
-        DispatchQueue.main.async { self.isConnected = false }
-    }
-    
+        
     public func willConnect() {
         if clearAtConnect { clearObjectsAndMessages() }
     }
@@ -626,13 +525,11 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
     public func willDisconnect() {
         if clearAtDisconnect { clearObjectsAndMessages() }
     }
-
     
     // ----------------------------------------------------------------------------
     // MARK: - ApiDelegate methods
     
     /// Process a sent message
-    ///
     /// - Parameter text:       text of the command
     ///
     public func sentMessage(_ text: String) {

@@ -13,17 +13,8 @@ struct TopButtonsView: View {
     @ObservedObject var tester: Tester
     @ObservedObject var radioManager: RadioManager
 
-    var smartLinkButtonText: String {
-        if radioManager.delegate.smartLinkEnabled == false {
-            return "Disabled"
-        } else {
-            return radioManager.smartLinkIsLoggedIn ? "Logout" : "Login"
-        }
-    }
-
     var body: some View {
-        
-    
+
         HStack(spacing: 30) {
             Button(radioManager.isConnected ? "Stop" : "Start") {
                 if radioManager.isConnected {
@@ -32,7 +23,6 @@ struct TopButtonsView: View {
                     radioManager.start()
                 }
             }
-            .frame(width: 50, alignment: .leading)
             .help("Using the Default connection type")
             
             Toggle("As Gui", isOn: $tester.enableGui)
@@ -41,26 +31,22 @@ struct TopButtonsView: View {
             Toggle("Show Replies", isOn: $tester.showReplies)
             
             Spacer()
-            
-            HStack {
-                Text("SmartLink")
-                Button(smartLinkButtonText) {
+            HStack(spacing: 10){
+                Text("SmartLink").frame(width: 75)
+                Button(action: {
                     if radioManager.smartLinkIsLoggedIn {
                         radioManager.smartLinkLogout()
                     } else {
                         radioManager.smartLinkLogin()
                     }
+                }) {
+                    Text(radioManager.smartLinkIsLoggedIn ? "Logout" : "Login").frame(width: 50)
                 }
-            }
-            .frame(width: 250)
-            .disabled(radioManager.delegate.smartLinkEnabled == false || radioManager.isConnected)
+                Button("Status") { radioManager.showSheet(.status) }
+            }.disabled(radioManager.delegate.smartLinkEnabled == false || radioManager.isConnected)
             
             Spacer()
-            
-            Button("Defaults") {
-                radioManager.chooseDefaults()
-            }
-            .disabled(radioManager.isConnected)
+            Button("Defaults") { radioManager.chooseDefaults() }.disabled(radioManager.isConnected)
         }
     }
 }

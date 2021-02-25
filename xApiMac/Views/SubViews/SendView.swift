@@ -26,7 +26,6 @@ struct SendView: View {
                 .modifier(ClearButton(text: $tester.cmdToSend))
 
             Spacer()
-
             Toggle("Clear on Send", isOn: $tester.clearOnSend).frame(width: 170)
         }
     }
@@ -49,7 +48,6 @@ struct ClearButton: ViewModifier {
 }
 
 struct SendView_Previews: PreviewProvider {
-
     static var previews: some View {
         SendView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate))
     }

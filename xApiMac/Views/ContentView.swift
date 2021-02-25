@@ -29,7 +29,7 @@ struct ContentView: View {
             
             Divider().frame(height: 2).background(Color(.disabledControlTextColor))
             
-            BottomButtonsView(tester: tester)
+            BottomButtonsView(tester: tester, radioManager: radioManager)
         }
         .frame(minWidth: 920, minHeight: 400)
         .padding()
@@ -46,6 +46,9 @@ struct ContentView: View {
             case .picker:   PickerView()
                 .environmentObject(radioManager)
                 .onDisappear(perform: {radioManager.connect(to: radioManager.pickerSelection)})
+            case .status:   StatusView()
+                .environmentObject(radioManager)
+//                .onDisappear(perform: {)})
             }
         }
     }

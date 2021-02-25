@@ -7,9 +7,11 @@
 //
 
 import SwiftUI
+import xClientMac
 
 struct BottomButtonsView: View {
     @ObservedObject var tester: Tester
+    @ObservedObject var radioManager: RadioManager
 
     var body: some View {
 
@@ -22,10 +24,10 @@ struct BottomButtonsView: View {
                     Toggle("Clear on Disconnect", isOn: $tester.clearAtDisconnect).frame(width: 215)
                 }
                 Spacer()
-                Button("Clear Now", action: { tester.clearObjectsAndMessages() })
+                Button("Clear Now") { tester.clearObjectsAndMessages() }
 
                 Spacer()
-                Button("Log Window", action: { tester.showLogWindow() })
+                Button("Log Window") { tester.showLogWindow() }
             }
         }
     }
@@ -34,6 +36,6 @@ struct BottomButtonsView: View {
 struct BottomButtonsView_Previews: PreviewProvider {
 
     static var previews: some View {
-        BottomButtonsView(tester: Tester())
+        BottomButtonsView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate) )
     }
 }
