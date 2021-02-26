@@ -20,15 +20,12 @@ struct ContentView: View {
             FiltersView(tester: tester)
             
             Divider().frame(height: 2).background(Color(.disabledControlTextColor))
-            
             ObjectsView(objects: tester.filteredObjects, fontSize: tester.fontSize)
             
             Divider().frame(height: 2).background(Color(.disabledControlTextColor))
-            
             MessagesView(messages: tester.filteredMessages, showTimestamps: tester.showTimestamps, fontSize: tester.fontSize)
             
-            Divider().frame(height: 2).background(Color(.disabledControlTextColor))
-            
+            Divider().frame(height: 2).background(Color(.disabledControlTextColor))            
             BottomButtonsView(tester: tester, radioManager: radioManager)
         }
         .frame(minWidth: 920, minHeight: 400)
@@ -37,18 +34,12 @@ struct ContentView: View {
         // Sheet presentation
         .sheet(item: $radioManager.activeSheet) { sheetType in
             switch sheetType {
-            case .alert:    AlertView()
-                .environmentObject(radioManager)
-//                .onDisappear(perform: {print("TODO: On dismiss AlertView")})
-            case .auth0:    Auth0View()
-                .environmentObject(radioManager)
-//                .onDisappear(perform: {print("TODO: On dismiss Auth0View")})
-            case .picker:   PickerView()
-                .environmentObject(radioManager)
-                .onDisappear(perform: {radioManager.connect(to: radioManager.pickerSelection)})
-            case .status:   StatusView()
-                .environmentObject(radioManager)
-//                .onDisappear(perform: {)})
+            
+            case .defaultPicker:            DefaultPickerView().environmentObject(radioManager)
+            case .genericAlert:             GenericAlertView().environmentObject(radioManager)
+            case .radioPicker:              RadioPickerView().environmentObject(radioManager)
+            case .smartlinkAuthorization:   SmartlinkAuthorizationView().environmentObject(radioManager)
+            case .smartlinkStatus:          SmartlinkStatusView().environmentObject(radioManager)
             }
         }
     }

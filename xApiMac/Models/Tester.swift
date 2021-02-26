@@ -52,36 +52,36 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
     @Published var clearAtConnect       = false   { didSet {Defaults.clearAtConnect = clearAtConnect} }
     @Published var clearAtDisconnect    = false   { didSet {Defaults.clearAtDisconnect = clearAtDisconnect} }
     @Published var clearOnSend          = false   { didSet {Defaults.clearOnSend = clearOnSend} }
-    @Published var clientId             = ""      { didSet {Defaults.clientId = clientId} }
     @Published var cmdToSend            = ""
     @Published var connectToFirstRadio  = false   { didSet {Defaults.connectToFirstRadio = connectToFirstRadio} }
     @Published var enableGui            = false   { didSet {Defaults.enableGui = enableGui} }
     @Published var enablePinging        = false   { didSet {Defaults.enablePinging = enablePinging} }
     @Published var fontSize             = 12      { didSet {Defaults.fontSize = fontSize} }
-    @Published var isConnected          = false
     @Published var showPings            = false   { didSet {Defaults.showPings = showPings} }
     @Published var showReplies          = false   { didSet {Defaults.showReplies = showReplies} }
     @Published var showTimestamps       = false   { didSet {Defaults.showTimestamps = showTimestamps} }
-    @Published var smartLinkAuth0Email  = ""      { didSet {Defaults.smartLinkAuth0Email = smartLinkAuth0Email} }
-    @Published var smartLinkEnabled     = false   { didSet {Defaults.smartLinkEnabled = smartLinkEnabled} }
-    @Published var smartLinkUserImage: NSImage?
-    @Published var smartLinkTestStatus  = false
-    @Published var stationName          = ""
     
-    @Published var filteredMessages     = [Message]()
-    @Published var messagesFilterBy     : FilterMessages  = .none { didSet {filterCollection(of: .messages) ; Defaults.messagesFilterBy = messagesFilterBy.rawValue }}
-    @Published var messagesFilterText   = ""                      { didSet {filterCollection(of: .messages) ; Defaults.messagesFilterText = messagesFilterText }}
-    @Published var messagesScrollTo     : CGPoint? = nil
-    
-    @Published var filteredObjects      = [Object]()
-    @Published var objectsFilterBy      : FilterObjects   = .none { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterBy = objectsFilterBy.rawValue }}
-    @Published var objectsFilterText    = ""                      { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterText = objectsFilterText}}
-    
-    var activePacket: DiscoveryPacket?
+    @Published var filteredMessages                 = [Message]()
+    @Published var messagesFilterBy: FilterMessages = .none { didSet {filterCollection(of: .messages) ; Defaults.messagesFilterBy = messagesFilterBy.rawValue }}
+    @Published var messagesFilterText               = ""    { didSet {filterCollection(of: .messages) ; Defaults.messagesFilterText = messagesFilterText }}
+    @Published var messagesScrollTo: CGPoint? = nil
+    @Published var filteredObjects                  = [Object]()
+    @Published var objectsFilterBy: FilterObjects   = .none { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterBy = objectsFilterBy.rawValue }}
+    @Published var objectsFilterText                = ""    { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterText = objectsFilterText}}
 
     // ----------------------------------------------------------------------------
     // MARK: - Internal properties
     
+    var activePacket: DiscoveryPacket?
+//    var clientId = "" { didSet {Defaults.clientId = clientId} }
+    var clientId: String {
+        get { Defaults.clientId }
+        set { Defaults.clientId = newValue }
+    }
+//    var connectToFirstRadio: Bool {
+//        get { Defaults.connectToFirstRadio }
+//        set { Defaults.connectToFirstRadio = newValue }
+//    }
     var defaultConnection: String {
         get { Defaults.defaultConnection }
         set { Defaults.defaultConnection = newValue }
@@ -90,6 +90,24 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
         get { Defaults.defaultGuiConnection }
         set { Defaults.defaultGuiConnection = newValue }
     }
+    var isConnected  = false
+//    var smartlinkAuth0Email  = ""      { didSet {Defaults.smartlinkAuth0Email = smartlinkAuth0Email} }
+    var showLogWindow: Bool {
+        get { Defaults.showLogWindow }
+        set { Defaults.showLogWindow = newValue }
+    }
+    var smartlinkAuth0Email: String {
+        get { Defaults.smartlinkAuth0Email }
+        set { Defaults.smartlinkAuth0Email = newValue }
+    }
+//    var smartlinkEnabled     = false   { didSet {Defaults.smartlinkEnabled = smartlinkEnabled} }
+    var smartlinkEnabled: Bool {
+        get { Defaults.smartlinkEnabled }
+        set { Defaults.smartlinkEnabled = newValue }
+    }
+    var smartlinkUserImage: NSImage?
+    var smartlinkTestStatus = false
+    var stationName  = ""
     
     // ----------------------------------------------------------------------------
     // MARK: - Private properties
@@ -124,11 +142,10 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
     // MARK: - Initialization
     
     init() {
-        // restore Defaults
+        // initialize @Published properties
         clearAtConnect       = Defaults.clearAtConnect
         clearAtDisconnect    = Defaults.clearAtDisconnect
         clearOnSend          = Defaults.clearOnSend
-        clientId             = Defaults.clientId
         connectToFirstRadio  = Defaults.connectToFirstRadio
         enableGui            = Defaults.enableGui
         enablePinging        = Defaults.enablePinging
@@ -136,8 +153,6 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
         showPings            = Defaults.showPings
         showReplies          = Defaults.showReplies
         showTimestamps       = Defaults.showTimestamps
-        smartLinkAuth0Email  = Defaults.smartLinkAuth0Email
-        smartLinkEnabled     = Defaults.smartLinkEnabled
 
         messagesFilterBy     = FilterMessages(rawValue: Defaults.messagesFilterBy) ?? .none
         messagesFilterText   = Defaults.messagesFilterText
@@ -150,7 +165,7 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
         // give the Api access to our logger
         LogProxy.sharedInstance.delegate = Logger.sharedInstance
         
-        if Defaults.showLogWindow { showLogWindow() }
+        openLogWindow()
         
         // is there a saved Client ID?
         if clientId == "" {
@@ -161,8 +176,6 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
         }
         defaultConnection     = Defaults.defaultConnection
         defaultGuiConnection  = Defaults.defaultGuiConnection
-
-        addObservations()
 
         // receive delegate actions from the Api
         _api.testerDelegate = self
@@ -185,10 +198,19 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
         if clearOnSend { DispatchQueue.main.async { self.cmdToSend = "" }}
     }
 
-    func showLogWindow() {
-        Defaults.showLogWindow = true
+    func openLogWindow() {
+        if showLogWindow {
+            
+            if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
+                appDelegate.showLogWindow(showLogWindow)
+            }
+        }
+    }
+    
+    func toggleLogWindow() {
+        showLogWindow.toggle()
         if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
-            appDelegate.showLogWindow.toggle()
+            appDelegate.showLogWindow(showLogWindow)
         }
     }
     
@@ -505,15 +527,15 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
     // ----------------------------------------------------------------------------
     // MARK: - Observations
 
-    private func addObservations() {
-        NotificationCenter.default.addObserver(self, selector: #selector(self.showMainView), name: Notification.Name("showMainView"), object: nil)
-    }
-
-    @objc private func showMainView(notification: NSNotification){
-        if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
-            appDelegate.showLogWindow = false
-        }
-    }
+//    private func addObservations() {
+//        NotificationCenter.default.addObserver(self, selector: #selector(self.showMainView), name: Notification.Name("showMainView"), object: nil)
+//    }
+//
+//    @objc private func showMainView(notification: NSNotification){
+//        if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
+//            appDelegate.showLogWindow = false
+//        }
+//    }
 
     // ----------------------------------------------------------------------------
     // MARK: - RadioManagerDelegate

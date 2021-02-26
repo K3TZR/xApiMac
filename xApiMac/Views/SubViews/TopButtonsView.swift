@@ -26,6 +26,7 @@ struct TopButtonsView: View {
             .help("Using the Default connection type")
             
             Toggle("As Gui", isOn: $tester.enableGui)
+            Toggle("Connect to First", isOn: $tester.connectToFirstRadio)
             Toggle("Show Times", isOn: $tester.showTimestamps)
             Toggle("Show Pings", isOn: $tester.showPings)
             Toggle("Show Replies", isOn: $tester.showReplies)
@@ -34,16 +35,16 @@ struct TopButtonsView: View {
             HStack(spacing: 10){
                 Text("SmartLink").frame(width: 75)
                 Button(action: {
-                    if radioManager.smartLinkIsLoggedIn {
-                        radioManager.smartLinkLogout()
+                    if radioManager.smartlinkIsLoggedIn {
+                        radioManager.smartlinkLogout()
                     } else {
-                        radioManager.smartLinkLogin()
+                        radioManager.smartlinkLogin()
                     }
                 }) {
-                    Text(radioManager.smartLinkIsLoggedIn ? "Logout" : "Login").frame(width: 50)
+                    Text(radioManager.smartlinkIsLoggedIn ? "Logout" : "Login").frame(width: 50)
                 }
-                Button("Status") { radioManager.showSheet(.status) }
-            }.disabled(radioManager.delegate.smartLinkEnabled == false || radioManager.isConnected)
+                Button("Status") { radioManager.showSheet(.smartlinkStatus) }
+            }.disabled(radioManager.delegate.smartlinkEnabled == false || radioManager.isConnected)
             
             Spacer()
             Button("Defaults") { radioManager.chooseDefaults() }.disabled(radioManager.isConnected)

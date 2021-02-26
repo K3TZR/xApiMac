@@ -12,7 +12,6 @@ import xClientMac
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDelegate {
-    
     // ----------------------------------------------------------------------------
     // MARK: - Static properties
     
@@ -20,14 +19,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
     static let kDomainName = "net.k3tzr"
     
     // ----------------------------------------------------------------------------
-    // MARK: - Published properties
-    
-    var showLogWindow = false { didSet{ updateLogWindow(showLogWindow) }}
-    
-    // ----------------------------------------------------------------------------
     // MARK: - Internal properties
     
-    @IBOutlet private weak var smartLinkMenuItem: NSMenuItem!
+    @IBOutlet private weak var smartlinkMenuItem: NSMenuItem!
+    @IBOutlet private weak var logViewerMenuItem: NSMenuItem!
     
     var window: NSWindow!
     var logWindow: NSWindow?
@@ -73,7 +68,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
         let defaultLogUrl = URL(fileURLWithPath: URL.appSupport.path + "/" + AppDelegate.kDomainName + "." + AppDelegate.kAppName + "/Logs/" + AppDelegate.kAppName + ".log")
         Logger.sharedInstance.loadLog(at: defaultLogUrl)
         
-        smartLinkMenuItem.boolState = tester.smartLinkEnabled
+        // initialize the state of the menu items
+        smartlinkMenuItem.boolState = tester.smartlinkEnabled
+        logViewerMenuItem.boolState = tester.showLogWindow
     }
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
@@ -81,9 +78,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
     }
     
     /// Show / Hide the Log window
-    /// - Parameter show:     show / hide
+    /// - Parameter show:     show /
     ///
-    private func updateLogWindow(_ show: Bool) {
+    func showLogWindow(_ show: Bool) {
         let frameName = "LogWindowFrame"
         
         if show {
@@ -95,6 +92,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
             logWindow?.saveFrame(usingName: frameName)
             logWindow?.orderOut(nil)
         }
+        tester.showLogWindow = show
+        logViewerMenuItem.boolState = show
     }
     
     /// Refresh the Logger view when a font change occurs
@@ -107,13 +106,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
     // ----------------------------------------------------------------------------
     // MARK: - Menu IBAction methods
     
-    @IBAction func smartLinkMenu(sender: NSMenuItem) {
+    @IBAction func smartlinkMenu(sender: NSMenuItem) {
         sender.boolState.toggle()
-        radioManager.smartLink(enabled: sender.boolState)
+        radioManager.smartlink(enabled: sender.boolState)
     }
     
-    @IBAction func logViewer(_ sender: Any) {
-        showLogWindow.toggle()
+    @IBAction func logViewer(_ sender: NSMenuItem) {
+        sender.boolState.toggle()
+        showLogWindow(sender.boolState)
     }
     
     @IBAction func larger(_ sender: Any) {

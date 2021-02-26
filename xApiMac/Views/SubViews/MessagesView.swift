@@ -36,16 +36,19 @@ struct MessagesView: View {
     var body: some View {
 
         ScrollViewReader { scrollView in
-            ScrollView {
+            ScrollView([.horizontal, .vertical]) {
                 ForEach(messages) { message in
                     Text(showTimestamps(text: message.text))
                         .padding(.leading, 5)
                         .font(.system(size: CGFloat(fontSize), weight: .regular, design: .monospaced))
-                        .frame(minWidth: 400, maxWidth: .infinity, maxHeight: 18, alignment: .leading)
                         .foregroundColor( lineColor(message.text) )
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
-            }.onChange(of: messages.count, perform: { value in
-                scrollView.scrollTo(messages.count, anchor: .center)
+                .frame(alignment: .leading)
+            }
+            .frame(alignment: .leading)
+            .onChange(of: messages.count, perform: { value in
+                scrollView.scrollTo(messages.count, anchor: .bottomLeading)
             })
         }
     }

@@ -23,7 +23,7 @@
                                         <menuItem isSeparatorItem="YES" id="VOq-y0-SEH"/>
                                         <menuItem title="SmartLink enabled" keyEquivalent="S" id="JdB-LI-WuQ">
                                             <connections>
-                                                <action selector="smartLinkMenuWithSender:" target="Voe-Tx-rLC" id="T9Q-CH-czY"/>
+                                                <action selector="smartlinkMenuWithSender:" target="Voe-Tx-rLC" id="T9Q-CH-czY"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Log Viewer" keyEquivalent="L" id="InY-I1-Mf0">
@@ -144,7 +144,8 @@
                 </application>
                 <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="xApiMac" customModuleProvider="target">
                     <connections>
-                        <outlet property="smartLinkMenuItem" destination="JdB-LI-WuQ" id="0NI-M5-cyG"/>
+                        <outlet property="logViewerMenuItem" destination="InY-I1-Mf0" id="uSz-J8-yuo"/>
+                        <outlet property="smartlinkMenuItem" destination="JdB-LI-WuQ" id="0NI-M5-cyG"/>
                     </connections>
                 </customObject>
                 <customObject id="YLy-65-1bz" customClass="NSFontManager"/>

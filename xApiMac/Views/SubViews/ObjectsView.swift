@@ -14,7 +14,7 @@ struct ObjectsView: View {
     
     var body: some View {
         
-        ScrollView {
+        ScrollView([.horizontal, .vertical]) {
             VStack(alignment: .leading, spacing: 2) {
                 ForEach(objects) { object in
                     Text(object.line.text)

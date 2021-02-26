@@ -39,8 +39,8 @@ extension DefaultsKeys {
     var showReplies             : DefaultsKey<Bool>     { .init("showReplies", defaultValue: false) }
     var showPings               : DefaultsKey<Bool>     { .init("showPings", defaultValue: false) }
     var showTimestamps          : DefaultsKey<Bool>     { .init("showTimestamps", defaultValue: false) }
-    var smartLinkAuth0Email     : DefaultsKey<String>   { .init("smartLinkAuth0Email", defaultValue: "") }
-    var smartLinkEnabled        : DefaultsKey<Bool>     { .init("smartLinkEnabled", defaultValue: true) }
+    var smartlinkAuth0Email     : DefaultsKey<String>   { .init("smartlinkAuth0Email", defaultValue: "") }
+    var smartlinkEnabled        : DefaultsKey<Bool>     { .init("smartlinkEnabled", defaultValue: true) }
     var showLogWindow           : DefaultsKey<Bool>     { .init("showLogWindow", defaultValue: false) }
     var useLowBw                : DefaultsKey<Bool>     { .init("useLowBw", defaultValue: false) }
 }

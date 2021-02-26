@@ -27,7 +27,7 @@ struct BottomButtonsView: View {
                 Button("Clear Now") { tester.clearObjectsAndMessages() }
 
                 Spacer()
-                Button("Log Window") { tester.showLogWindow() }
+                Button("Log Window") { tester.toggleLogWindow() }
             }
         }
     }
