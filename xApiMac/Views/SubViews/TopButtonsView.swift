@@ -18,9 +18,9 @@ struct TopButtonsView: View {
         HStack(spacing: 30) {
             Button(radioManager.isConnected ? "Stop" : "Start") {
                 if radioManager.isConnected {
-                    radioManager.stop()
+                    radioManager.connect()
                 } else {
-                    radioManager.start()
+                    radioManager.disconnect()
                 }
             }
             .help("Using the Default connection type")

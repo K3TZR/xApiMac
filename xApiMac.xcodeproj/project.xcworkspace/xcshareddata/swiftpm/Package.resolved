@@ -78,8 +78,8 @@
         "repositoryURL": "https://github.com/K3TZR/xClientMac.git",
         "state": {
           "branch": null,
-          "revision": "45f8a3328ec7a188651f4634082a5f93aace2493",
-          "version": "1.0.2"
+          "revision": "cbeaa2e4a6c8bf083b9d44b2bec8de935988240e",
+          "version": "1.0.3"
         }
       },
       {
@@ -87,8 +87,8 @@
         "repositoryURL": "https://github.com/K3TZR/xLib6000.git",
         "state": {
           "branch": null,
-          "revision": "3407fc5ab78ffd382f314fbfec945211b6e7405e",
-          "version": "1.6.16"
+          "revision": "432df86e5a8ad2780aa5f4f4b322c16d9089ea9e",
+          "version": "1.7.0"
         }
       }
     ]
