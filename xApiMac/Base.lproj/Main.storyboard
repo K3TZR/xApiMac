@@ -21,17 +21,6 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="VOq-y0-SEH"/>
-                                        <menuItem title="SmartLink enabled" keyEquivalent="S" id="JdB-LI-WuQ">
-                                            <connections>
-                                                <action selector="smartlinkMenuWithSender:" target="Voe-Tx-rLC" id="T9Q-CH-czY"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Log Viewer" keyEquivalent="L" id="InY-I1-Mf0">
-                                            <connections>
-                                                <action selector="logViewer:" target="Voe-Tx-rLC" id="qCZ-pL-QPF"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem isSeparatorItem="YES" id="wFC-TO-SCJ"/>
                                         <menuItem title="Services" id="NMo-om-nkz">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <menu key="submenu" title="Services" systemMenu="services" id="hz9-B4-Xy5"/>
@@ -142,12 +131,7 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="xApiMac" customModuleProvider="target">
-                    <connections>
-                        <outlet property="logViewerMenuItem" destination="InY-I1-Mf0" id="uSz-J8-yuo"/>
-                        <outlet property="smartlinkMenuItem" destination="JdB-LI-WuQ" id="0NI-M5-cyG"/>
-                    </connections>
-                </customObject>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="xApiMac" customModuleProvider="target"/>
                 <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>

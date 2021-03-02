@@ -9,8 +9,8 @@
 import SwiftUI
 
 struct ObjectsView: View {
-    let objects   : [Object]
-    let fontSize  : Int
+    let objects: [Object]
+    let fontSize: Int
     
     var body: some View {
         

@@ -9,9 +9,9 @@
 import SwiftUI
 
 struct MessagesView: View {
-    let messages        : [Message]
-    let showTimestamps  : Bool
-    let fontSize        : Int
+    let messages: [Message]
+    let showTimestamps: Bool
+    let fontSize: Int
     
     func showTimestamps(text: String) -> String {
         if showTimestamps {
@@ -48,7 +48,7 @@ struct MessagesView: View {
             }
             .frame(alignment: .leading)
             .onChange(of: messages.count, perform: { value in
-                scrollView.scrollTo(messages.count, anchor: .bottomLeading)
+                scrollView.scrollTo(value, anchor: .bottomLeading)
             })
         }
     }

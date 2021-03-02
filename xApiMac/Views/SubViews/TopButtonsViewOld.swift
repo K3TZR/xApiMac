@@ -10,7 +10,7 @@ import SwiftUI
 import xClientMac
 
 struct TopButtonsViewOld: View {
-  @EnvironmentObject var tester : Tester
+  @EnvironmentObject var tester: Tester
   
   var body: some View {
     
@@ -23,7 +23,7 @@ struct TopButtonsViewOld: View {
         .sheet(isPresented: $tester.radioManager.showPickerSheet) {
           PickerView().environmentObject(tester.radioManager)
         }
-        HStack (spacing: 20){
+        HStack(spacing: 20) {
           Text("Enable -->").frame(width: 80, alignment: .leading)
           Toggle("Gui", isOn: $tester.enableGui).frame(width: 80, alignment: .leading)
           Toggle("Pinging", isOn: $tester.enablePinging).frame(width: 80, alignment: .leading)

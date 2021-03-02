@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct StatusView: View {
-  @EnvironmentObject var tester : Tester
+  @EnvironmentObject var tester: Tester
   
   var body: some View {
 //    let active = tester.radioManager.activeRadio != nil

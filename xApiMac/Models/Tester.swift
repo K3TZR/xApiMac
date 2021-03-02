@@ -12,14 +12,14 @@ import xClientMac
 
 typealias ObjectTuple = (color: NSColor, text: String)
 
-struct Message : Identifiable {
+struct Message: Identifiable {
     var id = 0
-    var text  = ""
+    var text = ""
 }
 
-struct Object : Identifiable {
+struct Object: Identifiable {
     var id = 0
-    var line : ObjectTuple = (.black, "")
+    var line: ObjectTuple = (.black, "")
 }
 
 enum FilterType: String {
@@ -27,14 +27,14 @@ enum FilterType: String {
     case objects
 }
 
-enum FilterObjects : String, CaseIterable {
+enum FilterObjects: String, CaseIterable {
     case none
     case prefix
     case includes
     case excludes
 }
 
-enum FilterMessages : String, CaseIterable {
+enum FilterMessages: String, CaseIterable {
     case none
     case prefix
     case includes
@@ -45,36 +45,37 @@ enum FilterMessages : String, CaseIterable {
     case S0
 }
 
-final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {    
+final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
     // ----------------------------------------------------------------------------
     // MARK: - Published properties
     
-    @Published var clearAtConnect       = false   { didSet {Defaults.clearAtConnect = clearAtConnect} }
-    @Published var clearAtDisconnect    = false   { didSet {Defaults.clearAtDisconnect = clearAtDisconnect} }
-    @Published var clearOnSend          = false   { didSet {Defaults.clearOnSend = clearOnSend} }
+    @Published var clearAtConnect       = false { didSet {Defaults.clearAtConnect = clearAtConnect} }
+    @Published var clearAtDisconnect    = false { didSet {Defaults.clearAtDisconnect = clearAtDisconnect} }
+    @Published var clearOnSend          = false { didSet {Defaults.clearOnSend = clearOnSend} }
     @Published var cmdToSend            = ""
-    @Published var connectToFirstRadio  = false   { didSet {Defaults.connectToFirstRadio = connectToFirstRadio} }
-    @Published var enableGui            = false   { didSet {Defaults.enableGui = enableGui} }
-    @Published var enablePinging        = false   { didSet {Defaults.enablePinging = enablePinging} }
-    @Published var fontSize             = 12      { didSet {Defaults.fontSize = fontSize} }
-    @Published var showPings            = false   { didSet {Defaults.showPings = showPings} }
-    @Published var showReplies          = false   { didSet {Defaults.showReplies = showReplies} }
-    @Published var showTimestamps       = false   { didSet {Defaults.showTimestamps = showTimestamps} }
-    
+    @Published var connectToFirstRadio  = false { didSet {Defaults.connectToFirstRadio = connectToFirstRadio} }
+    @Published var enableGui            = false { didSet {Defaults.enableGui = enableGui} }
+    @Published var enablePinging        = false { didSet {Defaults.enablePinging = enablePinging} }
+    @Published var fontSize             = 12 { didSet {Defaults.fontSize = fontSize} }
+    @Published var showPings            = false { didSet {Defaults.showPings = showPings} }
+    @Published var showReplies          = false { didSet {Defaults.showReplies = showReplies} }
+    @Published var showTimestamps       = false { didSet {Defaults.showTimestamps = showTimestamps} }
+    @Published var smartlinkEnabled     = false { didSet {Defaults.smartlinkEnabled = smartlinkEnabled} }
+
     @Published var filteredMessages                 = [Message]()
     @Published var messagesFilterBy: FilterMessages = .none { didSet {filterCollection(of: .messages) ; Defaults.messagesFilterBy = messagesFilterBy.rawValue }}
-    @Published var messagesFilterText               = ""    { didSet {filterCollection(of: .messages) ; Defaults.messagesFilterText = messagesFilterText }}
-    @Published var messagesScrollTo: CGPoint? = nil
+    @Published var messagesFilterText               = "" { didSet {filterCollection(of: .messages) ; Defaults.messagesFilterText = messagesFilterText }}
+    @Published var messagesScrollTo: CGPoint?
     @Published var filteredObjects                  = [Object]()
     @Published var objectsFilterBy: FilterObjects   = .none { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterBy = objectsFilterBy.rawValue }}
-    @Published var objectsFilterText                = ""    { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterText = objectsFilterText}}
+    @Published var objectsFilterText                = "" { didSet {filterCollection(of: .objects) ; Defaults.objectsFilterText = objectsFilterText}}
 
     // ----------------------------------------------------------------------------
     // MARK: - Internal properties
     
     var activePacket: DiscoveryPacket?
 //    var clientId = "" { didSet {Defaults.clientId = clientId} }
-    var clientId: String {
+    var clientId: String? {
         get { Defaults.clientId }
         set { Defaults.clientId = newValue }
     }
@@ -82,11 +83,11 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
 //        get { Defaults.connectToFirstRadio }
 //        set { Defaults.connectToFirstRadio = newValue }
 //    }
-    var defaultConnection: String {
+    var defaultConnection: String? {
         get { Defaults.defaultConnection }
         set { Defaults.defaultConnection = newValue }
     }
-    var defaultGuiConnection: String {
+    var defaultGuiConnection: String? {
         get { Defaults.defaultGuiConnection }
         set { Defaults.defaultGuiConnection = newValue }
     }
@@ -96,15 +97,15 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
         get { Defaults.showLogWindow }
         set { Defaults.showLogWindow = newValue }
     }
-    var smartlinkAuth0Email: String {
+    var smartlinkAuth0Email: String? {
         get { Defaults.smartlinkAuth0Email }
         set { Defaults.smartlinkAuth0Email = newValue }
     }
 //    var smartlinkEnabled     = false   { didSet {Defaults.smartlinkEnabled = smartlinkEnabled} }
-    var smartlinkEnabled: Bool {
-        get { Defaults.smartlinkEnabled }
-        set { Defaults.smartlinkEnabled = newValue }
-    }
+//    var smartlinkEnabled: Bool {
+//        get { Defaults.smartlinkEnabled }
+//        set { Defaults.smartlinkEnabled = newValue }
+//    }
     var smartlinkUserImage: NSImage?
     var smartlinkTestStatus = false
     var stationName  = ""
@@ -115,13 +116,13 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
     private var _api                  = Api.sharedInstance
     private var _commandsIndex        = 0
     private var _commandHistory       = [String]()
-    private let _log                  : (_ msg: String, _ level: MessageLevel, _ function: StaticString, _ file: StaticString, _ line: Int) -> Void
+    private let _log: (_ msg: String, _ level: MessageLevel, _ function: StaticString, _ file: StaticString, _ line: Int) -> Void
     private var _messageNumber        = 0
     private var _objectNumber         = 0
     private let _objectQ              = DispatchQueue(label: AppDelegate.kAppName + ".objectQ", attributes: [.concurrent])
-    private var _packets              : [DiscoveryPacket] { Discovery.sharedInstance.discoveryPackets }
+    private var _packets: [DiscoveryPacket] { Discovery.sharedInstance.discoveryPackets }
     private var _previousCommand      = ""
-    private var _startTimestamp       : Date?
+    private var _startTimestamp: Date?
     
     // ----------------------------------------------------------------------------
     // MARK: - Private properties with concurrency protection
@@ -153,7 +154,8 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
         showPings            = Defaults.showPings
         showReplies          = Defaults.showReplies
         showTimestamps       = Defaults.showTimestamps
-
+        smartlinkEnabled     = Defaults.smartlinkEnabled
+        
         messagesFilterBy     = FilterMessages(rawValue: Defaults.messagesFilterBy) ?? .none
         messagesFilterText   = Defaults.messagesFilterText
         objectsFilterBy      = FilterObjects(rawValue: Defaults.objectsFilterBy) ?? .none
@@ -168,26 +170,25 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
         openLogWindow()
         
         // is there a saved Client ID?
-        if clientId == "" {
+        if clientId == nil {
             // NO, assign one
             clientId = UUID().uuidString
-            Defaults.clientId = clientId
-            _log("Tester: ClientId created - \(clientId)", .debug,  #function, #file, #line)
+            _log("Tester: ClientId created - \(clientId!)", .debug, #function, #file, #line)
         }
-        defaultConnection     = Defaults.defaultConnection
-        defaultGuiConnection  = Defaults.defaultGuiConnection
+//        defaultConnection     = Defaults.defaultConnection
+//        defaultGuiConnection  = Defaults.defaultGuiConnection
 
         // receive delegate actions from the Api
         _api.testerDelegate = self
     }
     
     // ----------------------------------------------------------------------------
-    // MARK: -  Internal methods (Tester related)
+    // MARK: - Internal methods (Tester related)
            
     /// A command  was sent to the Radio
     ///
     func sent(command: String) {
-        guard command.isEmpty else { return }
+        guard command.isEmpty == false else { return }
 
         if command != _previousCommand { _commandHistory.append(command) }
 
@@ -231,10 +232,10 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
     /// Send a command to the Radio
     ///
     func sendCommand(_ command: String) {
-        guard command != "" else { return }
+        guard command.isEmpty == false else { return }
         
         // send the command to the Radio via TCP
-        let _ = _api.radio!.sendCommand( command )
+        _api.radio!.sendCommand( command )
         
         if command != _previousCommand { _commandHistory.append(command) }
         
@@ -261,7 +262,7 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
     }
     
     // ----------------------------------------------------------------------------
-    // MARK: -  Private methods (common to Messages and Objects)
+    // MARK: - Private methods (common to Messages and Objects)
         
     /// Filter the message and object collections
     /// - Parameter type:     object type
@@ -279,8 +280,7 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
             case .status:     filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "S" && $0.text.dropFirst(10).prefix(1) != "0"}
             case .reply:      filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "R" }
             }
-        }
-        else {
+        } else {
             switch objectsFilterBy {
             
             case .none:       filteredObjects = objects
@@ -292,7 +292,7 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
     }
     
     // ----------------------------------------------------------------------------
-    // MARK: -  Private methods (Messages-related)
+    // MARK: - Private methods (Messages-related)
     
     /// Add an entry to the messages collection
     /// - Parameter text:       the text of the entry
@@ -331,7 +331,7 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
     }
     
     // ----------------------------------------------------------------------------
-    // MARK: -  Private methods (Objects-related)
+    // MARK: - Private methods (Objects-related)
     
     /// Add an entry to the messages collection
     /// - Parameters:
@@ -358,19 +358,25 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
         _objects.removeAll()
         _objectNumber = 0
         
-        var activeHandle : Handle = 0
+        var activeHandle: Handle = 0
         
         // Radio
         if let radio = Api.sharedInstance.radio {
             self.objects.removeAll()
             var color = NSColor.systemGreen
             
-            self.appendObject(color, "Radio (\(radio.packet.isWan ? "SmartLink" : "Local"))  name = \(radio.nickname)  model = \(radio.packet.model)  serial = \(radio.packet.serialNumber)  version = \(radio.packet.firmwareVersion)  ip = \(radio.packet.publicIp)" +
-                                "  atu = \(Api.sharedInstance.radio!.atuPresent ? "Yes" : "No")  gps = \(Api.sharedInstance.radio!.gpsPresent ? "Yes" : "No")" +
-                                "  scu's = \(Api.sharedInstance.radio!.numberOfScus)")
-            
-            self.appendObject(NSColor.systemBlue, "-------------------------------------------------------------------------------------------------------------------------------------------------------------------")
-            
+            // Show the connected Radio
+            self.appendObject(color, "Radio (\(radio.packet.isWan ? "SmartLink" : "Local"))" +
+                                "  name=\(radio.nickname)  model=\(radio.packet.model)" +
+                                "  serial=\(radio.packet.serialNumber)" +
+                                "  version=\(radio.packet.firmwareVersion)" +
+                                "  ip=\(radio.packet.publicIp)" +
+                                "  atu=\(Api.sharedInstance.radio!.atuPresent ? "Yes" : "No")" +
+                                "  gps=\(Api.sharedInstance.radio!.gpsPresent ? "Yes" : "No")" +
+                                "  scu's=\(Api.sharedInstance.radio!.numberOfScus)")
+
+            self.appendObject(NSColor.systemBlue, String(repeating: "-", count: 200))
+
             // what verion is the Radio?
             if radio.version.isNewApi {
                 
@@ -384,30 +390,49 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
                         if enableGui == false && guiClient.clientId != nil && guiClient.clientId == radio.boundClientId { color = NSColor.systemPurple }
                         if enableGui == true  && guiClient.handle == _api.connectionHandle { color = NSColor.systemPurple }
                         
-                        self.appendObject(color, "Gui Client     station = \(guiClient.station.padTo(15))  handle = \(guiClient.handle.hex)  id = \(guiClient.clientId ?? "unknown")  localPtt = \(guiClient.isLocalPtt ? "Yes" : "No ")  available = \(radio.packet.status.lowercased() == "available" ? "Yes" : "No ")  program = \(guiClient.program)")
-                        
-                        self.addSubsidiaryObjects(activeHandle, radio, NSColor.textColor)
-                        self.appendObject(NSColor.systemBlue, "-------------------------------------------------------------------------------------------------------------------------------------------------------------------")
+                        self.appendObject(color, "Gui Client     station = \(guiClient.station.padTo(15))" +
+                                            "  handle = \(guiClient.handle.hex)" +
+                                            "  id = \(guiClient.clientId ?? "unknown")" +
+                                            "  localPtt = \(guiClient.isLocalPtt ? "Yes" : "No ")" +
+                                            "  available = \(radio.packet.status.lowercased() == "available" ? "Yes" : "No ")" +
+                                            "  program = \(guiClient.program)")
+
+                        self.addStreamObjects(activeHandle, radio, NSColor.labelColor)
+                        self.addPanadapterObjects(activeHandle, radio, NSColor.labelColor)
+                        self.appendObject(NSColor.systemBlue, String(repeating: "-", count: 200))
                     }
                 }
                 
             } else {
                 // oldApi
-                self.addSubsidiaryObjects(activeHandle, radio, color)
+                self.addStreamObjects(activeHandle, radio, NSColor.labelColor)
+                self.addPanadapterObjects(activeHandle, radio, NSColor.labelColor)
             }
             color = NSColor.systemGray.withAlphaComponent(0.8)
             
             // OpusAudioStream
             for (_, stream) in radio.opusAudioStreams {
-                self.appendObject(color, "Opus           id = \(stream.id.hex)  rx = \(stream.rxEnabled)  rx stopped = \(stream.rxStopped)  tx = \(stream.txEnabled)  ip = \(stream.ip)  port = \(stream.port)")
+                self.appendObject(color, "Opus           id = \(stream.id.hex)" +
+                                    "  rx = \(stream.rxEnabled)" +
+                                    "  rx stopped = \(stream.rxStopped)" +
+                                    "  tx = \(stream.txEnabled)" +
+                                    "  ip = \(stream.ip)" +
+                                    "  port = \(stream.port)")
             }
             // AudioStream without a Slice
             for (_, stream) in radio.audioStreams where stream.slice == nil {
-                self.appendObject(color, "Audio          id = \(stream.id.hex)  ip = \(stream.ip)  port = \(stream.port)  slice = -not assigned-")
+                self.appendObject(color, "Audio          id = \(stream.id.hex)" +
+                                    "  ip = \(stream.ip)" +
+                                    "  port = \(stream.port)" +
+                                    "  slice = -not assigned-")
             }
             // Tnfs
             for (_, tnf) in radio.tnfs {
-                self.appendObject(color, "Tnf            id = \(tnf.id)  frequency = \(tnf.frequency)  width = \(tnf.width)  depth = \(tnf.depth)  permanent = \(tnf.permanent)")
+                self.appendObject(color, "Tnf            id = \(tnf.id)" +
+                                    "  frequency = \(tnf.frequency)" +
+                                    "  width = \(tnf.width)" +
+                                    "  depth = \(tnf.depth)" +
+                                    "  permanent = \(tnf.permanent)")
             }
             // Amplifiers
             for (_, amplifier) in radio.amplifiers {
@@ -423,7 +448,10 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
             }
             // Xvtrs
             for (_, xvtr) in radio.xvtrs {
-                self.appendObject(color, "Xvtr           id = \(xvtr.id)  rf frequency = \(xvtr.rfFrequency.hzToMhz)  if frequency = \(xvtr.ifFrequency.hzToMhz)  valid = \(xvtr.isValid.asTrueFalse)")
+                self.appendObject(color, "Xvtr           id = \(xvtr.id)" +
+                                    "  rf frequency = \(xvtr.rfFrequency.hzToMhz)" +
+                                    "  if frequency = \(xvtr.ifFrequency.hzToMhz)" +
+                                    "  valid = \(xvtr.isValid.asTrueFalse)")
             }
             // other Meters (non "slc")
             let sortedMeters = radio.meters.sorted(by: {
@@ -431,68 +459,116 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
                     ( $1.value.source.prefix(3), Int($1.value.group.suffix(3), radix: 10) ?? 0, $1.value.id )
             })
             for (_, meter) in sortedMeters where !meter.source.hasPrefix("slc") {
-                self.appendObject(color, "Meter          source = \(meter.source.prefix(3))  group = \(("00" + meter.group).suffix(3))  id = \(String(format: "%03d", meter.id))  name = \(meter.name.padTo(12))  units = \(meter.units.padTo(5))  low = \(String(format: "% 7.2f", meter.low))  high = \(String(format: "% 7.2f", meter.high))  fps = \(String(format: "% 3d", meter.fps))  desc = \(meter.desc)  ")
+                self.appendObject(color, "Meter          source = \(meter.source.prefix(3))" +
+                                    "  group = \(("00" + meter.group).suffix(3))" +
+                                    "  id = \(String(format: "%03d", meter.id))" +
+                                    "  name = \(meter.name.padTo(12))" +
+                                    "  units = \(meter.units.padTo(5))" +
+                                    "  low = \(String(format: "% 7.2f", meter.low))" +
+                                    "  high = \(String(format: "% 7.2f", meter.high))" +
+                                    "  fps = \(String(format: "% 3d", meter.fps))" +
+                                    "  desc = \(meter.desc)  ")
             }
+
         }
     }
     
-    /// Add subsidiary objects to the Objects array
+    /// Add stream objects to the Objects array
     /// - Parameters:
     ///   - activeHandle:       a connection handle
     ///   - radio:              the active radio
     ///   - color:              an NSColor for the text
     ///
-    private func addSubsidiaryObjects(_ activeHandle: Handle, _ radio: Radio, _ color: NSColor) {
-        
+    private func addStreamObjects(_ activeHandle: Handle, _ radio: Radio, _ color: NSColor) {
         // MicAudioStream
         for (_, stream) in radio.micAudioStreams where stream.clientHandle == activeHandle {
-            self.appendObject(color, "MicAudio       id = \(stream.id.hex)  handle = \(stream.clientHandle.hex)  ip = \(stream.ip)  port = \(stream.port)")
+            self.appendObject(color, "MicAudio       id = \(stream.id.hex)" +
+                                "  handle = \(stream.clientHandle.hex)" +
+                                "  ip = \(stream.ip)" +
+                                "  port = \(stream.port)")
         }
         // IqStream without a Panadapter
         for (_, stream) in radio.iqStreams where stream.clientHandle == activeHandle && stream.pan == 0 {
-            self.appendObject(color, "Iq             id = \(stream.id.hex)  channel = \(stream.daxIqChannel)  rate = \(stream.rate)  ip = \(stream.ip)  panadapter = -not assigned-")
+            self.appendObject(color, "Iq             id = \(stream.id.hex)" +
+                                "  channel = \(stream.daxIqChannel)" +
+                                "  rate = \(stream.rate)" +
+                                "  ip = \(stream.ip)" +
+                                "  panadapter = -not assigned-")
         }
         // TxAudioStream
         for (_, stream) in radio.txAudioStreams where stream.clientHandle == activeHandle {
-            self.appendObject(color, "TxAudio        id = \(stream.id.hex)  handle = \(stream.clientHandle.hex)  transmit = \(stream.transmit)  ip = \(stream.ip)  port = \(stream.port)")
+            self.appendObject(color, "TxAudio        id = \(stream.id.hex)" +
+                                "  handle = \(stream.clientHandle.hex)" +
+                                "  transmit = \(stream.transmit)" +
+                                "  ip = \(stream.ip)" +
+                                "  port = \(stream.port)")
         }
         // DaxRxAudioStream without a Slice
         for (_, stream) in radio.daxRxAudioStreams where stream.clientHandle == activeHandle && stream.slice == nil {
-            self.appendObject(color, "DaxRxAudio     id = \(stream.id.hex)  handle = \(stream.clientHandle.hex)  channel = \(stream.daxChannel)  ip = \(stream.ip)  slice = -not assigned-")
+            self.appendObject(color, "DaxRxAudio     id = \(stream.id.hex)" +
+                                "  handle = \(stream.clientHandle.hex)" +
+                                "  channel = \(stream.daxChannel)" +
+                                "  ip = \(stream.ip)" +
+                                "  slice = -not assigned-")
         }
         // DaxTxAudioStream
         for (_, stream) in radio.daxTxAudioStreams where stream.clientHandle == activeHandle {
-            self.appendObject(color, "DaxTxAudio     id = \(stream.id.hex)  handle = \(stream.clientHandle.hex)  isTransmit = \(stream.isTransmitChannel)")
+            self.appendObject(color, "DaxTxAudio     id = \(stream.id.hex)" +
+                                "  handle = \(stream.clientHandle.hex)" +
+                                "  isTransmit = \(stream.isTransmitChannel)")
         }
         // DaxIqStream without a Panadapter
         for (_, stream) in radio.daxIqStreams where stream.clientHandle == activeHandle && stream.pan == 0 {
-            self.appendObject(color, "DaxIq          id = \(stream.id.hex)  handle = \(stream.clientHandle.hex)  channel = \(stream.channel)  rate = \(stream.rate)  ip = \(stream.ip)  panadapter = -not assigned-")
+            self.appendObject(color, "DaxIq          id = \(stream.id.hex)" +
+                                "  handle = \(stream.clientHandle.hex)" +
+                                "  channel = \(stream.channel)" +
+                                "  rate = \(stream.rate)" +
+                                "  ip = \(stream.ip)" +
+                                "  panadapter = -not assigned-")
         }
         // RemoteRxAudioStream
         for (_, stream) in radio.remoteRxAudioStreams where stream.clientHandle == activeHandle {
-            self.appendObject(color, "RemoteRxAudio  id = \(stream.id.hex)  handle = \(stream.clientHandle.hex)  compression = \(stream.compression)")
+            self.appendObject(color, "RemoteRxAudio  id = \(stream.id.hex)" +
+                                "  handle = \(stream.clientHandle.hex)" +
+                                "  compression = \(stream.compression)")
         }
         // RemoteTxAudioStream
         for (_, stream) in radio.remoteTxAudioStreams where stream.clientHandle == activeHandle {
-            self.appendObject(color, "RemoteTxAudio  id = \(stream.id.hex)  handle = \(stream.clientHandle.hex)  compression = \(stream.compression)  ip = \(stream.ip)")
+            self.appendObject(color, "RemoteTxAudio  id = \(stream.id.hex)" +
+                                "  handle = \(stream.clientHandle.hex)" +
+                                "  compression = \(stream.compression)" +
+                                "  ip = \(stream.ip)")
         }
         // DaxMicAudioStream
         for (_, stream) in radio.daxMicAudioStreams where stream.clientHandle == activeHandle {
-            self.appendObject(color, "DaxMicAudio    id = \(stream.id.hex)  handle = \(stream.clientHandle.hex)  ip = \(stream.ip)")
+            self.appendObject(color, "DaxMicAudio    id = \(stream.id.hex)" +
+                                "  handle = \(stream.clientHandle.hex)" +
+                                "  ip = \(stream.ip)")
         }
-        
+    }
+    
+    func addPanadapterObjects(_ activeHandle: Handle, _ radio: Radio, _ color: NSColor) {
         // Panadapters & its accompanying objects
         for (_, panadapter) in radio.panadapters {
             if panadapter.clientHandle != activeHandle { continue }
             
             if radio.version.isNewApi {
-                self.appendObject(color, "Panadapter     handle = \(panadapter.clientHandle.hex)  id = \(panadapter.id.hex)  center = \(panadapter.center.hzToMhz)  bandwidth = \(panadapter.bandwidth.hzToMhz)")
+                self.appendObject(color, "Panadapter     handle = \(panadapter.clientHandle.hex)" +
+                                    "  id = \(panadapter.id.hex)" +
+                                    "  center = \(panadapter.center.hzToMhz)" +
+                                    "  bandwidth = \(panadapter.bandwidth.hzToMhz)")
             } else {
-                self.appendObject(color, "Panadapter     id = \(panadapter.id.hex)  center = \(panadapter.center.hzToMhz)  bandwidth = \(panadapter.bandwidth.hzToMhz)")
+                self.appendObject(color, "Panadapter     id = \(panadapter.id.hex)" +
+                                    "  center = \(panadapter.center.hzToMhz)" +
+                                    "  bandwidth = \(panadapter.bandwidth.hzToMhz)")
             }
             // Waterfall
             for (_, waterfall) in radio.waterfalls where panadapter.id == waterfall.panadapterId {
-                self.appendObject(color, "      Waterfall   id = \(waterfall.id.hex)  autoBlackEnabled = \(waterfall.autoBlackEnabled),  colorGain = \(waterfall.colorGain),  blackLevel = \(waterfall.blackLevel),  duration = \(waterfall.lineDuration)")
+                self.appendObject(color, "      Waterfall   id = \(waterfall.id.hex)" +
+                                    "  autoBlackEnabled = \(waterfall.autoBlackEnabled)" +
+                                    "  colorGain = \(waterfall.colorGain)" +
+                                    "  blackLevel = \(waterfall.blackLevel)" +
+                                    "  duration = \(waterfall.lineDuration)")
             }
             // IqStream
             for (_, iqStream) in radio.iqStreams where panadapter.id == iqStream.pan {
@@ -504,26 +580,42 @@ final class Tester : ObservableObject, ApiDelegate, RadioManagerDelegate {
             }
             // Slice(s) & their accompanying objects
             for (_, slice) in radio.slices where panadapter.id == slice.panadapterId {
-                self.appendObject(color, "      Slice       id = \(slice.id)  frequency = \(slice.frequency.hzToMhz)  mode = \(slice.mode.padTo(4))  filterLow = \(String(format: "% 5d", slice.filterLow))  filterHigh = \(String(format: "% 5d", slice.filterHigh))  active = \(slice.active)  locked = \(slice.locked)")
+                self.appendObject(color, "      Slice       id = \(slice.id)" +
+                                    "  frequency = \(slice.frequency.hzToMhz)" +
+                                    "  mode = \(slice.mode.padTo(4))" +
+                                    "  filterLow = \(String(format: "% 5d", slice.filterLow))" +
+                                    "  filterHigh = \(String(format: "% 5d", slice.filterHigh))" +
+                                    "  active = \(slice.active)" +
+                                    "  locked = \(slice.locked)")
                 
                 // AudioStream
                 for (_, stream) in radio.audioStreams where stream.slice?.id == slice.id {
-                    self.appendObject(color, "          Audio       id = \(stream.id.hex)  ip = \(stream.ip)  port = \(stream.port)")
+                    self.appendObject(color, "          Audio       id = \(stream.id.hex)" +
+                                        "  ip = \(stream.ip)" +
+                                        "  port = \(stream.port)")
                 }
                 // DaxRxAudioStream
                 for (_, stream) in radio.daxRxAudioStreams where stream.slice?.id == slice.id {
-                    self.appendObject(color, "          DaxAudio    id = \(stream.id.hex)  channel = \(stream.daxChannel)  ip = \(stream.ip)")
+                    self.appendObject(color, "          DaxAudio    id = \(stream.id.hex)" +
+                                        "  channel = \(stream.daxChannel)" +
+                                        "  ip = \(stream.ip)")
                 }
                 // Meters
                 for (_, meter) in radio.meters.sorted(by: { $0.value.id < $1.value.id }) {
                     if meter.source == "slc" && meter.group == String(slice.id) {
-                        self.appendObject(color, "          Meter id = \(meter.id)  name = \(meter.name.padTo(12))  units = \(meter.units.padTo(5))  low = \(String(format: "% 7.2f", meter.low))  high = \(String(format: "% 7.2f", meter.high))  fps = \(String(format: "% 3d", meter.fps))  desc = \(meter.desc)  ")
+                        self.appendObject(color, "          Meter id = \(meter.id)" +
+                                            "  name = \(meter.name.padTo(12))" +
+                                            "  units = \(meter.units.padTo(5))" +
+                                            "  low = \(String(format: "% 7.2f", meter.low))" +
+                                            "  high = \(String(format: "% 7.2f", meter.high))" +
+                                            "  fps = \(String(format: "% 3d", meter.fps))" +
+                                            "  desc = \(meter.desc)  ")
                     }
                 }
             }
         }
     }
-    
+
     // ----------------------------------------------------------------------------
     // MARK: - Observations
 

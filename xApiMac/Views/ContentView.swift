@@ -22,7 +22,7 @@ struct ContentView: View {
             Divider().frame(height: 2).background(Color(.disabledControlTextColor))
             ObjectsView(objects: tester.filteredObjects, fontSize: tester.fontSize)
             
-            Divider().frame(height: 2).background(Color(.disabledControlTextColor))
+            Divider().frame(height: 4).background(Color(.systemBlue))
             MessagesView(messages: tester.filteredMessages, showTimestamps: tester.showTimestamps, fontSize: tester.fontSize)
             
             Divider().frame(height: 2).background(Color(.disabledControlTextColor))            

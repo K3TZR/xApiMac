@@ -31,6 +31,9 @@ Please send any bugs / comments / questions to support@k3tzr.net
 [![W6OP](https://img.shields.io/badge/W6OP-xVoiceKeyer,_xCW-informational)](https://w6op.com) A Mac-based Voice Keyer and a CW Keyer.  
 
 ---
+##### 1.1.2 Release Notes
+* changes to make similar to xApiIos
+
 ##### 1.1.1 Release Notes
 * enabled sandboxing
 * corrected Log View show/hide

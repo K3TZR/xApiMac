@@ -37,11 +37,14 @@ struct ClearButton: ViewModifier {
     public func body(content: Content) -> some View {
         ZStack(alignment: .trailing) {
             content
-
+            
             if !text.isEmpty {
-                Button(action: { self.text = "" }) {
-                    Image(systemName: "x.circle")
-                }
+                Image(systemName: "x.circle")
+                    .resizable()
+                    .frame(width: 17, height: 17)
+                    .onTapGesture {
+                        self.text = ""
+                    }
             }
         }
     }

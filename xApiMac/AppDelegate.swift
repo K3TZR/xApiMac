@@ -21,9 +21,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
     // ----------------------------------------------------------------------------
     // MARK: - Internal properties
     
-    @IBOutlet private weak var smartlinkMenuItem: NSMenuItem!
-    @IBOutlet private weak var logViewerMenuItem: NSMenuItem!
-    
     var window: NSWindow!
     var logWindow: NSWindow?
     var tester = Tester()
@@ -33,7 +30,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
     // MARK: - Internal methods
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        
         // instantiate the RadioManager and give it access to the app (i.e. Tester)
         radioManager = RadioManager(delegate: tester as RadioManagerDelegate)
 
@@ -67,10 +63,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
         // initialize Logger with the default log
         let defaultLogUrl = URL(fileURLWithPath: URL.appSupport.path + "/" + AppDelegate.kDomainName + "." + AppDelegate.kAppName + "/Logs/" + AppDelegate.kAppName + ".log")
         Logger.sharedInstance.loadLog(at: defaultLogUrl)
-        
-        // initialize the state of the menu items
-        smartlinkMenuItem.boolState = tester.smartlinkEnabled
-        logViewerMenuItem.boolState = tester.showLogWindow
     }
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
@@ -93,7 +85,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
             logWindow?.orderOut(nil)
         }
         tester.showLogWindow = show
-        logViewerMenuItem.boolState = show
     }
     
     /// Refresh the Logger view when a font change occurs
@@ -104,17 +95,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
     }
     
     // ----------------------------------------------------------------------------
-    // MARK: - Menu IBAction methods
-    
-    @IBAction func smartlinkMenu(sender: NSMenuItem) {
-        sender.boolState.toggle()
-        radioManager.smartlink(enabled: sender.boolState)
-    }
-    
-    @IBAction func logViewer(_ sender: NSMenuItem) {
-        sender.boolState.toggle()
-        showLogWindow(sender.boolState)
-    }
+    // MARK: - Action methods
     
     @IBAction func larger(_ sender: Any) {
         tester.fontSize(larger: true)
@@ -126,4 +107,3 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
         updateLoggerFont()
     }
 }
-

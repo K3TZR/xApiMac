@@ -25,14 +25,15 @@ struct TopButtonsView: View {
             }
             .help("Using the Default connection type")
             
-            Toggle("As Gui", isOn: $tester.enableGui)
-            Toggle("Connect to First", isOn: $tester.connectToFirstRadio)
-            Toggle("Show Times", isOn: $tester.showTimestamps)
-            Toggle("Show Pings", isOn: $tester.showPings)
-            Toggle("Show Replies", isOn: $tester.showReplies)
+            HStack(spacing: 20) {
+                Toggle("Gui", isOn: $tester.enableGui)
+                Toggle("Times", isOn: $tester.showTimestamps)
+                Toggle("Pings", isOn: $tester.showPings)
+                Toggle("Replies", isOn: $tester.showReplies)
+            }
             
             Spacer()
-            HStack(spacing: 10){
+            HStack(spacing: 10) {
                 Text("SmartLink").frame(width: 75)
                 Button(action: {
                     if radioManager.smartlinkIsLoggedIn {
@@ -44,7 +45,7 @@ struct TopButtonsView: View {
                     Text(radioManager.smartlinkIsLoggedIn ? "Logout" : "Login").frame(width: 50)
                 }
                 Button("Status") { radioManager.showSheet(.smartlinkStatus) }
-            }.disabled(radioManager.delegate.smartlinkEnabled == false || radioManager.isConnected)
+            }.disabled(radioManager.isConnected)
             
             Spacer()
             Button("Defaults") { radioManager.chooseDefaults() }.disabled(radioManager.isConnected)
@@ -54,6 +55,6 @@ struct TopButtonsView: View {
 
 struct TopButtonsView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate) )
+        TopButtonsView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate) )
     }
 }
