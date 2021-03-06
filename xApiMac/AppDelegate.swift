@@ -60,9 +60,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
         logWindow!.title = "Log Window"
         logWindow!.contentView = NSHostingView(rootView: LoggerView()
                                                 .environmentObject(Logger.sharedInstance))
-        // initialize Logger with the default log
-        let defaultLogUrl = URL(fileURLWithPath: URL.appSupport.path + "/" + AppDelegate.kDomainName + "." + AppDelegate.kAppName + "/Logs/" + AppDelegate.kAppName + ".log")
-        Logger.sharedInstance.loadLog(at: defaultLogUrl)
     }
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {

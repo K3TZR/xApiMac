@@ -18,9 +18,9 @@ struct TopButtonsView: View {
         HStack(spacing: 30) {
             Button(radioManager.isConnected ? "Stop" : "Start") {
                 if radioManager.isConnected {
-                    radioManager.connect()
-                } else {
                     radioManager.disconnect()
+                } else {
+                    radioManager.connect()
                 }
             }
             .help("Using the Default connection type")
@@ -44,11 +44,11 @@ struct TopButtonsView: View {
                 }) {
                     Text(radioManager.smartlinkIsLoggedIn ? "Logout" : "Login").frame(width: 50)
                 }
-                Button("Status") { radioManager.showSheet(.smartlinkStatus) }
+                Button("Status") { radioManager.showView(.smartlinkStatus) }
             }.disabled(radioManager.isConnected)
             
             Spacer()
-            Button("Defaults") { radioManager.chooseDefaults() }.disabled(radioManager.isConnected)
+            Button("Defaults") { radioManager.chooseDefault() }.disabled(radioManager.isConnected)
         }
     }
 }

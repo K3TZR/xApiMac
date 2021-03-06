@@ -32,10 +32,10 @@ struct ContentView: View {
         .padding()
         
         // Sheet presentation
-        .sheet(item: $radioManager.activeSheet) { sheetType in
-            switch sheetType {
+        .sheet(item: $radioManager.activeView) { viewType in
+            switch viewType {
             
-            case .defaultPicker:            DefaultPickerView().environmentObject(radioManager)
+//            case .defaultPicker:            DefaultPickerView().environmentObject(radioManager)
             case .genericAlert:             GenericAlertView().environmentObject(radioManager)
             case .radioPicker:              RadioPickerView().environmentObject(radioManager)
             case .smartlinkAuthorization:   SmartlinkAuthorizationView().environmentObject(radioManager)

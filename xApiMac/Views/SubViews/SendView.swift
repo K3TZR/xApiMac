@@ -31,24 +31,24 @@ struct SendView: View {
     }
 }
 
-struct ClearButton: ViewModifier {
-    @Binding var text: String
-
-    public func body(content: Content) -> some View {
-        ZStack(alignment: .trailing) {
-            content
-            
-            if !text.isEmpty {
-                Image(systemName: "x.circle")
-                    .resizable()
-                    .frame(width: 17, height: 17)
-                    .onTapGesture {
-                        self.text = ""
-                    }
-            }
-        }
-    }
-}
+//struct ClearButton: ViewModifier {
+//    @Binding var text: String
+//
+//    public func body(content: Content) -> some View {
+//        ZStack(alignment: .trailing) {
+//            content
+//            
+//            if !text.isEmpty {
+//                Image(systemName: "x.circle")
+//                    .resizable()
+//                    .frame(width: 17, height: 17)
+//                    .onTapGesture {
+//                        self.text = ""
+//                    }
+//            }
+//        }
+//    }
+//}
 
 struct SendView_Previews: PreviewProvider {
     static var previews: some View {

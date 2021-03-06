@@ -3,7 +3,7 @@
 #### API Explorer for Flex (TM) 6000 series radios (SwiftUI macOS version)
 
 ##### Built on:
-*  macOS 11.2.1
+*  macOS 11.2.2
 *  Xcode 12.4 (12D4e) 
 *  Swift 5.3 / SwiftUI
 
@@ -31,6 +31,9 @@ Please send any bugs / comments / questions to support@k3tzr.net
 [![W6OP](https://img.shields.io/badge/W6OP-xVoiceKeyer,_xCW-informational)](https://w6op.com) A Mac-based Voice Keyer and a CW Keyer.  
 
 ---
+##### 1.1.4 Release Notes
+* incorporate xClientMac 1.0.4
+
 ##### 1.1.3 Release Notes
 * changes to conform to xClientMac v1.0.3
 
