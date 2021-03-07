@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-import xClientMac
+import xClient
 
 struct TopButtonsView: View {
     @ObservedObject var tester: Tester

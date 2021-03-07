@@ -8,7 +8,7 @@
 import Cocoa
 import SwiftUI
 import xLib6000
-import xClientMac
+import xClient
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDelegate {

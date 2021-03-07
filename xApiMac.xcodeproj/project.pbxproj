@@ -20,8 +20,8 @@
 		91859183257E80D400C7D6F5 /* MessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859175257E80D400C7D6F5 /* MessagesView.swift */; };
 		91859185257E80D400C7D6F5 /* FiltersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859177257E80D400C7D6F5 /* FiltersView.swift */; };
 		91859187257E80D400C7D6F5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859179257E80D400C7D6F5 /* ContentView.swift */; };
-		91874C032585519A00D80F05 /* xClientMac in Frameworks */ = {isa = PBXBuildFile; productRef = 91874C022585519A00D80F05 /* xClientMac */; };
 		91874C1C2585620600D80F05 /* Tester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91874C1B2585620600D80F05 /* Tester.swift */; };
+		91CAF17825F46A42009CF981 /* xClient in Frameworks */ = {isa = PBXBuildFile; productRef = 91CAF17725F46A42009CF981 /* xClient */; };
 		91CCF46D2592D7F00063757A /* TopButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CCF46C2592D7F00063757A /* TopButtonsView.swift */; };
 /* End PBXBuildFile section */
 
@@ -51,7 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				91874C032585519A00D80F05 /* xClientMac in Frameworks */,
+				91CAF17825F46A42009CF981 /* xClient in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -155,7 +155,7 @@
 			);
 			name = xApiMac;
 			packageProductDependencies = (
-				91874C022585519A00D80F05 /* xClientMac */,
+				91CAF17725F46A42009CF981 /* xClient */,
 			);
 			productName = xApi6000;
 			productReference = 91541C1524E02E7C002FE61E /* xApiMac.app */;
@@ -185,7 +185,7 @@
 			);
 			mainGroup = 91541C0C24E02E7C002FE61E;
 			packageReferences = (
-				91874C012585519A00D80F05 /* XCRemoteSwiftPackageReference "xClientMac" */,
+				91CAF17625F46A42009CF981 /* XCRemoteSwiftPackageReference "xClient" */,
 			);
 			productRefGroup = 91541C1624E02E7C002FE61E /* Products */;
 			projectDirPath = "";
@@ -377,7 +377,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -403,7 +403,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -434,21 +434,21 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		91874C012585519A00D80F05 /* XCRemoteSwiftPackageReference "xClientMac" */ = {
+		91CAF17625F46A42009CF981 /* XCRemoteSwiftPackageReference "xClient" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/K3TZR/xClientMac.git";
+			repositoryURL = "https://github.com/K3TZR/xClient.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.4;
+				minimumVersion = 1.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		91874C022585519A00D80F05 /* xClientMac */ = {
+		91CAF17725F46A42009CF981 /* xClient */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 91874C012585519A00D80F05 /* XCRemoteSwiftPackageReference "xClientMac" */;
-			productName = xClientMac;
+			package = 91CAF17625F46A42009CF981 /* XCRemoteSwiftPackageReference "xClient" */;
+			productName = xClient;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

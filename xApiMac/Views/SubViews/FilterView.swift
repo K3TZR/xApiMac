@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import xClient
 
 struct FilterView: View {
     let filterType: FilterType
@@ -32,7 +33,7 @@ struct FilterView: View {
             TextField("Filter text", text: filterType == .messages ? $tester.messagesFilterText : $tester.objectsFilterText)
 //                .background(Color(.lightGray))
 //                .autocapitalization(.none)
-                .modifier(ClearButton(text: filterType == .messages ? $tester.messagesFilterText : $tester.objectsFilterText))
+                .modifier(ClearButton(boundText: filterType == .messages ? $tester.messagesFilterText : $tester.objectsFilterText))
         }
         .pickerStyle(MenuPickerStyle())
     }

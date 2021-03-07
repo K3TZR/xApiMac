@@ -74,12 +74,12 @@
         }
       },
       {
-        "package": "xClientMac",
-        "repositoryURL": "https://github.com/K3TZR/xClientMac.git",
+        "package": "xClient",
+        "repositoryURL": "https://github.com/K3TZR/xClient.git",
         "state": {
           "branch": null,
-          "revision": "315752f4d6577258a3e926916ca330658fbefce4",
-          "version": "1.0.4"
+          "revision": "57bcf3ae26efba0dbd4b103364fba49cf3262871",
+          "version": "1.0.0"
         }
       },
       {

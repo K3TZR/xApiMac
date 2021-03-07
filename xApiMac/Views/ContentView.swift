@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import xClientMac
+import xClient
 
 struct ContentView: View {
     @ObservedObject var tester: Tester

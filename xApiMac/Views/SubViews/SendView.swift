@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import xClientMac
+import xClient
 
 struct SendView: View {
     @ObservedObject var tester: Tester
@@ -23,7 +23,7 @@ struct SendView: View {
             .disabled(!radioManager.isConnected)
 
             TextField("Command to send", text: $tester.cmdToSend)
-                .modifier(ClearButton(text: $tester.cmdToSend))
+                .modifier(ClearButton(boundText: $tester.cmdToSend))
 
             Spacer()
             Toggle("Clear on Send", isOn: $tester.clearOnSend).frame(width: 170)
@@ -31,19 +31,23 @@ struct SendView: View {
     }
 }
 
-//struct ClearButton: ViewModifier {
-//    @Binding var text: String
+//public struct ClearButton: ViewModifier {
+//    var text: Binding<String>
+//
+//    public init(boundText: Binding<String>) {
+//        self.text = boundText
+//    }
 //
 //    public func body(content: Content) -> some View {
 //        ZStack(alignment: .trailing) {
 //            content
-//            
-//            if !text.isEmpty {
+//
+//            if !text.wrappedValue.isEmpty {
 //                Image(systemName: "x.circle")
 //                    .resizable()
 //                    .frame(width: 17, height: 17)
 //                    .onTapGesture {
-//                        self.text = ""
+//                        text.wrappedValue = ""
 //                    }
 //            }
 //        }

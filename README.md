@@ -19,7 +19,7 @@ Please send any bugs / comments / questions to support@k3tzr.net
 ##### Credits
 [xLib6000](https://github.com/K3TZR/xLib6000.git)
 
-[xClientMac](https://github.com/K3TZR/xClientMac.git)
+[xClient](https://github.com/K3TZR/xClient.git)
 
 [SwiftyUserDefaults](https://github.com/sunshinejr/SwiftyUserDefaults.git)
 
@@ -31,6 +31,9 @@ Please send any bugs / comments / questions to support@k3tzr.net
 [![W6OP](https://img.shields.io/badge/W6OP-xVoiceKeyer,_xCW-informational)](https://w6op.com) A Mac-based Voice Keyer and a CW Keyer.  
 
 ---
+##### 1.1.5 Release Notes
+* transition to xClient instead of xClientMac
+
 ##### 1.1.4 Release Notes
 * incorporate xClientMac 1.0.4
 

@@ -8,7 +8,7 @@
 import xLib6000
 import SwiftyUserDefaults
 import SwiftUI
-import xClientMac
+import xClient
 
 typealias ObjectTuple = (color: NSColor, text: String)
 
