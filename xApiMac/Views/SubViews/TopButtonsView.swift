@@ -23,6 +23,7 @@ struct TopButtonsView: View {
                     radioManager.connect()
                 }
             }
+            .keyboardShortcut(.defaultAction)
             .help("Using the Default connection type")
             
             HStack(spacing: 20) {
@@ -44,6 +45,8 @@ struct TopButtonsView: View {
                 }) {
                     Text(radioManager.smartlinkIsLoggedIn ? "Logout" : "Login").frame(width: 50)
                 }
+                .disabled(!radioManager.delegate.smartlinkEnabled)
+
                 Button("Status") { radioManager.showView(.smartlinkStatus) }
             }.disabled(radioManager.isConnected)
             

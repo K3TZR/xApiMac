@@ -3,7 +3,7 @@
 #### API Explorer for Flex (TM) 6000 series radios (SwiftUI macOS version)
 
 ##### Built on:
-*  macOS 11.2.2
+*  macOS 11.2.3
 *  Xcode 12.4 (12D4e) 
 *  Swift 5.3 / SwiftUI
 
@@ -17,6 +17,8 @@ Compiled [RELEASE builds](https://github.com/K3TZR/xApi6000/releases)  will be c
 Please send any bugs / comments / questions to support@k3tzr.net
 
 ##### Credits
+[CocoaAsyncSocket](https://github.com/robbiehanson/CocoaAsyncSocket)
+
 [xLib6000](https://github.com/K3TZR/xLib6000.git)
 
 [xClient](https://github.com/K3TZR/xClient.git)
@@ -25,12 +27,17 @@ Please send any bugs / comments / questions to support@k3tzr.net
 
 [XCGLogger](https://github.com/DaveWoodCom/XCGLogger.git)
 
+[JWTDecode](https://github.com/auth0/JWTDecode.swift.git)
+
 ##### Other software
 [![xSDR6000](https://img.shields.io/badge/K3TZR-xSDR6000-informational)]( https://github.com/K3TZR/xSDR6000) A SmartSDR-like client for the Mac.   
 [![DL3LSM](https://img.shields.io/badge/DL3LSM-xDAX,_xCAT,_xKey-informational)](https://dl3lsm.blogspot.com) Mac versions of DAX and/or CAT and a Remote CW Keyer.  
 [![W6OP](https://img.shields.io/badge/W6OP-xVoiceKeyer,_xCW-informational)](https://w6op.com) A Mac-based Voice Keyer and a CW Keyer.  
 
 ---
+##### 1.1.6 Release Notes
+* incorporated xCLient 1.1.0
+
 ##### 1.1.5 Release Notes
 * transition to xClient instead of xClientMac
 

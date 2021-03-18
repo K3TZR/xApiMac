@@ -79,10 +79,6 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
         get { Defaults.clientId }
         set { Defaults.clientId = newValue }
     }
-//    var connectToFirstRadio: Bool {
-//        get { Defaults.connectToFirstRadio }
-//        set { Defaults.connectToFirstRadio = newValue }
-//    }
     var defaultConnection: String? {
         get { Defaults.defaultConnection }
         set { Defaults.defaultConnection = newValue }
@@ -92,20 +88,14 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
         set { Defaults.defaultGuiConnection = newValue }
     }
     var isConnected  = false
-//    var smartlinkAuth0Email  = ""      { didSet {Defaults.smartlinkAuth0Email = smartlinkAuth0Email} }
     var showLogWindow: Bool {
         get { Defaults.showLogWindow }
         set { Defaults.showLogWindow = newValue }
     }
-    var smartlinkAuth0Email: String? {
-        get { Defaults.smartlinkAuth0Email }
-        set { Defaults.smartlinkAuth0Email = newValue }
+    var smartlinkEmail: String? {
+        get { Defaults.smartlinkEmail }
+        set { Defaults.smartlinkEmail = newValue }
     }
-//    var smartlinkEnabled     = false   { didSet {Defaults.smartlinkEnabled = smartlinkEnabled} }
-//    var smartlinkEnabled: Bool {
-//        get { Defaults.smartlinkEnabled }
-//        set { Defaults.smartlinkEnabled = newValue }
-//    }
     var smartlinkUserImage: NSImage?
     var smartlinkTestStatus = false
     var stationName  = ""
@@ -162,10 +152,10 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
         objectsFilterText    = Defaults.objectsFilterText
         
         // initialize and configure the Logger
-        _log = Logger.sharedInstance.logMessage
+        _log = LogManager.sharedInstance.logMessage
         
         // give the Api access to our logger
-        LogProxy.sharedInstance.delegate = Logger.sharedInstance
+        LogProxy.sharedInstance.delegate = LogManager.sharedInstance
         
         openLogWindow()
         
@@ -175,9 +165,6 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
             clientId = UUID().uuidString
             _log("Tester: ClientId created - \(clientId!)", .debug, #function, #file, #line)
         }
-//        defaultConnection     = Defaults.defaultConnection
-//        defaultGuiConnection  = Defaults.defaultGuiConnection
-
         // receive delegate actions from the Api
         _api.testerDelegate = self
     }
@@ -615,19 +602,6 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
             }
         }
     }
-
-    // ----------------------------------------------------------------------------
-    // MARK: - Observations
-
-//    private func addObservations() {
-//        NotificationCenter.default.addObserver(self, selector: #selector(self.showMainView), name: Notification.Name("showMainView"), object: nil)
-//    }
-//
-//    @objc private func showMainView(notification: NSNotification){
-//        if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
-//            appDelegate.showLogWindow = false
-//        }
-//    }
 
     // ----------------------------------------------------------------------------
     // MARK: - RadioManagerDelegate

@@ -35,10 +35,9 @@ struct ContentView: View {
         .sheet(item: $radioManager.activeView) { viewType in
             switch viewType {
             
-//            case .defaultPicker:            DefaultPickerView().environmentObject(radioManager)
             case .genericAlert:             GenericAlertView().environmentObject(radioManager)
             case .radioPicker:              RadioPickerView().environmentObject(radioManager)
-            case .smartlinkAuthorization:   SmartlinkAuthorizationView().environmentObject(radioManager)
+            case .smartlinkAuthentication:  smartlinkAuthenticationView().environmentObject(radioManager)
             case .smartlinkStatus:          SmartlinkStatusView().environmentObject(radioManager)
             }
         }

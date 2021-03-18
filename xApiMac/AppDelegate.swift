@@ -59,7 +59,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
         logWindow!.isReleasedWhenClosed = false
         logWindow!.title = "Log Window"
         logWindow!.contentView = NSHostingView(rootView: LoggerView()
-                                                .environmentObject(Logger.sharedInstance))
+                                                .environmentObject(LogManager.sharedInstance))
     }
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
@@ -87,8 +87,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject, LoggerDele
     /// Refresh the Logger view when a font change occurs
     ///
     private func updateLoggerFont() {
-        Logger.sharedInstance.fontSize = tester.fontSize
-        Logger.sharedInstance.refreshLog()
+        LogManager.sharedInstance.fontSize = tester.fontSize
+        LogManager.sharedInstance.refreshLog()
     }
     
     // ----------------------------------------------------------------------------
