@@ -25,17 +25,17 @@ struct TopButtonsView: View {
             }
             .keyboardShortcut(.defaultAction)
             .help("Using the Default connection type")
-            
+
             HStack(spacing: 20) {
-                Toggle("Gui", isOn: $tester.enableGui)
+                Toggle("Gui", isOn: $tester.guiIsEnabled)
                 Toggle("Times", isOn: $tester.showTimestamps)
                 Toggle("Pings", isOn: $tester.showPings)
                 Toggle("Replies", isOn: $tester.showReplies)
             }
-            
+
             Spacer()
             HStack(spacing: 10) {
-                Text("SmartLink").frame(width: 75)
+                Text("SmartLink")
                 Button(action: {
                     if radioManager.smartlinkIsLoggedIn {
                         radioManager.smartlinkLogout()
@@ -45,13 +45,13 @@ struct TopButtonsView: View {
                 }) {
                     Text(radioManager.smartlinkIsLoggedIn ? "Logout" : "Login").frame(width: 50)
                 }
-                .disabled(!radioManager.delegate.smartlinkEnabled)
+                .disabled(!radioManager.delegate.smartlinkIsEnabled)
 
                 Button("Status") { radioManager.showView(.smartlinkStatus) }
             }.disabled(radioManager.isConnected)
-            
+
             Spacer()
-            Button("Defaults") { radioManager.chooseDefault() }.disabled(radioManager.isConnected)
+            Button("Defaults") { radioManager.defaultChoose() }.disabled(radioManager.isConnected)
         }
     }
 }

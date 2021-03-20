@@ -9,10 +9,10 @@ import SwiftUI
 
 struct StatusView: View {
   @EnvironmentObject var tester: Tester
-  
+
   var body: some View {
 //    let active = tester.radioManager.activeRadio != nil
-    
+
     VStack {
       if tester.radioManager.activeRadio != nil {Text(tester.radioManager.activePacket!.isWan ? "Wan" : "Local")}
       Text(tester.radioManager.delegate.connectAsGui ? "Gui" : "Non-Gui")

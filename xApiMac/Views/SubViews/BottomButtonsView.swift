@@ -11,24 +11,17 @@ import xClient
 
 struct BottomButtonsView: View {
     @ObservedObject var tester: Tester
-    @ObservedObject var radioManager: RadioManager
 
     var body: some View {
 
-        VStack(alignment: .leading) {
-            HStack {
-                Stepper("Font Size", value: $tester.fontSize, in: 8...24).frame(width: 175)
-                Spacer()
-                HStack {
-                    Toggle("Clear on Connect", isOn: $tester.clearAtConnect).frame(width: 190)
-                    Toggle("Clear on Disconnect", isOn: $tester.clearAtDisconnect).frame(width: 215)
-                }
-                Spacer()
-                Button("Clear Now") { tester.clearObjectsAndMessages() }
-
-                Spacer()
-                Button("Log Window") { tester.toggleLogWindow() }
-            }
+        HStack(spacing: 40) {
+            Stepper("Font Size", value: $tester.fontSize, in: 8...24)
+            Spacer()
+            Toggle("Clear on Connect", isOn: $tester.clearAtConnect)
+            Toggle("Clear on Disconnect", isOn: $tester.clearAtDisconnect)
+            Button("Clear Now") { tester.clearObjectsAndMessages() }
+            Spacer()
+            Button("Log Window") { tester.toggleLogWindow() }
         }
     }
 }
@@ -36,6 +29,6 @@ struct BottomButtonsView: View {
 struct BottomButtonsView_Previews: PreviewProvider {
 
     static var previews: some View {
-        BottomButtonsView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate) )
+        BottomButtonsView(tester: Tester())
     }
 }

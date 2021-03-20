@@ -12,7 +12,7 @@ struct AlertView: View {
   let title: String
   let message: String
   let buttons: [ (title: String, action: (() -> Void)?) ]
-  
+
   var body: some View {
     VStack {
       Text(title).font(.system(size: 16))

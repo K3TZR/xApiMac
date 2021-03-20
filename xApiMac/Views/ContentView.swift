@@ -13,28 +13,28 @@ struct ContentView: View {
     @ObservedObject var radioManager: RadioManager
 
     var body: some View {
-        
+
         VStack(alignment: .leading) {
             TopButtonsView(tester: tester, radioManager: radioManager)
             SendView(tester: tester, radioManager: radioManager)
             FiltersView(tester: tester)
-            
-            Divider().frame(height: 2).background(Color(.disabledControlTextColor))
+
+            Divider()
             ObjectsView(objects: tester.filteredObjects, fontSize: tester.fontSize)
-            
-            Divider().frame(height: 4).background(Color(.systemBlue))
+
+            Divider().background(Color(.systemBlue))
             MessagesView(messages: tester.filteredMessages, showTimestamps: tester.showTimestamps, fontSize: tester.fontSize)
-            
-            Divider().frame(height: 2).background(Color(.disabledControlTextColor))            
-            BottomButtonsView(tester: tester, radioManager: radioManager)
+
+            Divider()
+            BottomButtonsView(tester: tester)
         }
         .frame(minWidth: 920, minHeight: 400)
         .padding()
-        
+
         // Sheet presentation
         .sheet(item: $radioManager.activeView) { viewType in
             switch viewType {
-            
+
             case .genericAlert:             GenericAlertView().environmentObject(radioManager)
             case .radioPicker:              RadioPickerView().environmentObject(radioManager)
             case .smartlinkAuthentication:  smartlinkAuthenticationView().environmentObject(radioManager)

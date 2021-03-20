@@ -11,9 +11,9 @@ import xClientMac
 
 struct TopButtonsViewOld: View {
   @EnvironmentObject var tester: Tester
-  
+
   var body: some View {
-    
+
     VStack(alignment: .leading) {
       HStack {
         // Top row
@@ -28,9 +28,9 @@ struct TopButtonsViewOld: View {
           Toggle("Gui", isOn: $tester.enableGui).frame(width: 80, alignment: .leading)
           Toggle("Pinging", isOn: $tester.enablePinging).frame(width: 80, alignment: .leading)
           Toggle("SmartLink", isOn: $tester.enableSmartLink).frame(width: 80, alignment: .leading)
-          
+
           Spacer()
-          
+
           Button(action: {tester.radioManager.showPicker()}) {
             Text("Picker").frame(width: 70, alignment: .center)
           }.padding(.trailing, 10)
@@ -42,7 +42,7 @@ struct TopButtonsViewOld: View {
         .padding(5)
 //        .border(Color(.textColor))
       }
-      
+
       // Bottom row
       HStack(spacing: 20) {
         Text("Show -->").frame(width: 80, alignment: .leading).padding(.leading, 130)

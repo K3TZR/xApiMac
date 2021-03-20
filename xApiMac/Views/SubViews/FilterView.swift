@@ -31,8 +31,6 @@ struct FilterView: View {
 
             }
             TextField("Filter text", text: filterType == .messages ? $tester.messagesFilterText : $tester.objectsFilterText)
-//                .background(Color(.lightGray))
-//                .autocapitalization(.none)
                 .modifier(ClearButton(boundText: filterType == .messages ? $tester.messagesFilterText : $tester.objectsFilterText))
         }
         .pickerStyle(MenuPickerStyle())
@@ -43,7 +41,5 @@ struct FilterView_Previews: PreviewProvider {
 
     static var previews: some View {
         FilterView(filterType: .messages, tester: Tester())
-//            .environmentObject(Tester())
-//            .previewLayout(.fixed(width: 2160 / 2.0, height: 1620 / 2.0))
     }
 }

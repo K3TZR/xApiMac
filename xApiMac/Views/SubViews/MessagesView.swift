@@ -12,7 +12,7 @@ struct MessagesView: View {
     let messages: [Message]
     let showTimestamps: Bool
     let fontSize: Int
-    
+
     func showTimestamps(text: String) -> String {
         if showTimestamps {
             return text
@@ -20,19 +20,19 @@ struct MessagesView: View {
             return String(text.dropFirst(9))
         }
     }
-    
+
     func lineColor(_ text: String) -> Color {
         var color = Color(.textColor)
-        
+
         let base = text.dropFirst(9)
         if base.prefix(1) == "C" { color = Color(.systemGreen) }
         if base.prefix(1) == "R" && base.contains("|0|") { color = Color(.systemGray) }
         if base.prefix(1) == "R" && !base.contains("|0|") { color = Color(.systemRed) }
         if base.prefix(2) == "S0" { color = Color(.systemOrange) }
-        
+
         return color
     }
-    
+
     var body: some View {
 
         ScrollViewReader { scrollView in
@@ -55,7 +55,7 @@ struct MessagesView: View {
 }
 
 struct MessagesView_Previews: PreviewProvider {
-    
+
     static var previews: some View {
         let mockMessages = [
             Message(id: 0, text: "11:40:04 C  The first message"),

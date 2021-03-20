@@ -36,7 +36,7 @@ Please send any bugs / comments / questions to support@k3tzr.net
 
 ---
 ##### 1.1.6 Release Notes
-* incorporated xCLient 1.1.0
+* incorporated xClient 1.1.0
 
 ##### 1.1.5 Release Notes
 * transition to xClient instead of xClientMac
