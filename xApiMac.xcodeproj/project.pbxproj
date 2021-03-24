@@ -7,10 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		91541C1924E02E7C002FE61E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91541C1824E02E7C002FE61E /* AppDelegate.swift */; };
 		91541C1D24E02E7D002FE61E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 91541C1C24E02E7D002FE61E /* Assets.xcassets */; };
 		91541C2024E02E7D002FE61E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 91541C1F24E02E7D002FE61E /* Preview Assets.xcassets */; };
-		91541C2324E02E7D002FE61E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 91541C2124E02E7D002FE61E /* Main.storyboard */; };
 		91541C3524E02FA1002FE61E /* AppExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91541C3424E02FA1002FE61E /* AppExtensions.swift */; };
 		9185317B252262570085EC51 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 9185317A252262570085EC51 /* README.md */; };
 		9185917D257E80D400C7D6F5 /* ObjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9185916F257E80D400C7D6F5 /* ObjectsView.swift */; };
@@ -23,14 +21,13 @@
 		91874C1C2585620600D80F05 /* Tester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91874C1B2585620600D80F05 /* Tester.swift */; };
 		91CAF17825F46A42009CF981 /* xClient in Frameworks */ = {isa = PBXBuildFile; productRef = 91CAF17725F46A42009CF981 /* xClient */; };
 		91CCF46D2592D7F00063757A /* TopButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CCF46C2592D7F00063757A /* TopButtonsView.swift */; };
+		91FAC20A2606CD19004DCE43 /* xApiMac.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91FAC2092606CD19004DCE43 /* xApiMac.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		91541C1524E02E7C002FE61E /* xApiMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = xApiMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		91541C1824E02E7C002FE61E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		91541C1C24E02E7D002FE61E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		91541C1F24E02E7D002FE61E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		91541C2224E02E7D002FE61E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		91541C2424E02E7D002FE61E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		91541C2524E02E7D002FE61E /* xApiMac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = xApiMac.entitlements; sourceTree = "<group>"; };
 		91541C3424E02FA1002FE61E /* AppExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppExtensions.swift; sourceTree = "<group>"; };
@@ -44,6 +41,7 @@
 		91859179257E80D400C7D6F5 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		91874C1B2585620600D80F05 /* Tester.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tester.swift; sourceTree = "<group>"; };
 		91CCF46C2592D7F00063757A /* TopButtonsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopButtonsView.swift; sourceTree = "<group>"; };
+		91FAC2092606CD19004DCE43 /* xApiMac.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = xApiMac.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,13 +79,12 @@
 			children = (
 				9185917A257E80D400C7D6F5 /* Models */,
 				9185916D257E80D400C7D6F5 /* Views */,
-				91541C1824E02E7C002FE61E /* AppDelegate.swift */,
 				91541C3424E02FA1002FE61E /* AppExtensions.swift */,
 				91541C1C24E02E7D002FE61E /* Assets.xcassets */,
 				91541C2424E02E7D002FE61E /* Info.plist */,
-				91541C2124E02E7D002FE61E /* Main.storyboard */,
 				91541C1E24E02E7D002FE61E /* Preview Content */,
 				91541C2524E02E7D002FE61E /* xApiMac.entitlements */,
+				91FAC2092606CD19004DCE43 /* xApiMac.swift */,
 			);
 			path = xApiMac;
 			sourceTree = "<group>";
@@ -202,7 +199,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				91541C2324E02E7D002FE61E /* Main.storyboard in Resources */,
 				91541C2024E02E7D002FE61E /* Preview Assets.xcassets in Resources */,
 				9185317B252262570085EC51 /* README.md in Resources */,
 				91541C1D24E02E7D002FE61E /* Assets.xcassets in Resources */,
@@ -243,7 +239,7 @@
 				91859185257E80D400C7D6F5 /* FiltersView.swift in Sources */,
 				91541C3524E02FA1002FE61E /* AppExtensions.swift in Sources */,
 				91874C1C2585620600D80F05 /* Tester.swift in Sources */,
-				91541C1924E02E7C002FE61E /* AppDelegate.swift in Sources */,
+				91FAC20A2606CD19004DCE43 /* xApiMac.swift in Sources */,
 				91859187257E80D400C7D6F5 /* ContentView.swift in Sources */,
 				9185917F257E80D400C7D6F5 /* SendView.swift in Sources */,
 				9185917D257E80D400C7D6F5 /* ObjectsView.swift in Sources */,
@@ -251,17 +247,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		91541C2124E02E7D002FE61E /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				91541C2224E02E7D002FE61E /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		91541C2624E02E7D002FE61E /* Debug */ = {
@@ -398,7 +383,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -424,7 +409,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -460,7 +445,7 @@
 			repositoryURL = "https://github.com/K3TZR/xClient.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.0;
+				minimumVersion = 1.2.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

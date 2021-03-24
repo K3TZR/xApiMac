@@ -107,7 +107,7 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
     private let _log: (_ msg: String, _ level: MessageLevel, _ function: StaticString, _ file: StaticString, _ line: Int) -> Void
     private var _messageNumber        = 0
     private var _objectNumber         = 0
-    private let _objectQ              = DispatchQueue(label: AppDelegate.kAppName + ".objectQ", attributes: [.concurrent])
+    private let _objectQ              = DispatchQueue(label: "xApiMac" + ".objectQ", attributes: [.concurrent])
     private var _packets: [DiscoveryPacket] { Discovery.sharedInstance.discoveryPackets }
     private var _previousCommand      = ""
     private var _startTimestamp: Date?
@@ -155,8 +155,6 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
         // give the Api access to our logger
         LogProxy.sharedInstance.delegate = LogManager.sharedInstance
 
-        restoreLogWindow()
-
         // is there a saved Client ID?
         if clientId == nil {
             // NO, assign one
@@ -170,6 +168,10 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
     // ----------------------------------------------------------------------------
     // MARK: - Internal methods (Tester related)
 
+    func closeApp() {
+        NSApp.terminate(NSApp)
+    }
+
     /// A command  was sent to the Radio
     ///
     func sent(command: String) {
@@ -182,30 +184,6 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
 
         // optionally clear the Command field
         if clearOnSend { DispatchQueue.main.async { self.cmdToSend = "" }}
-    }
-
-    func restoreLogWindow() {
-        if logWindowIsOpen {
-            DispatchQueue.main.async { [self] in
-                if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
-                    appDelegate.showLogWindow(logWindowIsOpen)
-                    logWindowIsOpen = true
-                }
-            }
-        }
-    }
-
-//    func logWindowClose() {
-//        if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
-//            appDelegate.logWindowClose()
-//        }
-//    }
-
-    func toggleLogWindow() {
-        logWindowIsOpen.toggle()
-        if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
-            appDelegate.showLogWindow(logWindowIsOpen)
-        }
     }
 
     /// Clear the object and messages areas

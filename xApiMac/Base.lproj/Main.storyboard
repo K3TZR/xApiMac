@@ -62,16 +62,8 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Format" id="GEO-Iw-cKr">
                                     <items>
-                                        <menuItem title="Font Larger" keyEquivalent="=" id="d3i-SN-F1s">
-                                            <connections>
-                                                <action selector="larger:" target="Voe-Tx-rLC" id="Ser-08-vfd"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Font Smaller" keyEquivalent="-" id="G4M-AJ-TbG">
-                                            <connections>
-                                                <action selector="smaller:" target="Voe-Tx-rLC" id="haO-uR-Ql2"/>
-                                            </connections>
-                                        </menuItem>
+                                        <menuItem title="Font Larger" keyEquivalent="=" id="d3i-SN-F1s"/>
+                                        <menuItem title="Font Smaller" keyEquivalent="-" id="G4M-AJ-TbG"/>
                                     </items>
                                 </menu>
                             </menuItem>

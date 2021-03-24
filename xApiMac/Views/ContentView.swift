@@ -26,7 +26,7 @@ struct ContentView: View {
             MessagesView(messages: tester.filteredMessages, showTimestamps: tester.showTimestamps, fontSize: tester.fontSize)
 
             Divider()
-            BottomButtonsView(tester: tester)
+            BottomButtonsView(tester: tester, radioManager: radioManager)
         }
         .frame(minWidth: 920, minHeight: 400)
         .padding()
@@ -41,6 +41,8 @@ struct ContentView: View {
             case .smartlinkStatus:          SmartlinkStatusView().environmentObject(radioManager)
             }
         }
+
+        .onDisappear { tester.closeApp() }
     }
 }
 

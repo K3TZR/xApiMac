@@ -35,6 +35,10 @@ Please send any bugs / comments / questions to support@k3tzr.net
 [![W6OP](https://img.shields.io/badge/W6OP-xVoiceKeyer,_xCW-informational)](https://w6op.com) A Mac-based Voice Keyer and a CW Keyer.  
 
 ---
+##### 1.2.1 Release Notes
+* switched to SwiftUI life cycle
+* adapted LogView
+
 ##### 1.2.0 Release Notes
 * many small corrections
 * added SwiftLint phase
