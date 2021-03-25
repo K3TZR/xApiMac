@@ -35,6 +35,12 @@ Please send any bugs / comments / questions to support@k3tzr.net
 [![W6OP](https://img.shields.io/badge/W6OP-xVoiceKeyer,_xCW-informational)](https://w6op.com) A Mac-based Voice Keyer and a CW Keyer.  
 
 ---
+##### 1.2.2 Release Notes
+* changed ContentView to a TabView (Api & Log)
+* removed "Log Window" button
+* removed secondary WindowGroup from xApiMac.swift
+* added version number to window title
+
 ##### 1.2.1 Release Notes
 * switched to SwiftUI life cycle
 * adapted LogView

@@ -74,7 +74,6 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
     // MARK: - Internal properties
 
     var activePacket: DiscoveryPacket?
-//    var clientId = "" { didSet {Defaults.clientId = clientId} }
     var clientId: String? {
         get { Defaults.clientId }
         set { Defaults.clientId = newValue }

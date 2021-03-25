@@ -22,10 +22,6 @@ struct BottomButtonsView: View {
             Toggle("Clear on Connect", isOn: $tester.clearAtConnect)
             Toggle("Clear on Disconnect", isOn: $tester.clearAtDisconnect)
             Button("Clear Now") { tester.clearObjectsAndMessages() }
-            Spacer()
-            Button("Log Window") {
-                    openURL(URL(string: "xApiMac://LoggerView")!)
-            }.disabled(radioManager.loggerViewIsOpen)
         }
     }
 }

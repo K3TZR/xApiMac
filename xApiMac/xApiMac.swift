@@ -25,9 +25,6 @@ struct XApiMac: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self)
     var appDelegate
 
-//    @StateObject var windowCollection = WindowCollection()
-
-    @StateObject var logManager = LogManager.sharedInstance
     var tester: Tester
     var radioManager: RadioManager
 
@@ -40,15 +37,8 @@ struct XApiMac: App {
 
         WindowGroup {
             ContentView(tester: tester, radioManager: radioManager)
+                .navigationTitle("xApiMac " + Version().longString)
         }
-
-        WindowGroup {
-            LogView()
-                .environmentObject(radioManager)
-                .environmentObject(logManager)
-        }
-        .handlesExternalEvents(matching: Set(["LoggerView"]))
-
         .commands {
             // remove the "File->New" menu item
             CommandGroup(replacing: .newItem) {
