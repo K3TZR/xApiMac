@@ -1,6 +1,6 @@
 //
 //  Tester.swift
-//  xApiMac
+//
 //
 //  Created by Douglas Adams on 8/9/20.
 //
@@ -10,7 +10,13 @@ import SwiftyUserDefaults
 import SwiftUI
 import xClient
 
-typealias ObjectTuple = (color: NSColor, text: String)
+#if os(macOS)
+let kAppName = "xApiMac"
+#elseif os(iOS)
+let kAppName = "xApiIos"
+#endif
+
+typealias ObjectTuple = (color: Color, text: String)
 
 struct Message: Identifiable {
     var id = 0
@@ -55,7 +61,6 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
     @Published var cmdToSend                    = ""
     @Published var connectToFirstRadioIsEnabled = false { didSet {Defaults.connectToFirstRadioIsEnabled = connectToFirstRadioIsEnabled} }
     @Published var guiIsEnabled                 = false { didSet {Defaults.guiIsEnabled = guiIsEnabled} }
-    @Published var enablePinging                = false { didSet {Defaults.enablePinging = enablePinging} }
     @Published var fontSize                     = 12 { didSet {Defaults.fontSize = fontSize} }
     @Published var showPings                    = false { didSet {Defaults.showPings = showPings} }
     @Published var showReplies                  = false { didSet {Defaults.showReplies = showReplies} }
@@ -87,10 +92,6 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
         set { Defaults.defaultGuiConnection = newValue }
     }
     var isConnected  = false
-    var logWindowIsOpen: Bool {
-        get { Defaults.logWindowIsOpen }
-        set { Defaults.logWindowIsOpen = newValue }
-    }
     var smartlinkEmail: String? {
         get { Defaults.smartlinkEmail }
         set { Defaults.smartlinkEmail = newValue }
@@ -106,7 +107,7 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
     private let _log: (_ msg: String, _ level: MessageLevel, _ function: StaticString, _ file: StaticString, _ line: Int) -> Void
     private var _messageNumber        = 0
     private var _objectNumber         = 0
-    private let _objectQ              = DispatchQueue(label: "xApiMac" + ".objectQ", attributes: [.concurrent])
+    private let _objectQ              = DispatchQueue(label: kAppName + ".objectQ", attributes: [.concurrent])
     private var _packets: [DiscoveryPacket] { Discovery.sharedInstance.discoveryPackets }
     private var _previousCommand      = ""
     private var _startTimestamp: Date?
@@ -135,7 +136,6 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
         clearAtDisconnect               = Defaults.clearAtDisconnect
         clearOnSend                     = Defaults.clearOnSend
         connectToFirstRadioIsEnabled    = Defaults.connectToFirstRadioIsEnabled
-        enablePinging                   = Defaults.enablePinging
         fontSize                        = Defaults.fontSize
         guiIsEnabled                    = Defaults.guiIsEnabled
         showPings                       = Defaults.showPings
@@ -166,10 +166,6 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
 
     // ----------------------------------------------------------------------------
     // MARK: - Internal methods (Tester related)
-
-    func closeApp() {
-        NSApp.terminate(NSApp)
-    }
 
     /// A command  was sent to the Radio
     ///
@@ -304,10 +300,10 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
 
     /// Add an entry to the messages collection
     /// - Parameters:
-    ///   - color:        an UIColor for the text
+    ///   - color:        a Color for the text
     ///   - text:         the text of the entry
     ///
-    private func appendObject(_ color: NSColor, _ text: String) {
+    private func appendObject(_ color: Color, _ text: String) {
         objects.append( Object(id: _objectNumber, line: (color, text)) )
         _objectNumber += 1
     }
@@ -332,7 +328,7 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
         // Radio
         if let radio = Api.sharedInstance.radio {
             self.objects.removeAll()
-            var color = NSColor.systemGreen
+            var color = Color.red
 
             // Show the connected Radio
             self.appendObject(color, "Radio (\(radio.packet.isWan ? "SmartLink" : "Local"))" +
@@ -344,7 +340,7 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
                                 "  gps=\(Api.sharedInstance.radio!.gpsPresent ? "Yes" : "No")" +
                                 "  scu's=\(Api.sharedInstance.radio!.numberOfScus)")
 
-            self.appendObject(NSColor.systemBlue, String(repeating: "-", count: 200))
+            self.appendObject(Color.blue, String(repeating: "-", count: 200))
 
             // what verion is the Radio?
             if radio.version.isNewApi {
@@ -354,9 +350,9 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
 
                         activeHandle = guiClient.handle
 
-                        color = NSColor.systemRed
-                        if guiIsEnabled == false && guiClient.clientId != nil && guiClient.clientId == radio.boundClientId { color = NSColor.systemPurple }
-                        if guiIsEnabled == true  && guiClient.handle == _api.connectionHandle { color = NSColor.systemPurple }
+                        color = Color.red
+                        if guiIsEnabled == false && guiClient.clientId != nil && guiClient.clientId == radio.boundClientId { color = Color.purple }
+                        if guiIsEnabled == true  && guiClient.handle == _api.connectionHandle { color = Color.purple }
 
                         self.appendObject(color, "Gui Client     station = \(guiClient.station.padTo(15))" +
                                             "  handle = \(guiClient.handle.hex)" +
@@ -365,18 +361,18 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
                                             "  available = \(radio.packet.status.lowercased() == "available" ? "Yes" : "No ")" +
                                             "  program = \(guiClient.program)")
 
-                        self.addStreamObjects(activeHandle, radio, NSColor.labelColor)
-                        self.addPanadapterObjects(activeHandle, radio, NSColor.labelColor)
-                        self.appendObject(NSColor.systemBlue, String(repeating: "-", count: 200))
+                        self.addStreamObjects(activeHandle, radio, color)
+                        self.addPanadapterObjects(activeHandle, radio, color)
+                        self.appendObject(Color.blue, String(repeating: "-", count: 200))
                     }
                 }
 
             } else {
                 // oldApi
-                self.addStreamObjects(activeHandle, radio, NSColor.labelColor)
-                self.addPanadapterObjects(activeHandle, radio, NSColor.labelColor)
+                self.addStreamObjects(activeHandle, radio, Color.primary)
+                self.addPanadapterObjects(activeHandle, radio, Color.primary)
             }
-            color = NSColor.systemGray.withAlphaComponent(0.8)
+            color = Color.gray
 
             // OpusAudioStream
             for (_, stream) in radio.opusAudioStreams {
@@ -444,9 +440,9 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
     /// - Parameters:
     ///   - activeHandle:       a connection handle
     ///   - radio:              the active radio
-    ///   - color:              an NSColor for the text
+    ///   - color:              a Color for the text
     ///
-    private func addStreamObjects(_ activeHandle: Handle, _ radio: Radio, _ color: NSColor) {
+    private func addStreamObjects(_ activeHandle: Handle, _ radio: Radio, _ color: Color) {
         // MicAudioStream
         for (_, stream) in radio.micAudioStreams where stream.clientHandle == activeHandle {
             self.appendObject(color, "MicAudio       id = \(stream.id.hex)" +
@@ -518,9 +514,9 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
     /// - Parameters:
     ///   - activeHandle:       a connection handle
     ///   - radio:              the active radio
-    ///   - color:              an NSColor for the text
+    ///   - color:              a Color for the text
     ///
-    func addPanadapterObjects(_ activeHandle: Handle, _ radio: Radio, _ color: NSColor) {
+    func addPanadapterObjects(_ activeHandle: Handle, _ radio: Radio, _ color: Color) {
         // Panadapters & its accompanying objects
         for (_, panadapter) in radio.panadapters {
             if panadapter.clientHandle != activeHandle { continue }

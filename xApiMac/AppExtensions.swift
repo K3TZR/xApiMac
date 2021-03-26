@@ -1,12 +1,12 @@
 //
 //  AppExtensions.swift
-//  xApiMac
+//
 //
 //  Created by Douglas Adams on 8/15/15.
 //  Copyright © 2018 Douglas Adams. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 import SwiftyUserDefaults
 
 // ----------------------------------------------------------------------------
@@ -24,13 +24,11 @@ extension DefaultsKeys {
     var clientId: DefaultsKey<String?> { .init("clientId") }
     var defaultConnection: DefaultsKey<String?> { .init("defaultConnection") }
     var defaultGuiConnection: DefaultsKey<String?> { .init("defaultGuiConnection") }
-    var enablePinging: DefaultsKey<Bool> { .init("enablePinging", defaultValue: false) }
     var fontMaxSize: DefaultsKey<Int> { .init("fontMaxSize", defaultValue: 20) }
     var fontMinSize: DefaultsKey<Int> { .init("fontMinSize", defaultValue: 8) }
     var fontName: DefaultsKey<String> { .init("fontName", defaultValue: "Monaco") }
     var fontSize: DefaultsKey<Int> { .init("fontSize", defaultValue: 12) }
     var guiIsEnabled: DefaultsKey<Bool> { .init("guiIsEnabled", defaultValue: false) }
-    var logWindowIsOpen: DefaultsKey<Bool> { .init("logWindowIsOpen", defaultValue: false) }
     var messagesFilterText: DefaultsKey<String> { .init("messagesFilterText", defaultValue: "") }
     var messagesFilterBy: DefaultsKey<String> { .init("messagesFilterBy", defaultValue: "none") }
     var objectsFilterText: DefaultsKey<String> { .init("objectsFilterText", defaultValue: "") }
@@ -118,14 +116,5 @@ extension String {
     ///
     func padTo(_ len: Int, with padCharacter: String = " ") -> String {
         String((self + "               ").prefix(len))
-    }
-}
-
-extension NSMenuItem {
-    /// Boolean equivalent of an NSMenuItem state property
-    ///
-    var boolState: Bool {
-        get { return self.state == NSControl.StateValue.on ? true : false }
-        set { self.state = (newValue == true ? NSControl.StateValue.on : NSControl.StateValue.off) }
     }
 }
