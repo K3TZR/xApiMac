@@ -15,16 +15,17 @@ struct ObjectsView: View {
     var body: some View {
 
         ScrollView([.horizontal, .vertical]) {
-            VStack(alignment: .leading, spacing: 2) {
-                ForEach(objects) { object in
-                    Text(object.line.text)
-                        .padding(.leading, 5)
-                        .font(.system(size: CGFloat(fontSize), weight: .regular, design: .monospaced))
-                        .frame(minWidth: 400, maxWidth: .infinity, maxHeight: 18, alignment: .leading)
-                        .foregroundColor(object.line.color)
-                }
+            ForEach(objects) { object in
+                Text(object.line.text)
+                    .padding(.leading, 5)
+                    .font(.system(size: CGFloat(fontSize), weight: .regular, design: .monospaced))
+                    .frame(minWidth: 400, maxWidth: .infinity, maxHeight: 18, alignment: .leading)
+                    .foregroundColor(object.line.color)
             }
+            .frame( alignment: .leading)
         }
+        .frame( alignment: .leading)
+
     }
 }
 
