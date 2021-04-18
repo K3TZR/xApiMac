@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import xClient
+import xClient6001
 
 struct MetersView: View {
     @EnvironmentObject var meterManager: MeterManager

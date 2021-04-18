@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import xClient
+import xClient6001
 
 struct ApiTesterView: View {
     @EnvironmentObject var tester: Tester
@@ -19,7 +19,8 @@ struct ApiTesterView: View {
             FiltersView(tester: tester)
 
             Divider()
-            ObjectsView(objects: tester.filteredObjects, fontSize: tester.fontSize)
+//            ObjectsView(objects: tester.filteredObjects, fontSize: tester.fontSize)
+            ObjectsViewNew(radioManager: radioManager, fontSize: tester.fontSize)
 
             Divider().background(Color(.systemBlue))
             MessagesView(messages: tester.filteredMessages, showTimestamps: tester.showTimestamps, fontSize: tester.fontSize)

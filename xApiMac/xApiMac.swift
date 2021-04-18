@@ -7,7 +7,7 @@
 
 import AppKit
 import SwiftUI
-import xClient
+import xClient6001
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {

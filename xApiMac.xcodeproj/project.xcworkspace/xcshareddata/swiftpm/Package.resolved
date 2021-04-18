@@ -74,21 +74,21 @@
         }
       },
       {
-        "package": "xClient",
-        "repositoryURL": "https://github.com/K3TZR/xClient.git",
+        "package": "xClient6001",
+        "repositoryURL": "https://github.com/K3TZR/xClient6001.git",
         "state": {
           "branch": null,
-          "revision": "f98279b6c4e5749387a71df862aecce86cdaa47a",
-          "version": "1.2.5"
+          "revision": "01ee9df5bba8d93b2da6c09f6e59fdf2db7fd89f",
+          "version": "0.1.6"
         }
       },
       {
-        "package": "xLib6000",
-        "repositoryURL": "https://github.com/K3TZR/xLib6000.git",
+        "package": "xLib6001",
+        "repositoryURL": "https://github.com/K3TZR/xLib6001.git",
         "state": {
           "branch": null,
-          "revision": "f0f48548b0182835f0d20045ab3fc35dd074b494",
-          "version": "1.7.1"
+          "revision": "42f0d3774aad23646860b0434a21e05b9d0bf006",
+          "version": "0.1.10"
         }
       }
     ]

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import xLib6000
+import xLib6001
 import SwiftUI
 
 final public class MeterManager: ObservableObject {

@@ -35,6 +35,9 @@ Please send any bugs / comments / questions to support@k3tzr.net
 [![W6OP](https://img.shields.io/badge/W6OP-xVoiceKeyer,_xCW-informational)](https://w6op.com) A Mac-based Voice Keyer and a CW Keyer.  
 
 ---
+##### 1.2.6 Release Notes
+* migrated to xClient6001 & xLib6001
+
 ##### 1.2.5 Release Notes
 * changed ContentView to be a TabView
 * added ApiTesterView

@@ -5,10 +5,10 @@
 //  Created by Douglas Adams on 8/9/20.
 //
 
-import xLib6000
+import xLib6001
 import SwiftyUserDefaults
 import SwiftUI
-import xClient
+import xClient6001
 
 #if os(macOS)
 let kAppName = "xApiMac"
@@ -52,6 +52,14 @@ enum FilterMessages: String, CaseIterable {
 }
 
 final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
+    func didConnect() {
+        //
+    }
+
+    func didFailToConnect() {
+        //
+    }
+
     // ----------------------------------------------------------------------------
     // MARK: - Published properties
 
@@ -107,7 +115,7 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
     private var _messageNumber        = 0
     private var _objectNumber         = 0
     private let _objectQ              = DispatchQueue(label: kAppName + ".objectQ", attributes: [.concurrent])
-    private var _packets: [DiscoveryPacket] { Discovery.sharedInstance.discoveryPackets }
+    private var _radios: [Radio] { Discovery.sharedInstance.radios }
     private var _previousCommand      = ""
     private var _startTimestamp: Date?
 
@@ -311,10 +319,10 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
     /// Redraw the Objects
     ///
     private func refreshObjects() {
-        DispatchQueue.main.async { [self] in
-            populateObjects()
-            self.filterCollection(of: .objects)
-        }
+//        DispatchQueue.main.async { [self] in
+//            populateObjects()
+//            self.filterCollection(of: .objects)
+//        }
     }
 
     /// Clear & recreate the Objects array
@@ -345,8 +353,8 @@ final class Tester: ObservableObject, ApiDelegate, RadioManagerDelegate {
             // what verion is the Radio?
             if radio.version.isNewApi {
                 // newApi
-                for packet in _packets where packet.isWan == activePacket?.isWan {
-                    for guiClient in packet.guiClients {
+                for radio in _radios where radio.packet.isWan == activePacket?.isWan {
+                    for guiClient in radio.packet.guiClients {
 
                         activeHandle = guiClient.handle
 

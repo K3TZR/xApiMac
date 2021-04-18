@@ -7,9 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9140FA16262613FF0026C81B /* ObjectsViewNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9140FA15262613FF0026C81B /* ObjectsViewNew.swift */; };
 		91541C1D24E02E7D002FE61E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 91541C1C24E02E7D002FE61E /* Assets.xcassets */; };
 		91541C2024E02E7D002FE61E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 91541C1F24E02E7D002FE61E /* Preview Assets.xcassets */; };
 		91541C3524E02FA1002FE61E /* AppExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91541C3424E02FA1002FE61E /* AppExtensions.swift */; };
+		917F20AE26248C6700204D66 /* xClient6001 in Frameworks */ = {isa = PBXBuildFile; productRef = 917F20AD26248C6700204D66 /* xClient6001 */; };
 		9185317B252262570085EC51 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 9185317A252262570085EC51 /* README.md */; };
 		9185917D257E80D400C7D6F5 /* ObjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9185916F257E80D400C7D6F5 /* ObjectsView.swift */; };
 		9185917E257E80D400C7D6F5 /* FilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859170257E80D400C7D6F5 /* FilterView.swift */; };
@@ -22,12 +24,12 @@
 		919DBBE22612431500BC4AFA /* ApiTesterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 919DBBE12612431500BC4AFA /* ApiTesterView.swift */; };
 		919DBBE62612441600BC4AFA /* MetersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 919DBBE52612441600BC4AFA /* MetersView.swift */; };
 		919DBBF32615499000BC4AFA /* MeterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 919DBBF22615498F00BC4AFA /* MeterManager.swift */; };
-		91CAF17825F46A42009CF981 /* xClient in Frameworks */ = {isa = PBXBuildFile; productRef = 91CAF17725F46A42009CF981 /* xClient */; };
 		91CCF46D2592D7F00063757A /* TopButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CCF46C2592D7F00063757A /* TopButtonsView.swift */; };
 		91FAC20A2606CD19004DCE43 /* xApiMac.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91FAC2092606CD19004DCE43 /* xApiMac.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9140FA15262613FF0026C81B /* ObjectsViewNew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectsViewNew.swift; sourceTree = "<group>"; };
 		91541C1524E02E7C002FE61E /* xApiMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = xApiMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91541C1C24E02E7D002FE61E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		91541C1F24E02E7D002FE61E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -55,7 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				91CAF17825F46A42009CF981 /* xClient in Frameworks */,
+				917F20AE26248C6700204D66 /* xClient6001 in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -131,6 +133,7 @@
 				91CCF46C2592D7F00063757A /* TopButtonsView.swift */,
 				919DBBE12612431500BC4AFA /* ApiTesterView.swift */,
 				919DBBE52612441600BC4AFA /* MetersView.swift */,
+				9140FA15262613FF0026C81B /* ObjectsViewNew.swift */,
 			);
 			path = SubViews;
 			sourceTree = "<group>";
@@ -154,7 +157,7 @@
 				91541C1124E02E7C002FE61E /* Sources */,
 				91541C1224E02E7C002FE61E /* Frameworks */,
 				91541C1324E02E7C002FE61E /* Resources */,
-				91FAC1DA2606411A004DCE43 /* ShellScript */,
+				91FAC1DA2606411A004DCE43 /* swiftlint */,
 			);
 			buildRules = (
 			);
@@ -162,7 +165,7 @@
 			);
 			name = xApiMac;
 			packageProductDependencies = (
-				91CAF17725F46A42009CF981 /* xClient */,
+				917F20AD26248C6700204D66 /* xClient6001 */,
 			);
 			productName = xApi6000;
 			productReference = 91541C1524E02E7C002FE61E /* xApiMac.app */;
@@ -192,7 +195,7 @@
 			);
 			mainGroup = 91541C0C24E02E7C002FE61E;
 			packageReferences = (
-				91CAF17625F46A42009CF981 /* XCRemoteSwiftPackageReference "xClient" */,
+				917F20AC26248C6700204D66 /* XCRemoteSwiftPackageReference "xClient6001" */,
 			);
 			productRefGroup = 91541C1624E02E7C002FE61E /* Products */;
 			projectDirPath = "";
@@ -217,7 +220,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		91FAC1DA2606411A004DCE43 /* ShellScript */ = {
+		91FAC1DA2606411A004DCE43 /* swiftlint */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -226,6 +229,7 @@
 			);
 			inputPaths = (
 			);
+			name = swiftlint;
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -248,6 +252,7 @@
 				919DBBE62612441600BC4AFA /* MetersView.swift in Sources */,
 				91859185257E80D400C7D6F5 /* FiltersView.swift in Sources */,
 				91541C3524E02FA1002FE61E /* AppExtensions.swift in Sources */,
+				9140FA16262613FF0026C81B /* ObjectsViewNew.swift in Sources */,
 				91874C1C2585620600D80F05 /* Tester.swift in Sources */,
 				91FAC20A2606CD19004DCE43 /* xApiMac.swift in Sources */,
 				91859187257E80D400C7D6F5 /* ContentView.swift in Sources */,
@@ -395,7 +400,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.2.5;
+				MARKETING_VERSION = 1.2.6;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -421,7 +426,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.2.5;
+				MARKETING_VERSION = 1.2.6;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -452,21 +457,21 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		91CAF17625F46A42009CF981 /* XCRemoteSwiftPackageReference "xClient" */ = {
+		917F20AC26248C6700204D66 /* XCRemoteSwiftPackageReference "xClient6001" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/K3TZR/xClient.git";
+			repositoryURL = "https://github.com/K3TZR/xClient6001.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.5;
+				minimumVersion = 0.1.6;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		91CAF17725F46A42009CF981 /* xClient */ = {
+		917F20AD26248C6700204D66 /* xClient6001 */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 91CAF17625F46A42009CF981 /* XCRemoteSwiftPackageReference "xClient" */;
-			productName = xClient;
+			package = 917F20AC26248C6700204D66 /* XCRemoteSwiftPackageReference "xClient6001" */;
+			productName = xClient6001;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
