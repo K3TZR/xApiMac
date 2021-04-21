@@ -19,8 +19,7 @@ struct ApiTesterView: View {
             FiltersView(tester: tester)
 
             Divider()
-//            ObjectsView(objects: tester.filteredObjects, fontSize: tester.fontSize)
-            ObjectsViewNew(radioManager: radioManager, fontSize: tester.fontSize)
+            ObjectsViewNew(radioManager: radioManager, filter: tester.objectsFilterBy, fontSize: tester.fontSize)
 
             Divider().background(Color(.systemBlue))
             MessagesView(messages: tester.filteredMessages, showTimestamps: tester.showTimestamps, fontSize: tester.fontSize)
@@ -28,7 +27,7 @@ struct ApiTesterView: View {
             Divider()
             BottomButtonsView(tester: tester, radioManager: radioManager)
         }
-        .frame(minWidth: 920, minHeight: 400)
+//        .frame(minWidth: 920, minHeight: 400)
         .padding()
     }
 }

@@ -22,16 +22,22 @@ struct ContentView: View {
                 .environmentObject(tester)
                 .environmentObject(radioManager)
                 .tabItem {Text("Api Tester")}
+                .padding(.horizontal)
 
             LogView()
                 .environmentObject(LogManager.sharedInstance)
                 .environmentObject(radioManager)
                 .tabItem {Text("Log View")}
+                .padding(.horizontal)
 
             MetersView()
                 .environmentObject(meterManager)
                 .tabItem {Text("Meters View")}
+                .padding(.horizontal)
         }
+//        .padding()
+        .frame(minWidth: 920, minHeight: 400)
+
         // Sheet presentation
        .sheet(item: $radioManager.activeView) { viewType in
            switch viewType {

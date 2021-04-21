@@ -10,17 +10,21 @@ import SwiftUI
 struct FiltersView: View {
     @ObservedObject var tester: Tester
 
+    @State var dummyText = ""
+
     var body: some View {
         HStack(spacing: 40) {
 
             FilterView(selection: $tester.objectsFilterBy,
-                        text: $tester.objectsFilterText,
+                        text: $dummyText,
                         choices: FilterObjects.allCases.map {$0.rawValue},
-                        message: "Filter Objects by")
+                        message: "Hide Objects of type",
+                        showText: false)
             FilterView(selection: $tester.messagesFilterBy,
                         text: $tester.messagesFilterText,
                         choices: FilterMessages.allCases.map {$0.rawValue},
-                        message: "Filter Messages by")
+                        message: "Filter Messages by",
+                        showText: true)
         }
     }
 }

@@ -40,7 +40,8 @@ struct MetersHeaderView: View {
             FilterView(selection: $meterManager.filterSelection,
                        text: $meterManager.filterText,
                        choices: MeterManager.MeterFilter.allCases.map {$0.rawValue},
-                       message: "Filter Meters by")
+                       message: "Filter Meters by",
+                       showText: true)
         }
     }
 }

@@ -35,19 +35,25 @@ struct MessagesView: View {
 
     var body: some View {
 
+        let messagesCount = messages.count
+
         ScrollViewReader { scrollView in
             ScrollView([.horizontal, .vertical]) {
-                ForEach(messages) { message in
-                    Text(showTimestamps(text: message.text))
-                        .padding(.leading, 5)
-                        .font(.system(size: CGFloat(fontSize), weight: .regular, design: .monospaced))
-                        .foregroundColor( lineColor(message.text) )
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                LazyVStack(alignment: .leading) {
+                    ForEach(messages) { message in
+                        Text(showTimestamps(text: message.text))
+                            .padding(.leading, 5)
+                            .font(.system(size: CGFloat(fontSize), weight: .regular, design: .monospaced))
+                            .foregroundColor( lineColor(message.text) )
+                            .frame(maxWidth: .infinity, alignment: .leading)
+//                            .multilineTextAlignment(.leading)
+                    }
+//                    .frame(alignment: .leading)
                 }
-                .frame(alignment: .leading)
+                .frame(minWidth: 3000, maxWidth: .infinity, alignment: .leading)
             }
             .frame(alignment: .leading)
-            .onChange(of: messages.count, perform: { value in
+            .onChange(of: messagesCount, perform: { value in
                 scrollView.scrollTo(value, anchor: .bottomLeading)
             })
         }

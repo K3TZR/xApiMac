@@ -13,18 +13,22 @@ struct FilterView: View {
     @Binding var text: String
     let choices: [String]
     let message: String
+    let showText: Bool
 
     var body: some View {
 
         HStack {
-                Picker(message, selection: $selection) {
-                    ForEach(choices, id: \.self) {
-                        Text($0)
-                    }
-                }.frame(width: 250)
+            Picker(message, selection: $selection) {
+                ForEach(choices, id: \.self) {
+                    Text($0)
+                }
+            }
+            .frame(width: 350)
 
-            TextField("Filter text", text: $text)
+            if showText {
+                TextField("Filter text", text: $text)
                 .modifier(ClearButton(boundText: $text))
+            }
         }
         .pickerStyle(MenuPickerStyle())
     }

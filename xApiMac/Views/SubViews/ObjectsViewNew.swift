@@ -11,188 +11,285 @@ import xLib6001
 
 struct ObjectsViewNew: View {
     @ObservedObject var radioManager: RadioManager
+    let filter: String
     let fontSize: Int
 
     var body: some View {
-        if radioManager.isConnected {
-            VStack(alignment: .leading) {
-                RadioView(radioManager: radioManager)
-                Divider()
-                ClientView(radioManager: radioManager)
-                PanadapterView(radioManager: radioManager)
-            }
-            .font(.system(size: CGFloat(fontSize), weight: .regular, design: .monospaced))
-            .padding()
+
+        let radio = radioManager.activeRadio
+        if radio == nil {
+            EmptyView()
 
         } else {
-            EmptyView()
+            ScrollView([.horizontal, .vertical]) {
+                VStack(alignment: .leading) {
+                    RadioView(radio: radio!)
+                    MetersList(radio: radio!, sliceId: nil, filter: filter)
+                    ClientView(radio: radio!, filter: filter)
+                    Divider().background(Color(.systemOrange))
+                }
+            }
+            .frame(minWidth: 920, maxWidth: .infinity, minHeight: 200, maxHeight: 200, alignment: .leading)
+            .font(.system(size: CGFloat(fontSize), weight: .regular, design: .monospaced))
         }
     }
 }
 
 struct ObjectsViewNew_Previews: PreviewProvider {
     static var previews: some View {
-        ObjectsViewNew(radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate), fontSize: 12)
+        ObjectsViewNew(radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate), filter: "none", fontSize: 12)
     }
 }
 
 struct RadioView: View {
-    @ObservedObject var radioManager: RadioManager
+    @ObservedObject var radio: Radio
 
     var body: some View {
-
-        let radio = radioManager.activeRadio
-        if radio == nil {
-            EmptyView()
-
-        } else {
-            HStack {
-                Text("Radio -> ")
-                Text(radio!.packet.isWan ? "Smartlink" : "Local")
-                Text(radio!.packet.publicIp)
-                Text(radio!.nickname)
-                Text(radio!.packet.model)
-                Text(radio!.serialNumber)
-                Text(radio!.packet.firmwareVersion)
-                Text("Atu=\(radio!.atuPresent ? "Y" : "N")")
-                Text("Gps=\(radio!.gpsPresent ? "Y" : "N")")
-                Text("Scu=\(radio!.numberOfScus)")
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .foregroundColor(Color(.textColor))
-        }
+        HStack(spacing: 20) {
+            Text("Radio -> ")
+            Text(radio.packet.isWan ? "Smartlink" : "Local")
+            Text(radio.packet.publicIp)
+            Text(radio.nickname)
+            Text(radio.packet.model)
+            Text(radio.serialNumber)
+            Text(radio.packet.firmwareVersion)
+            Text("Atu=\(radio.atuPresent ? "Y" : "N")")
+            Text("Gps=\(radio.gpsPresent ? "Y" : "N")")
+            Text("Scu=\(radio.numberOfScus)")
+        }.foregroundColor(Color(.textColor))
     }
 }
 
 struct ClientView: View {
-    @ObservedObject var radioManager: RadioManager
+    @ObservedObject var radio: Radio
+    let filter: String
 
     var body: some View {
-
-        let radio = radioManager.activeRadio
-        if radio == nil {
-            EmptyView()
-        } else {
-            ForEach(radio!.packet.guiClients, id: \.handle) { guiClient in
-                HStack {
+        ForEach(radio.packet.guiClients, id: \.handle) { guiClient in
+            VStack(alignment: .leading) {
+                Divider().background(Color(.systemGreen))
+                HStack(spacing: 20) {
                     Text("Gui Client -> ")
-                    Text("Station=\(guiClient.station)")
-                    Text("Handle=\(guiClient.handle.hex)")
-                    Text("Client Id=\(guiClient.clientId ?? "Unknown")")
-                    Text("LocalPtt=\(guiClient.isLocalPtt ? "Y" : "N")")
-                    Text("Status=\(radio!.packet.status)")
-                    Text("Program=\(guiClient.program)")
+                    Text("Station \(guiClient.station)")
+                    Text("Handle \(guiClient.handle.hex)")
+                    Text("ClientId \(guiClient.clientId ?? "Unknown")")
+                    Text("LocalPtt \(guiClient.isLocalPtt ? "Y" : "N")")
+                    Text("Status \(radio.packet.status)")
+                    Text("Program \(guiClient.program)")
                 }
+                .foregroundColor(.green)
+
+                if filter != "streams" { StreamsList(radio: radio, clientHandle: guiClient.handle) }
+                PanadapterView(radio: radio, guiClient: guiClient, filter: filter)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .foregroundColor(.green)
         }
     }
 }
 
 struct PanadapterView: View {
-    @ObservedObject var radioManager: RadioManager
-
-    @State var handle: UInt32 = 0x40000002
-    @State var id: UInt32 = 0x40000001
-    @State var center = 14_250_000
-    @State var bandwidth = 200_000
+    @ObservedObject var radio: Radio
+    let guiClient: GuiClient
+    let filter: String
 
     var body: some View {
+        let panadapters = Array(radio.panadapters.values)
 
-        let radio = radioManager.activeRadio
-        let pan = radio?.panadapters.first?.value
-
-        if radio == nil || pan == nil {
-            EmptyView()
-
-        } else {
-            VStack(alignment: .leading) {
-                HStack {
-                    Text("Panadapter").padding(.leading, 60)
-                    Text("Id=\(pan!.id.hex)")
-                    Text("Center=\(pan!.center)")
-                    Text("Bandwidth=\(pan!.bandwidth)")
+        ForEach(panadapters) { panadapter in
+            if panadapter.clientHandle == guiClient.handle {
+                VStack(alignment: .leading) {
+                    HStack(spacing: 20) {
+                        Text("Panadapter").frame(width: 100, alignment: .trailing)
+                        Text(panadapter.id.hex)
+                        Text("Center \(panadapter.center)")
+                        Text("Bandwidth \(panadapter.bandwidth)")
+                    }
+                    WaterfallView(radio: radio, panadapter: panadapter)
+                    SliceView(radio: radio, panadapter: panadapter, filter: filter)
                 }
-                WaterfallView(radioManager: radioManager)
-                SliceView(radioManager: radioManager)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .foregroundColor(.green)
         }
     }
 }
 
 struct WaterfallView: View {
-    @ObservedObject var radioManager: RadioManager
-
-//    @State var id: UInt32 = 0x40000008
-//    @State var autoBlackEnabled = false
-//    @State var colorGain = 34
-//    @State var blackLevel = 19
-//    @State var duration = 55
+    @ObservedObject var radio: Radio
+    let panadapter: Panadapter
 
     var body: some View {
+        let waterfalls = Array(radio.waterfalls.values)
 
-        let radio = radioManager.activeRadio
-        let water = radio?.waterfalls.first?.value
-
-        if radio == nil || water == nil {
-            EmptyView()
-
-        } else {
-            HStack {
-                Text("Waterfall").padding(.leading, 60)
-                Text("Id=\(water!.id.hex)")
-                Text("AutoBlack=\(water!.autoBlackEnabled ? "Y" : "N")")
-                Text("ColorGain=\(water!.colorGain)")
-                Text("BlackLevel=\(water!.blackLevel)")
-                Text("Duration=\(water!.lineDuration)")
+        ForEach(waterfalls) { waterfall in
+            if waterfall.panadapterId == panadapter.id {
+                HStack(spacing: 20) {
+                    Text("Waterfall").frame(width: 100, alignment: .trailing)
+                    Text(waterfall.id.hex)
+                    Text("AutoBlack \(waterfall.autoBlackEnabled ? "Y" : "N")")
+                    Text("ColorGain \(waterfall.colorGain)")
+                    Text("BlackLevel \(waterfall.blackLevel)")
+                    Text("Duration \(waterfall.lineDuration)")
+                }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .foregroundColor(.green)
         }
     }
 }
 
 struct SliceView: View {
-    @ObservedObject var radioManager: RadioManager
-
-//    @State var id: UInt32 = 0x40000008
-//    @State var frequency = 14_275_000
-//    @State var mode = "USB"
-//    @State var filterLow = 14_275_100
-//    @State var filterHigh = 14_277_100
-//    @State var active = true
-//    @State var locked = false
+    @ObservedObject var radio: Radio
+    let panadapter: Panadapter
+    let filter: String
 
     var body: some View {
+        let slices = Array(radio.slices.values)
 
-        let radio = radioManager.activeRadio
-        let slice = radio?.slices.first?.value
-
-        if radio == nil || slice == nil {
-            EmptyView()
-
-        } else {
-            HStack {
-                Text("Slice").padding(.leading, 60)
-                Text("Id=\(slice!.id.hex)")
-                Text("Frequency=\(slice!.frequency)")
-                Text("Mode=\(slice!.mode)")
-                Text("FilterLow=\(slice!.filterLow)")
-                Text("FilterHigh=\(slice!.filterHigh)")
-                Text("Active=\(slice!.active ? "Y" : "N")")
-                Text("Locked=\(slice!.locked ? "Y" : "N")")
+        ForEach(slices) { slice in
+            if filter != "slices" && slice.panadapterId == panadapter.id {
+                VStack(alignment: .leading) {
+                    HStack(spacing: 20) {
+                        Text("Slice").frame(width: 100, alignment: .trailing)
+                        Text(String(format: "% 3d", slice.id))
+                        Text("Frequency \(slice.frequency)")
+                        Text("Mode \(slice.mode)")
+                        Text("FilterLow \(slice.filterLow)")
+                        Text("FilterHigh \(slice.filterHigh)")
+                        Text("Active \(slice.active ? "Y" : "N")")
+                        Text("Locked \(slice.locked ? "Y" : "N")")
+                        Text("DAX channel \(slice.daxChannel)")
+                        Text("DAX clients \(slice.daxClients)")
+                    }
+                    MetersList(radio: radio, sliceId: slice.id, filter: filter)
+                }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .foregroundColor(.green)
         }
     }
 }
 
-/*
- */
+struct MetersList: View {
+    @ObservedObject var radio: Radio
+    let sliceId: ObjectId?
+    let filter: String
+
+    var body: some View {
+        let meters = Array(radio.meters.values)
+
+        VStack(alignment: .leading) {
+            ForEach(meters) { meter in
+                if filter != "allMeters" &&
+                    ((filter != "sliceMeters" && sliceId != nil && meter.source == "slc" && meter.group == String(sliceId!)) || (filter != "otherMeters" && sliceId == nil && meter.source != "slc")) {
+                    HStack(spacing: 20) {
+                        Text("Meter").frame(width: 50, alignment: .leading).padding(.leading, sliceId == nil ? 20 : 100)
+                        Text(String(format: "% 3d", meter.id)).frame(width: 50, alignment: .leading)
+                        Text(meter.name).frame(width: 120, alignment: .leading)
+                        Text("Low")
+                        Text(String(format: "%4.2f", meter.low)).frame(width: 75, alignment: .trailing)
+                        Text("High")
+                        Text(String(format: "%4.2f", meter.high)).frame(width: 75, alignment: .trailing)
+                        Text(meter.units).frame(width: 50, alignment: .leading)
+                        Text(String(format: "%02d", meter.fps) + " fps").frame(width: 75, alignment: .leading)
+                        Text(meter.desc)
+                    }
+                }
+            }.foregroundColor(.secondary)
+        }
+    }
+}
+
+struct StreamsList: View {
+    @ObservedObject var radio: Radio
+    let clientHandle: Handle
+
+    var body: some View {
+        let opus = Array(radio.opusAudioStreams.values)
+        let remRx = Array(radio.remoteRxAudioStreams.values)
+        let remTx = Array(radio.remoteTxAudioStreams.values)
+        let mics = Array(radio.daxMicAudioStreams.values)
+        let rxs = Array(radio.daxRxAudioStreams.values)
+        let txs = Array(radio.daxTxAudioStreams.values)
+        let iqs = Array(radio.daxIqStreams.values)
+
+        VStack(alignment: .leading) {
+            ForEach(opus) { stream in
+                if clientHandle == stream.clientHandle {
+                    HStack(spacing: 20) {
+                        Text("OpusAudioStream")
+                        Text(stream.id.hex)
+                        Text("Handle \(stream.clientHandle.hex)")
+                        Text("Ip \(stream.ip)")
+                        Text("Streaming \(stream.isStreaming ? "Y" : "N")")
+                        Text("Port \(stream.port)")
+                        Text("Stopped \(stream.rxStopped ? "Y" : "N")")
+                    }
+                }
+            }
+            ForEach(remRx) { stream in
+                if clientHandle == stream.clientHandle {
+                    HStack(spacing: 20) {
+                        Text("RemoteRxAudioStream")
+                        Text(stream.id.hex)
+                        Text("Handle \(stream.clientHandle.hex)")
+                        Text("Compression \(stream.compression)")
+                        Text("Streaming \(stream.isStreaming ? "Y" : "N")")
+                    }
+                }
+            }
+            ForEach(remTx) { stream in
+                if clientHandle == stream.clientHandle {
+                    HStack(spacing: 20) {
+                        Text("RemoteTxAudioStream")
+                        Text(stream.id.hex)
+                        Text("Handle \(stream.clientHandle.hex)")
+                        Text("Compression \(stream.compression)")
+                        Text("Streaming \(stream.isStreaming ? "Y" : "N")")
+                    }
+                }
+            }
+            ForEach(mics) { stream in
+                if clientHandle == stream.clientHandle {
+                    HStack(spacing: 20) {
+                        Text("DaxMicAudioStream")
+                        Text(stream.id.hex)
+                        Text("Handle \(stream.clientHandle.hex)")
+                        Text("Ip \(stream.ip)")
+                    }
+                }
+            }
+            ForEach(rxs) { stream in
+                if clientHandle == stream.clientHandle {
+                    HStack(spacing: 20) {
+                        Text("DaxRxAudioStream")
+                        Text(stream.id.hex)
+                        Text("Handle \(stream.clientHandle.hex)")
+                        Text("Channel \(stream.daxChannel)")
+                        Text("Ip \(stream.ip)")
+                    }
+                }
+            }
+            ForEach(txs) { stream in
+                if clientHandle == stream.clientHandle {
+                    HStack(spacing: 20) {
+                        Text("DaxTxAudioStream")
+                        Text("Id=\(stream.id.hex)")
+                        Text("Handle=\(stream.clientHandle.hex)")
+                        Text("Transmit=\(stream.isTransmitChannel ? "Y" : "N")")
+                    }
+                }
+            }
+            ForEach(iqs) { stream in
+                if clientHandle == stream.clientHandle {
+                    HStack(spacing: 20) {
+                        Text("DaxTxAudioStream")
+                        Text(stream.id.hex)
+                        Text("Handle=\(stream.clientHandle.hex)")
+                        Text("Channel \(stream.channel)")
+                        Text("Ip \(stream.ip)")
+                        Text("Pan \(stream.pan.hex)")
+                        Text("Streaming \(stream.isStreaming ? "Y" : "N")")
+                    }
+                }
+            }
+        }
+        .foregroundColor(.purple)
+    }
+}
 
 public extension UInt32 {
     var hex: String { return String(format: "0x%08X", self) }
