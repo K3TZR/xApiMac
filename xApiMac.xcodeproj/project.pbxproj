@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9140FA16262613FF0026C81B /* ObjectsViewNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9140FA15262613FF0026C81B /* ObjectsViewNew.swift */; };
+		9140FA16262613FF0026C81B /* ObjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9140FA15262613FF0026C81B /* ObjectsView.swift */; };
 		91541C1D24E02E7D002FE61E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 91541C1C24E02E7D002FE61E /* Assets.xcassets */; };
 		91541C2024E02E7D002FE61E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 91541C1F24E02E7D002FE61E /* Preview Assets.xcassets */; };
 		91541C3524E02FA1002FE61E /* AppExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91541C3424E02FA1002FE61E /* AppExtensions.swift */; };
@@ -27,7 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		9140FA15262613FF0026C81B /* ObjectsViewNew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectsViewNew.swift; sourceTree = "<group>"; };
+		9140FA15262613FF0026C81B /* ObjectsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectsView.swift; sourceTree = "<group>"; };
 		91541C1524E02E7C002FE61E /* xApiMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = xApiMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91541C1C24E02E7D002FE61E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		91541C1F24E02E7D002FE61E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -128,7 +128,7 @@
 				91CCF46C2592D7F00063757A /* TopButtonsView.swift */,
 				919DBBE12612431500BC4AFA /* ApiTesterView.swift */,
 				919DBBE52612441600BC4AFA /* MetersView.swift */,
-				9140FA15262613FF0026C81B /* ObjectsViewNew.swift */,
+				9140FA15262613FF0026C81B /* ObjectsView.swift */,
 			);
 			path = SubViews;
 			sourceTree = "<group>";
@@ -246,7 +246,7 @@
 				919DBBE62612441600BC4AFA /* MetersView.swift in Sources */,
 				91859185257E80D400C7D6F5 /* FiltersView.swift in Sources */,
 				91541C3524E02FA1002FE61E /* AppExtensions.swift in Sources */,
-				9140FA16262613FF0026C81B /* ObjectsViewNew.swift in Sources */,
+				9140FA16262613FF0026C81B /* ObjectsView.swift in Sources */,
 				91874C1C2585620600D80F05 /* Tester.swift in Sources */,
 				91FAC20A2606CD19004DCE43 /* xApiMac.swift in Sources */,
 				91859187257E80D400C7D6F5 /* ContentView.swift in Sources */,
@@ -392,7 +392,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.2.8;
+				MARKETING_VERSION = 1.2.9;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -418,7 +418,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.2.8;
+				MARKETING_VERSION = 1.2.9;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
