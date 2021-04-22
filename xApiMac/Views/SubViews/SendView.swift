@@ -19,8 +19,8 @@ struct SendView: View {
                     radioManager.send(command: tester.cmdToSend)
                     tester.sent(command: tester.cmdToSend)
             }
-//            .frame(width: 40, alignment: .leading)
             .disabled(!radioManager.isConnected)
+            .keyboardShortcut(.defaultAction)
 
             TextField("Command to send", text: $tester.cmdToSend)
                 .modifier(ClearButton(boundText: $tester.cmdToSend))

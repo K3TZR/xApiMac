@@ -9,15 +9,18 @@ import SwiftUI
 import xClient6001
 
 struct MetersView: View {
-    @EnvironmentObject var meterManager: MeterManager
+//    @EnvironmentObject var meterManager: MeterManager
+    @EnvironmentObject var radioManager: RadioManager
 
     var body: some View {
         VStack(alignment: .leading) {
             MetersHeaderView()
-                .environmentObject(meterManager)
+//                .environmentObject(meterManager)
+                .environmentObject(radioManager)
             MetersListHeadingView()
             MetersListView()
-                .environmentObject(meterManager)
+//                .environmentObject(meterManager)
+                .environmentObject(radioManager)
         }
         .padding()
     }
@@ -26,22 +29,23 @@ struct MetersView: View {
 struct MetersView_Previews: PreviewProvider {
     static var previews: some View {
         MetersView()
-            .environmentObject(MeterManager())
-
+//            .environmentObject(MeterManager())
+            .environmentObject(RadioManager(delegate: Tester() as RadioManagerDelegate))
     }
 }
 
 struct MetersHeaderView: View {
-    @EnvironmentObject var meterManager: MeterManager
+//    @EnvironmentObject var meterManager: MeterManager
+    @EnvironmentObject var radioManager: RadioManager
 
     var body: some View {
         VStack(spacing: 20) {
             Text("NOTE: Meter display is being refreshed once a second, actual data rate may be faster or slower").foregroundColor(.red)
-            FilterView(selection: $meterManager.filterSelection,
-                       text: $meterManager.filterText,
-                       choices: MeterManager.MeterFilter.allCases.map {$0.rawValue},
-                       message: "Filter Meters by",
-                       showText: true)
+//            FilterView(selection: $meterManager.filterSelection,
+//                       text: $meterManager.filterText,
+//                       choices: MeterManager.MeterFilter.allCases.map {$0.rawValue},
+//                       message: "Filter Meters by",
+//                       showText: true)
         }
     }
 }
@@ -53,7 +57,7 @@ struct MetersListHeadingView: View {
 
         VStack(alignment: .leading) {
             Divider()
-            HStack(spacing: 30) {
+            HStack(spacing: 20) {
                 Text("Id").frame(width: 30)
                 Text("Source").frame(width: width)
                 Text("Group").frame(width: width)
@@ -71,7 +75,8 @@ struct MetersListHeadingView: View {
 }
 
 struct MetersListView: View {
-    @EnvironmentObject var meterManager: MeterManager
+    @EnvironmentObject var radioManager: RadioManager
+
     @State var meterSelection: UInt16?
 
     func valueColor(_ value: Float, _ low: Float, _ high: Float) -> Color {
@@ -83,22 +88,31 @@ struct MetersListView: View {
     var body: some View {
 
         let width: CGFloat = 70
+        let radio = radioManager.activeRadio
 
-        VStack(alignment: .leading) {
-            List(meterManager.filteredMeters, id: \.id, selection: $meterSelection) { meter in
-                HStack(spacing: 30) {
-                    Text(String(meter.id)).frame(width: 30)
-                    Text(meter.source).frame(width: width)
-                    Text(meter.group).frame(width: width)
-                    Text(meter.name).frame(width: 100, alignment: .leading)
-                    Text( String(format: "%3.2f", meter.value) )
-                        .foregroundColor(valueColor(meter.value, meter.low, meter.high))
-                        .frame(width: width, alignment: .trailing)
-                    Text(meter.units).frame(width: width, alignment: .leading)
-                    Text(String(meter.low)).frame(width: width, alignment: .trailing)
-                    Text(String(meter.high)).frame(width: width, alignment: .trailing)
-                    Text(String(meter.fps)).frame(width: width, alignment: .trailing)
-                    Text(meter.desc).frame(width: 650, alignment: .leading)
+        if radio == nil {
+            EmptyView()
+
+        } else {
+            let meters = Array(radio!.meters.values).sorted {$0.id < $1.id}
+
+            VStack(alignment: .leading) {
+                List(meters, id: \.id, selection: $meterSelection) { meter in
+                    HStack(spacing: 20) {
+                        Text(String(format: "% 3d", meter.id)).frame(width: 30)
+                        Text(meter.source).frame(width: width)
+                        Text(meter.group).frame(width: width, alignment: .trailing)
+                        Text(meter.name).frame(width: 100, alignment: .leading)
+                        Text( String(format: "%3.2f", meter.value) )
+                            .foregroundColor(valueColor(meter.value, meter.low, meter.high))
+                            .frame(width: width, alignment: .trailing)
+                        Text(meter.units).frame(width: width, alignment: .leading)
+                        Text(String(format: "%4.2f", meter.low)).frame(width: width, alignment: .trailing)
+                        Text(String(format: "%4.2f", meter.high)).frame(width: width, alignment: .trailing)
+                        Text(String(format: "%02d", meter.fps)).frame(width: width, alignment: .trailing)
+                        Text(meter.desc).frame(width: 600, alignment: .leading)
+                    }
+                    .font(.system(size: CGFloat(12), weight: .regular, design: .monospaced))
                 }
             }
         }

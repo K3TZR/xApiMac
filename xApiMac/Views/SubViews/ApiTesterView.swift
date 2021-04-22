@@ -19,7 +19,7 @@ struct ApiTesterView: View {
             FiltersView(tester: tester)
 
             Divider()
-            ObjectsViewNew(radioManager: radioManager, filter: tester.objectsFilterBy, fontSize: tester.fontSize)
+            ObjectsView(radioManager: radioManager, filter: tester.objectsFilterBy, fontSize: tester.fontSize)
 
             Divider().background(Color(.systemBlue))
             MessagesView(messages: tester.filteredMessages, showTimestamps: tester.showTimestamps, fontSize: tester.fontSize)

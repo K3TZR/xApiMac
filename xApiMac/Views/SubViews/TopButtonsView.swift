@@ -23,7 +23,7 @@ struct TopButtonsView: View {
                     radioManager.connect()
                 }
             }
-            .keyboardShortcut(.defaultAction)
+            .keyboardShortcut(radioManager.isConnected ? .cancelAction : .defaultAction)
             .help("Using the Default connection type")
 
             HStack(spacing: 20) {
@@ -59,5 +59,6 @@ struct TopButtonsView: View {
 struct TopButtonsView_Previews: PreviewProvider {
     static var previews: some View {
         TopButtonsView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate) )
+            .previewLayout(.fixed(width: 2160 / 2.0, height: 1620 / 2.0))
     }
 }

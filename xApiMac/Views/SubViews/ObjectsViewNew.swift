@@ -9,7 +9,7 @@ import SwiftUI
 import xClient6001
 import xLib6001
 
-struct ObjectsViewNew: View {
+struct ObjectsView: View {
     @ObservedObject var radioManager: RadioManager
     let filter: String
     let fontSize: Int
@@ -22,11 +22,14 @@ struct ObjectsViewNew: View {
 
         } else {
             ScrollView([.horizontal, .vertical]) {
-                VStack(alignment: .leading) {
-                    RadioView(radio: radio!)
-                    MetersList(radio: radio!, sliceId: nil, filter: filter)
-                    ClientView(radio: radio!, filter: filter)
-                    Divider().background(Color(.systemOrange))
+                ScrollViewReader { scrollView in
+                    VStack(alignment: .leading) {
+                        RadioView(radio: radio!)
+                        MetersList(radio: radio!, sliceId: nil, filter: filter)
+                        ClientView(radio: radio!, filter: filter)
+                    }.onAppear {
+                        scrollView.scrollTo(0, anchor: .topLeading)
+                    }
                 }
             }
             .frame(minWidth: 920, maxWidth: .infinity, minHeight: 200, maxHeight: 200, alignment: .leading)
@@ -35,9 +38,9 @@ struct ObjectsViewNew: View {
     }
 }
 
-struct ObjectsViewNew_Previews: PreviewProvider {
+struct ObjectsView_Previews: PreviewProvider {
     static var previews: some View {
-        ObjectsViewNew(radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate), filter: "none", fontSize: 12)
+        ObjectsView(radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate), filter: "none", fontSize: 12)
     }
 }
 
@@ -168,6 +171,12 @@ struct MetersList: View {
     let sliceId: ObjectId?
     let filter: String
 
+    func valueColor(_ value: Float, _ low: Float, _ high: Float) -> Color {
+        if value > high { return .red }
+        if value < low { return .yellow }
+        return .green
+    }
+
     var body: some View {
         let meters = Array(radio.meters.values)
 
@@ -179,10 +188,11 @@ struct MetersList: View {
                         Text("Meter").frame(width: 50, alignment: .leading).padding(.leading, sliceId == nil ? 20 : 100)
                         Text(String(format: "% 3d", meter.id)).frame(width: 50, alignment: .leading)
                         Text(meter.name).frame(width: 120, alignment: .leading)
-                        Text("Low")
-                        Text(String(format: "%4.2f", meter.low)).frame(width: 75, alignment: .trailing)
-                        Text("High")
-                        Text(String(format: "%4.2f", meter.high)).frame(width: 75, alignment: .trailing)
+                        Text(String(format: "%-4.2f", meter.low)).frame(width: 100, alignment: .trailing)
+                        Text(String(format: "%-4.2f", meter.value))
+                            .foregroundColor(valueColor(meter.value, meter.low, meter.high))
+                            .frame(width: 100, alignment: .trailing)
+                        Text(String(format: "%-4.2f", meter.high)).frame(width: 100, alignment: .trailing)
                         Text(meter.units).frame(width: 50, alignment: .leading)
                         Text(String(format: "%02d", meter.fps) + " fps").frame(width: 75, alignment: .leading)
                         Text(meter.desc)
@@ -289,8 +299,4 @@ struct StreamsList: View {
         }
         .foregroundColor(.purple)
     }
-}
-
-public extension UInt32 {
-    var hex: String { return String(format: "0x%08X", self) }
 }

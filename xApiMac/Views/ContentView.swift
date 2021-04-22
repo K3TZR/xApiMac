@@ -11,7 +11,6 @@ import xClient6001
 struct ContentView: View {
     @ObservedObject var tester: Tester
     @ObservedObject var radioManager: RadioManager
-    @ObservedObject var meterManager: MeterManager
 
     @State var selectedTab = 1
 
@@ -29,13 +28,7 @@ struct ContentView: View {
                 .environmentObject(radioManager)
                 .tabItem {Text("Log View")}
                 .padding(.horizontal)
-
-            MetersView()
-                .environmentObject(meterManager)
-                .tabItem {Text("Meters View")}
-                .padding(.horizontal)
         }
-//        .padding()
         .frame(minWidth: 920, minHeight: 400)
 
         // Sheet presentation
@@ -53,6 +46,7 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate), meterManager: MeterManager() )
+//        ContentView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate), meterManager: MeterManager() )
+        ContentView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate))
     }
 }
