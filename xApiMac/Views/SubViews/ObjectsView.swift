@@ -25,7 +25,7 @@ struct ObjectsView: View {
                 ScrollViewReader { scrollView in
                     VStack(alignment: .leading) {
                         RadioView(radio: radio!)
-                        MetersList(radio: radio!, sliceId: nil, filter: filter)
+                        MeterView(radio: radio!, sliceId: nil, filter: filter)
                         ClientView(radio: radio!, filter: filter)
                     }.onAppear {
                         scrollView.scrollTo(0, anchor: .topLeading)
@@ -82,7 +82,7 @@ struct ClientView: View {
                 }
                 .foregroundColor(.green)
 
-                if filter != "streams" { StreamsList(radio: radio, clientHandle: guiClient.handle) }
+                if filter != "streams" { StreamView(radio: radio, clientHandle: guiClient.handle) }
                 PanadapterView(radio: radio, guiClient: guiClient, filter: filter)
             }
         }
@@ -159,14 +159,14 @@ struct SliceView: View {
                         Text("DAX channel \(slice.daxChannel)")
                         Text("DAX clients \(slice.daxClients)")
                     }
-                    MetersList(radio: radio, sliceId: slice.id, filter: filter)
+                    MeterView(radio: radio, sliceId: slice.id, filter: filter)
                 }
             }
         }
     }
 }
 
-struct MetersList: View {
+struct MeterView: View {
     @ObservedObject var radio: Radio
     let sliceId: ObjectId?
     let filter: String
@@ -203,7 +203,7 @@ struct MetersList: View {
     }
 }
 
-struct StreamsList: View {
+struct StreamView: View {
     @ObservedObject var radio: Radio
     let clientHandle: Handle
 

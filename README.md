@@ -11,7 +11,7 @@
 * macOS 11.0 (Big Sur) and higher
 
 ##### Builds
-Compiled [RELEASE builds](https://github.com/K3TZR/xApi6000/releases)  will be created at relatively stable points, please use them.  If you require a DEBUG build you will have to build from sources. 
+Compiled [RELEASE builds](https://github.com/K3TZR/xApiMac/releases)  will be created at relatively stable points, please use them.  If you require a DEBUG build you will have to build from sources. 
 
 ##### Comments / Questions
 Please send any bugs / comments / questions to support@k3tzr.net
@@ -19,9 +19,9 @@ Please send any bugs / comments / questions to support@k3tzr.net
 ##### Credits
 [CocoaAsyncSocket](https://github.com/robbiehanson/CocoaAsyncSocket)
 
-[xLib6000](https://github.com/K3TZR/xLib6000.git)
+[xLib6001](https://github.com/K3TZR/xLib6001.git)
 
-[xClient](https://github.com/K3TZR/xClient.git)
+[xClient6001](https://github.com/K3TZR/xClient6001.git)
 
 [SwiftyUserDefaults](https://github.com/sunshinejr/SwiftyUserDefaults.git)
 
@@ -35,6 +35,12 @@ Please send any bugs / comments / questions to support@k3tzr.net
 [![W6OP](https://img.shields.io/badge/W6OP-xVoiceKeyer,_xCW-informational)](https://w6op.com) A Mac-based Voice Keyer and a CW Keyer.  
 
 ---
+##### 1.2.11 Release Notes
+* updated README to reference "6001" versions of xLib and xClient
+* corrected link to releases
+* added "Color" to Message struct, moved logic out of the MessagesView
+* cleanup of Meter related code
+
 ##### 1.2.10 Release Notes
 * removed all references to Objects collection in Tester.swift
 

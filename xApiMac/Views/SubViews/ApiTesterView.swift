@@ -27,7 +27,6 @@ struct ApiTesterView: View {
             Divider()
             BottomButtonsView(tester: tester, radioManager: radioManager)
         }
-//        .frame(minWidth: 920, minHeight: 400)
         .padding()
     }
 }

@@ -21,7 +21,7 @@ struct BottomButtonsView: View {
             Spacer()
             Toggle("Clear on Connect", isOn: $tester.clearAtConnect)
             Toggle("Clear on Disconnect", isOn: $tester.clearAtDisconnect)
-            Button("Clear Now") { tester.clearObjectsAndMessages() }
+            Button("Clear Now") { tester.clearMessages() }
         }
     }
 }

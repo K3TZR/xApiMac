@@ -27,18 +27,15 @@ struct XApiMac: App {
 
     var tester: Tester
     var radioManager: RadioManager
-//    var meterManager: MeterManager
 
     init() {
         tester = Tester()
         radioManager = RadioManager(delegate: tester as RadioManagerDelegate)
-//        meterManager = MeterManager()
     }
 
     var body: some Scene {
 
         WindowGroup {
-//            ContentView(tester: tester, radioManager: radioManager, meterManager: meterManager)
             ContentView(tester: tester, radioManager: radioManager)
                 .navigationTitle("xApiMac " + Version().longString)
         }

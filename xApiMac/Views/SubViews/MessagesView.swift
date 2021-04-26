@@ -21,18 +21,6 @@ struct MessagesView: View {
         }
     }
 
-    func lineColor(_ text: String) -> Color {
-        var color = Color(.textColor)
-
-        let base = text.dropFirst(9)
-        if base.prefix(1) == "C" { color = Color(.systemGreen) }
-        if base.prefix(1) == "R" && base.contains("|0|") { color = Color(.systemGray) }
-        if base.prefix(1) == "R" && !base.contains("|0|") { color = Color(.systemRed) }
-        if base.prefix(2) == "S0" { color = Color(.systemOrange) }
-
-        return color
-    }
-
     var body: some View {
 
         let messageCount = messages.count
@@ -44,7 +32,7 @@ struct MessagesView: View {
                         Text(showTimestamps(text: message.text))
                             .padding(.leading, 5)
                             .font(.system(size: CGFloat(fontSize), weight: .regular, design: .monospaced))
-                            .foregroundColor( lineColor(message.text) )
+                            .foregroundColor( message.color )
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
@@ -62,10 +50,10 @@ struct MessagesView_Previews: PreviewProvider {
 
     static var previews: some View {
         let mockMessages = [
-            Message(id: 0, text: "11:40:04 C  The first message"),
-            Message(id: 1, text: "11:40:05 R  The second message"),
-            Message(id: 2, text: "11:40:06 S0 The third message"),
-            Message(id: 3, text: "11:40:06    The fourth message")
+            Message(id: 0, text: "11:40:04 C  The first message", color: .red),
+            Message(id: 1, text: "11:40:05 R  The second message", color: .orange),
+            Message(id: 2, text: "11:40:06 S0 The third message", color: .yellow),
+            Message(id: 3, text: "11:40:06    The fourth message", color: .green)
         ]
         MessagesView(messages: mockMessages, showTimestamps: true, fontSize: 20)
     }

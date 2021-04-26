@@ -46,7 +46,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-//        ContentView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate), meterManager: MeterManager() )
         ContentView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate))
     }
 }

@@ -19,6 +19,7 @@ let kAppName = "xApiIos"
 struct Message: Identifiable {
     var id = 0
     var text = ""
+    var color = Color(.textColor)
 }
 
 enum FilterObjects: String, CaseIterable {
@@ -59,7 +60,6 @@ final class Tester: ObservableObject {
     @Published var filteredMessages             = [Message]()
     @Published var messagesFilterBy: String     = "none" { didSet {filterCollection() ; Defaults.messagesFilterBy = messagesFilterBy }}
     @Published var messagesFilterText           = "" { didSet {filterCollection() ; Defaults.messagesFilterText = messagesFilterText }}
-    @Published var messagesScrollTo: CGPoint?
     @Published var objectsFilterBy: String      = "none"
 
     // ----------------------------------------------------------------------------
@@ -140,6 +140,7 @@ final class Tester: ObservableObject {
             _log("Tester: ClientId created - \(clientId!)", .debug, #function, #file, #line)
         }
         _api.testerModeEnabled = true
+
         // receive delegate actions from the Api
         _api.testerDelegate = self
     }
@@ -148,7 +149,6 @@ final class Tester: ObservableObject {
     // MARK: - Internal methods (Tester related)
 
     /// A command  was sent to the Radio
-    ///
     func sent(command: String) {
         guard command.isEmpty == false else { return }
 
@@ -162,8 +162,7 @@ final class Tester: ObservableObject {
     }
 
     /// Clear the messages area
-    ///
-    func clearObjectsAndMessages() {
+    func clearMessages() {
         DispatchQueue.main.async {  [self] in
             _messageNumber = 0
             messages.removeAll()
@@ -172,12 +171,11 @@ final class Tester: ObservableObject {
     }
 
     /// Send a command to the Radio
-    ///
     func sendCommand(_ command: String) {
         guard command.isEmpty == false else { return }
 
         // send the command to the Radio via TCP
-        _api.radio!.sendCommand( command )
+        _api.send( command )
 
         if command != _previousCommand { _commandHistory.append(command) }
 
@@ -190,7 +188,6 @@ final class Tester: ObservableObject {
 
     /// Adjust the font size larger or smaller (within limits)
     /// - Parameter larger:           larger?
-    ///
     func fontSize(larger: Bool) {
         // incr / decr the size
         var newSize =  Defaults.fontSize + (larger ? +1 : -1)
@@ -208,7 +205,6 @@ final class Tester: ObservableObject {
 
     /// Filter the message and object collections
     /// - Parameter type:     object type
-    ///
     private func filterCollection() {
         switch messagesFilterBy {
 
@@ -229,7 +225,6 @@ final class Tester: ObservableObject {
 
     /// Add an entry to the messages collection
     /// - Parameter text:       the text of the entry
-    ///
     private func populateMessages(_ text: String) {
         DispatchQueue.main.async { [self] in
             // guard that a session has been started
@@ -240,16 +235,28 @@ final class Tester: ObservableObject {
             let stampedText = String( format: "%8.3f", timeInterval) + " " + text
 
             _messageNumber += 1
-            messages.append( Message(id: _messageNumber, text: stampedText))
+            messages.append( Message(id: _messageNumber, text: stampedText, color: lineColor(text)))
 
             filterCollection()
         }
     }
+    
+    /// Assign each text line a color
+    /// - Parameter text:   the text line
+    /// - Returns:          a Color
+    private func lineColor(_ text: String) -> Color {
+        var color = Color(.textColor)                                                       // All others
+
+        if text.prefix(1) == "C" { color = Color(.systemGreen) }                            // Commands
+        if text.prefix(1) == "R" && text.contains("|0|") { color = Color(.systemGray) }     // Replies no error
+        if text.prefix(1) == "R" && !text.contains("|0|") { color = Color(.systemRed) }     // Replies w/error
+        if text.prefix(2) == "S0" { color = Color(.systemOrange) }                          // Status
+
+        return color
+    }
 
     /// Parse a Reply message. format: <sequenceNumber>|<hexResponse>|<message>[|<debugOutput>]
-    ///
     /// - parameter commandSuffix:    a Command Suffix
-    ///
     private func parseReplyMessage(_ commandSuffix: String) {
         // separate it into its components
         let components = commandSuffix.components(separatedBy: "|")
@@ -264,8 +271,8 @@ final class Tester: ObservableObject {
 }
 
 extension Tester: RadioManagerDelegate {
-    func willConnect() { if clearAtConnect { clearObjectsAndMessages() } }
-    func willDisconnect() { if clearAtDisconnect { clearObjectsAndMessages() } }
+    func willConnect() { if clearAtConnect { clearMessages() } }
+    func willDisconnect() { if clearAtDisconnect { clearMessages() } }
 
     // unused RadioManagerDelegate methods
     func didConnect() { /* unused */ }
