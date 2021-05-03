@@ -50,17 +50,16 @@ final class Tester: ObservableObject {
     @Published var clearAtDisconnect            = false { didSet {Defaults.clearAtDisconnect = clearAtDisconnect} }
     @Published var clearOnSend                  = false { didSet {Defaults.clearOnSend = clearOnSend} }
     @Published var cmdToSend                    = ""
-    @Published var guiIsEnabled                 = false { didSet {Defaults.guiIsEnabled = guiIsEnabled} }
+    @Published var filteredMessages             = [Message]()
     @Published var fontSize                     = 12 { didSet {Defaults.fontSize = fontSize} }
+    @Published var guiIsEnabled                 = false { didSet {Defaults.guiIsEnabled = guiIsEnabled} }
+    @Published var messagesFilterBy: String     = "none" { didSet {filterCollection() ; Defaults.messagesFilterBy = messagesFilterBy }}
+    @Published var messagesFilterText           = "" { didSet {filterCollection() ; Defaults.messagesFilterText = messagesFilterText }}
+    @Published var objectsFilterBy: String      = "none" { didSet {filterCollection() ; Defaults.objectsFilterBy = objectsFilterBy }}
     @Published var showPings                    = false { didSet {Defaults.showPings = showPings} }
     @Published var showReplies                  = false { didSet {Defaults.showReplies = showReplies} }
     @Published var showTimestamps               = false { didSet {Defaults.showTimestamps = showTimestamps} }
     @Published var smartlinkIsEnabled           = false { didSet {Defaults.smartlinkIsEnabled = smartlinkIsEnabled} }
-
-    @Published var filteredMessages             = [Message]()
-    @Published var messagesFilterBy: String     = "none" { didSet {filterCollection() ; Defaults.messagesFilterBy = messagesFilterBy }}
-    @Published var messagesFilterText           = "" { didSet {filterCollection() ; Defaults.messagesFilterText = messagesFilterText }}
-    @Published var objectsFilterBy: String      = "none"
 
     // ----------------------------------------------------------------------------
     // MARK: - Internal properties
@@ -78,24 +77,24 @@ final class Tester: ObservableObject {
         get { Defaults.defaultGuiConnection }
         set { Defaults.defaultGuiConnection = newValue }
     }
-    var isConnected  = false
+    var isConnected = false
     var smartlinkEmail: String? {
         get { Defaults.smartlinkEmail }
         set { Defaults.smartlinkEmail = newValue }
     }
-    var stationName  = ""
+    var stationName = ""
 
     // ----------------------------------------------------------------------------
     // MARK: - Private properties
 
-    private var _api                  = Api.sharedInstance
-    private var _commandsIndex        = 0
-    private var _commandHistory       = [String]()
-    private let _log: (_ msg: String, _ level: MessageLevel, _ function: StaticString, _ file: StaticString, _ line: Int) -> Void
-    private var _messageNumber        = 0
-    private let _objectQ              = DispatchQueue(label: kAppName + ".objectQ", attributes: [.concurrent])
+    private var _api = Api.sharedInstance
+    private var _commandsIndex = 0
+    private var _commandHistory = [String]()
+    private lazy var _log = LogManager.sharedInstance.logMessage
+    private var _messageNumber = 0
+    private let _objectQ  = DispatchQueue(label: kAppName + ".objectQ", attributes: [.concurrent])
     private var _radios: [Radio] { Discovery.sharedInstance.radios }
-    private var _previousCommand      = ""
+    private var _previousCommand = ""
     private var _startTimestamp: Date?
 
     // ----------------------------------------------------------------------------
@@ -112,26 +111,25 @@ final class Tester: ObservableObject {
     // MARK: - Initialization
 
     init() {
-        // initialize @Published properties
-        clearAtConnect                  = Defaults.clearAtConnect
-        clearAtDisconnect               = Defaults.clearAtDisconnect
-        clearOnSend                     = Defaults.clearOnSend
-        fontSize                        = Defaults.fontSize
-        guiIsEnabled                    = Defaults.guiIsEnabled
-        showPings                       = Defaults.showPings
-        showReplies                     = Defaults.showReplies
-        showTimestamps                  = Defaults.showTimestamps
-        smartlinkIsEnabled              = Defaults.smartlinkIsEnabled
-
-        messagesFilterBy                = Defaults.messagesFilterBy
-        messagesFilterText              = Defaults.messagesFilterText
-        objectsFilterBy                 = Defaults.objectsFilterBy
-
-        // initialize and configure the Logger
-        _log = LogManager.sharedInstance.logMessage
-
-        // give the Api access to our logger
+        // give the Api access to the logger
         LogProxy.sharedInstance.delegate = LogManager.sharedInstance
+
+        // initialize @Published properties
+        DispatchQueue.main.async { [self] in
+            clearAtConnect                  = Defaults.clearAtConnect
+            clearAtDisconnect               = Defaults.clearAtDisconnect
+            clearOnSend                     = Defaults.clearOnSend
+            fontSize                        = Defaults.fontSize
+            guiIsEnabled                    = Defaults.guiIsEnabled
+            showPings                       = Defaults.showPings
+            showReplies                     = Defaults.showReplies
+            showTimestamps                  = Defaults.showTimestamps
+            smartlinkIsEnabled              = Defaults.smartlinkIsEnabled
+
+            messagesFilterBy                = Defaults.messagesFilterBy
+            messagesFilterText              = Defaults.messagesFilterText
+            objectsFilterBy                 = Defaults.objectsFilterBy
+        }
 
         // is there a saved Client ID?
         if clientId == nil {
@@ -209,9 +207,9 @@ final class Tester: ObservableObject {
         switch messagesFilterBy {
 
         case FilterMessages.none.rawValue:       filteredMessages = messages
-        case FilterMessages.prefix.rawValue:     filteredMessages =  messages.filter { $0.text.contains("|" + messagesFilterText) }
-        case FilterMessages.includes.rawValue:   filteredMessages =  messages.filter { $0.text.contains(messagesFilterText) }
-        case FilterMessages.excludes.rawValue:   filteredMessages =  messages.filter { !$0.text.contains(messagesFilterText) }
+        case FilterMessages.prefix.rawValue:     filteredMessages =  messages.filter { $0.text.localizedCaseInsensitiveContains("|" + messagesFilterText) }
+        case FilterMessages.includes.rawValue:   filteredMessages =  messages.filter { $0.text.localizedCaseInsensitiveContains(messagesFilterText) }
+        case FilterMessages.excludes.rawValue:   filteredMessages =  messages.filter { !$0.text.localizedCaseInsensitiveContains(messagesFilterText) }
         case FilterMessages.command.rawValue:    filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "C" }
         case FilterMessages.S0.rawValue:         filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(2) == "S0" }
         case FilterMessages.status.rawValue:     filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "S" && $0.text.dropFirst(10).prefix(1) != "0"}
@@ -240,7 +238,7 @@ final class Tester: ObservableObject {
             filterCollection()
         }
     }
-    
+
     /// Assign each text line a color
     /// - Parameter text:   the text line
     /// - Returns:          a Color

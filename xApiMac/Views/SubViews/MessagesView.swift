@@ -23,10 +23,10 @@ struct MessagesView: View {
 
     var body: some View {
 
-        let messageCount = messages.count
+//        let messageCount = messages.count
 
             ScrollView([.horizontal, .vertical]) {
-                ScrollViewReader { scrollView in
+//                ScrollViewReader { scrollView in
                 LazyVStack(alignment: .leading) {
                     ForEach(messages) { message in
                         Text(showTimestamps(text: message.text))
@@ -35,11 +35,11 @@ struct MessagesView: View {
                             .foregroundColor( message.color )
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                }
+//                }
                 .frame(minWidth: 3000, maxWidth: .infinity, alignment: .leading)
-                .onChange(of: messageCount, perform: { value in
-                    scrollView.scrollTo(value, anchor: .topLeading)
-                })
+//                .onChange(of: messageCount, perform: { value in
+//                    scrollView.scrollTo(value, anchor: .topLeading)
+//                })
             }
             .frame(alignment: .leading)
         }

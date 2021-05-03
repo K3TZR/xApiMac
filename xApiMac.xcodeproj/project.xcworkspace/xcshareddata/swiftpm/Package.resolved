@@ -78,8 +78,8 @@
         "repositoryURL": "https://github.com/K3TZR/xClient6001.git",
         "state": {
           "branch": null,
-          "revision": "36b06b8c2716e87517299a58639ce5b9eba30382",
-          "version": "0.2.6"
+          "revision": "17d6e59270d925a45013f47bc9e107fe5f2b0555",
+          "version": "0.5.0"
         }
       },
       {
@@ -87,8 +87,8 @@
         "repositoryURL": "https://github.com/K3TZR/xLib6001.git",
         "state": {
           "branch": null,
-          "revision": "d9f221f2b37654a04f0b002b55910574c5f537cb",
-          "version": "0.2.5"
+          "revision": "5083bbaee27e1289c43ebd793808f14a29a4bc04",
+          "version": "0.5.0"
         }
       }
     ]

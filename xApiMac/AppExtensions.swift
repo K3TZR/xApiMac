@@ -27,7 +27,6 @@ extension DefaultsKeys {
     var guiIsEnabled: DefaultsKey<Bool> { .init("guiIsEnabled", defaultValue: false) }
     var messagesFilterText: DefaultsKey<String> { .init("messagesFilterText", defaultValue: "") }
     var messagesFilterBy: DefaultsKey<String> { .init("messagesFilterBy", defaultValue: "none") }
-    var objectsFilterText: DefaultsKey<String> { .init("objectsFilterText", defaultValue: "") }
     var objectsFilterBy: DefaultsKey<String> { .init("objectsFilterBy", defaultValue: "none") }
     var showReplies: DefaultsKey<Bool> { .init("showReplies", defaultValue: false) }
     var showPings: DefaultsKey<Bool> { .init("showPings", defaultValue: false) }

@@ -11,23 +11,24 @@ import xClient6001
 struct ContentView: View {
     @ObservedObject var tester: Tester
     @ObservedObject var radioManager: RadioManager
-
-    @State var selectedTab = 1
+    @State var selectedTab: Int
 
     var body: some View {
 
-        TabView {
+        TabView(selection: $selectedTab) {
             ApiTesterView()
                 .environmentObject(tester)
                 .environmentObject(radioManager)
                 .tabItem {Text("Api Tester")}
                 .padding(.horizontal)
+                .tag(1)
 
             LogView()
                 .environmentObject(LogManager.sharedInstance)
                 .environmentObject(radioManager)
                 .tabItem {Text("Log View")}
                 .padding(.horizontal)
+                .tag(2)
         }
         .frame(minWidth: 920, minHeight: 400)
 
@@ -46,6 +47,7 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate))
+        ContentView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate), selectedTab: 1)
+        ContentView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate), selectedTab: 2)
     }
 }

@@ -19,7 +19,11 @@ struct ApiTesterView: View {
             FiltersView(tester: tester)
 
             Divider()
-            ObjectsView(radioManager: radioManager, filter: tester.objectsFilterBy, fontSize: tester.fontSize)
+            if radioManager.activeRadio == nil {
+                EmptyView()
+            } else {
+                ObjectsView(radio: radioManager.activeRadio!, filter: tester.objectsFilterBy, fontSize: tester.fontSize)
+            }
 
             Divider().background(Color(.systemBlue))
             MessagesView(messages: tester.filteredMessages, showTimestamps: tester.showTimestamps, fontSize: tester.fontSize)

@@ -25,18 +25,12 @@ struct XApiMac: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self)
     var appDelegate
 
-    var tester: Tester
-    var radioManager: RadioManager
-
-    init() {
-        tester = Tester()
-        radioManager = RadioManager(delegate: tester as RadioManagerDelegate)
-    }
+    var tester = Tester()
 
     var body: some Scene {
 
         WindowGroup {
-            ContentView(tester: tester, radioManager: radioManager)
+            ContentView(tester: tester, radioManager: RadioManager(delegate: tester as RadioManagerDelegate), selectedTab: 1)
                 .navigationTitle("xApiMac " + Version().longString)
         }
         .commands {
