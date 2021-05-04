@@ -115,7 +115,7 @@ final class Tester: ObservableObject {
         LogProxy.sharedInstance.delegate = LogManager.sharedInstance
 
         // initialize @Published properties
-        DispatchQueue.main.async { [self] in
+//        DispatchQueue.main.async { [self] in
             clearAtConnect                  = Defaults.clearAtConnect
             clearAtDisconnect               = Defaults.clearAtDisconnect
             clearOnSend                     = Defaults.clearOnSend
@@ -129,7 +129,7 @@ final class Tester: ObservableObject {
             messagesFilterBy                = Defaults.messagesFilterBy
             messagesFilterText              = Defaults.messagesFilterText
             objectsFilterBy                 = Defaults.objectsFilterBy
-        }
+//        }
 
         // is there a saved Client ID?
         if clientId == nil {
@@ -268,6 +268,8 @@ final class Tester: ObservableObject {
     }
 }
 
+// ----------------------------------------------------------------------------
+
 extension Tester: RadioManagerDelegate {
     func willConnect() { if clearAtConnect { clearMessages() } }
     func willDisconnect() { if clearAtDisconnect { clearMessages() } }
@@ -276,6 +278,8 @@ extension Tester: RadioManagerDelegate {
     func didConnect() { /* unused */ }
     func didFailToConnect() { /* unused */ }
 }
+
+// ----------------------------------------------------------------------------
 
 extension Tester: ApiDelegate {
     public func sentMessage(_ text: String) {

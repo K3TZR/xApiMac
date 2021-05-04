@@ -30,6 +30,11 @@ struct ContentView: View {
                 .padding(.horizontal)
                 .tag(2)
         }
+//        .onAppear {
+//            if tester.smartlinkIsEnabled && tester.smartlinkWasLoggedIn {
+//                radioManager.smartlinkLogin(showPicker: false)
+//            }
+//        }
         .frame(minWidth: 920, minHeight: 400)
 
         // Sheet presentation

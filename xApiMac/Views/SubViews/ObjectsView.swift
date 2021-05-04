@@ -44,11 +44,11 @@ struct RadioView: View {
 
     var body: some View {
         HStack(spacing: 20) {
-            Text("Radio  (\(radio.packet.status))  -> ")
-            Text(radio.packet.isWan ? "Smartlink" : "Local")
-            Text(radio.packet.publicIp)
             Text(radio.nickname)
             Text(radio.packet.model)
+            Text(radio.packet.status)
+            Text(radio.packet.isWan ? "Smartlink" : "Local")
+            Text(radio.packet.publicIp)
             Text(radio.serialNumber)
             Text(radio.packet.firmwareVersion)
             Text("Atu=\(radio.atuPresent ? "Y" : "N")")
@@ -203,7 +203,6 @@ struct StreamView: View {
     let handle: Handle
 
     var body: some View {
-        let opus = Array(radio.opusAudioStreams.values)
         let remRx = Array(radio.remoteRxAudioStreams.values)
         let remTx = Array(radio.remoteTxAudioStreams.values)
         let mics = Array(radio.daxMicAudioStreams.values)
@@ -212,19 +211,6 @@ struct StreamView: View {
         let iqs = Array(radio.daxIqStreams.values)
 
         VStack(alignment: .leading) {
-            ForEach(opus) { stream in
-                if handle == stream.clientHandle {
-                    HStack(spacing: 20) {
-                        Text("OpusAudioStream")
-                        Text(stream.id.hex)
-                        Text("Handle \(stream.clientHandle.hex)")
-                        Text("Ip \(stream.ip)")
-                        Text("Streaming \(stream.isStreaming ? "Y" : "N")")
-                        Text("Port \(stream.port)")
-                        Text("Stopped \(stream.rxStopped ? "Y" : "N")")
-                    }
-                }
-            }
             ForEach(remRx) { stream in
                 if handle == stream.clientHandle {
                     HStack(spacing: 20) {

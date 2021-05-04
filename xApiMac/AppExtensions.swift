@@ -33,6 +33,7 @@ extension DefaultsKeys {
     var showTimestamps: DefaultsKey<Bool> { .init("showTimestamps", defaultValue: false) }
     var smartlinkEmail: DefaultsKey<String?> { .init("smartlinkEmail") }
     var smartlinkIsEnabled: DefaultsKey<Bool> { .init("smartlinkIsEnabled", defaultValue: true) }
+//    var smartlinkWasLoggedIn: DefaultsKey<Bool> { .init("smartlinkWasLoggedIn", defaultValue: false) }
     var useLowBw: DefaultsKey<Bool> { .init("useLowBw", defaultValue: false) }
 }
 

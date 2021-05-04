@@ -35,6 +35,14 @@ Please send any bugs / comments / questions to support@k3tzr.net
 [![W6OP](https://img.shields.io/badge/W6OP-xVoiceKeyer,_xCW-informational)](https://w6op.com) A Mac-based Voice Keyer and CW Keyer.  
 
 ---
+
+
+
+##### UNDER CONSTRUCTION - no Release Notes until a stable version is created
+
+
+
+
 ##### 1.2.11 Release Notes
 * updated README to reference "6001" versions of xLib and xClient
 * corrected link to releases
