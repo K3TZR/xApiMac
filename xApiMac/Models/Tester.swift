@@ -22,7 +22,7 @@ struct Message: Identifiable {
     var color = Color(.textColor)
 }
 
-enum FilterObjects: String, CaseIterable {
+enum ObjectFilters: String, CaseIterable {
     case none
     case sliceMeters
     case otherMeters
@@ -30,8 +30,7 @@ enum FilterObjects: String, CaseIterable {
     case slices
     case streams
 }
-
-enum FilterMessages: String, CaseIterable {
+enum MessageFilters: String, CaseIterable {
     case none
     case prefix
     case includes
@@ -46,20 +45,33 @@ final class Tester: ObservableObject {
     // ----------------------------------------------------------------------------
     // MARK: - Published properties
 
-    @Published var clearAtConnect               = false { didSet {Defaults.clearAtConnect = clearAtConnect} }
-    @Published var clearAtDisconnect            = false { didSet {Defaults.clearAtDisconnect = clearAtDisconnect} }
-    @Published var clearOnSend                  = false { didSet {Defaults.clearOnSend = clearOnSend} }
+//    @Published var clearAtConnect               = false
+//    @Published var clearAtDisconnect            = false
+//    @Published var clearOnSend                  = false
     @Published var cmdToSend                    = ""
     @Published var filteredMessages             = [Message]()
-    @Published var fontSize                     = 12 { didSet {Defaults.fontSize = fontSize} }
-    @Published var guiIsEnabled                 = false { didSet {Defaults.guiIsEnabled = guiIsEnabled} }
-    @Published var messagesFilterBy: String     = "none" { didSet {filterCollection() ; Defaults.messagesFilterBy = messagesFilterBy }}
-    @Published var messagesFilterText           = "" { didSet {filterCollection() ; Defaults.messagesFilterText = messagesFilterText }}
-    @Published var objectsFilterBy: String      = "none" { didSet {filterCollection() ; Defaults.objectsFilterBy = objectsFilterBy }}
-    @Published var showPings                    = false { didSet {Defaults.showPings = showPings} }
-    @Published var showReplies                  = false { didSet {Defaults.showReplies = showReplies} }
-    @Published var showTimestamps               = false { didSet {Defaults.showTimestamps = showTimestamps} }
-    @Published var smartlinkIsEnabled           = false { didSet {Defaults.smartlinkIsEnabled = smartlinkIsEnabled} }
+//    @Published var fontSize                     = 12
+//    @Published var guiIsEnabled                 = false {didSet {print("guiIsEnabled = \(guiIsEnabled)") }}
+//    @Published var messagesFilterBy: String     = "none"
+//    @Published var messagesFilterText           = "" { didSet {filterCollection() }}
+//    @Published var objectsFilterBy: String      = "none" { didSet {filterCollection() }}
+//    @Published var showPings                    = false
+//    @Published var showReplies                  = false
+//    @Published var showTimestamps               = false
+//    @Published var smartlinkIsEnabled           = false
+
+    @AppStorage("clearOnSend") var clearOnSend: Bool = false
+    @AppStorage("clearAtConnect") var clearAtConnect: Bool = false
+    @AppStorage("clearAtDisconnect") var clearAtDisconnect: Bool = false
+    @AppStorage("fontSize") var fontSize: Int = 12
+    @AppStorage("guiIsEnabled") var guiIsEnabled: Bool = false
+    @AppStorage("messagesFilterBy") var messagesFilterBy: String = "none"
+    @AppStorage("messagesFilterText") var messagesFilterText: String = "" { didSet { filterCollection() } }
+    @AppStorage("objectsFilterBy") var objectsFilterBy: String = "none" { didSet { filterCollection() } }
+    @AppStorage("showPings") var showPings: Bool = false
+    @AppStorage("showReplies") var showReplies: Bool = false
+    @AppStorage("showTimestamps") var showTimestamps: Bool = false
+    @AppStorage("smartlinkIsEnabled") var smartlinkIsEnabled: Bool = false
 
     // ----------------------------------------------------------------------------
     // MARK: - Internal properties
@@ -97,6 +109,12 @@ final class Tester: ObservableObject {
     private var _previousCommand = ""
     private var _startTimestamp: Date?
 
+    private let commandsColor = Color(.systemGreen)
+    private let repliesColor = Color(.systemGray)
+    private let repliesWithErrorsColor = Color(.systemGray)
+    private let standardColor = Color(.textColor)
+    private let statusColor = Color(.systemOrange)
+
     // ----------------------------------------------------------------------------
     // MARK: - Private properties with concurrency protection
 
@@ -105,7 +123,7 @@ final class Tester: ObservableObject {
         set { _objectQ.sync(flags: .barrier) { _messages = newValue } } }
 
     // ----- Backing store, do not use -----
-    private var _messages       = [Message]()
+    private var _messages = [Message]()
 
     // ----------------------------------------------------------------------------
     // MARK: - Initialization
@@ -113,23 +131,6 @@ final class Tester: ObservableObject {
     init() {
         // give the Api access to the logger
         LogProxy.sharedInstance.delegate = LogManager.sharedInstance
-
-        // initialize @Published properties
-//        DispatchQueue.main.async { [self] in
-            clearAtConnect                  = Defaults.clearAtConnect
-            clearAtDisconnect               = Defaults.clearAtDisconnect
-            clearOnSend                     = Defaults.clearOnSend
-            fontSize                        = Defaults.fontSize
-            guiIsEnabled                    = Defaults.guiIsEnabled
-            showPings                       = Defaults.showPings
-            showReplies                     = Defaults.showReplies
-            showTimestamps                  = Defaults.showTimestamps
-            smartlinkIsEnabled              = Defaults.smartlinkIsEnabled
-
-            messagesFilterBy                = Defaults.messagesFilterBy
-            messagesFilterText              = Defaults.messagesFilterText
-            objectsFilterBy                 = Defaults.objectsFilterBy
-//        }
 
         // is there a saved Client ID?
         if clientId == nil {
@@ -144,7 +145,7 @@ final class Tester: ObservableObject {
     }
 
     // ----------------------------------------------------------------------------
-    // MARK: - Internal methods (Tester related)
+    // MARK: - Internal methods
 
     /// A command  was sent to the Radio
     func sent(command: String) {
@@ -199,27 +200,24 @@ final class Tester: ObservableObject {
     }
 
     // ----------------------------------------------------------------------------
-    // MARK: - Private methods (common to Messages and Objects)
+    // MARK: - Private methods
 
     /// Filter the message and object collections
     /// - Parameter type:     object type
     private func filterCollection() {
         switch messagesFilterBy {
 
-        case FilterMessages.none.rawValue:       filteredMessages = messages
-        case FilterMessages.prefix.rawValue:     filteredMessages =  messages.filter { $0.text.localizedCaseInsensitiveContains("|" + messagesFilterText) }
-        case FilterMessages.includes.rawValue:   filteredMessages =  messages.filter { $0.text.localizedCaseInsensitiveContains(messagesFilterText) }
-        case FilterMessages.excludes.rawValue:   filteredMessages =  messages.filter { !$0.text.localizedCaseInsensitiveContains(messagesFilterText) }
-        case FilterMessages.command.rawValue:    filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "C" }
-        case FilterMessages.S0.rawValue:         filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(2) == "S0" }
-        case FilterMessages.status.rawValue:     filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "S" && $0.text.dropFirst(10).prefix(1) != "0"}
-        case FilterMessages.reply.rawValue:      filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "R" }
+        case MessageFilters.none.rawValue:       filteredMessages = messages
+        case MessageFilters.prefix.rawValue:     filteredMessages =  messages.filter { $0.text.localizedCaseInsensitiveContains("|" + messagesFilterText) }
+        case MessageFilters.includes.rawValue:   filteredMessages =  messages.filter { $0.text.localizedCaseInsensitiveContains(messagesFilterText) }
+        case MessageFilters.excludes.rawValue:   filteredMessages =  messages.filter { !$0.text.localizedCaseInsensitiveContains(messagesFilterText) }
+        case MessageFilters.command.rawValue:    filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "C" }
+        case MessageFilters.S0.rawValue:         filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(2) == "S0" }
+        case MessageFilters.status.rawValue:     filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "S" && $0.text.dropFirst(10).prefix(1) != "0"}
+        case MessageFilters.reply.rawValue:      filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "R" }
         default: break
         }
     }
-
-    // ----------------------------------------------------------------------------
-    // MARK: - Private methods (Messages-related)
 
     /// Add an entry to the messages collection
     /// - Parameter text:       the text of the entry
@@ -243,14 +241,13 @@ final class Tester: ObservableObject {
     /// - Parameter text:   the text line
     /// - Returns:          a Color
     private func lineColor(_ text: String) -> Color {
-        var color = Color(.textColor)                                                       // All others
 
-        if text.prefix(1) == "C" { color = Color(.systemGreen) }                            // Commands
-        if text.prefix(1) == "R" && text.contains("|0|") { color = Color(.systemGray) }     // Replies no error
-        if text.prefix(1) == "R" && !text.contains("|0|") { color = Color(.systemRed) }     // Replies w/error
-        if text.prefix(2) == "S0" { color = Color(.systemOrange) }                          // Status
+        if text.prefix(1) == "C" { return commandsColor }                                   // Commands
+        if text.prefix(1) == "R" && text.contains("|0|") { return repliesColor }            // Replies no error
+        if text.prefix(1) == "R" && !text.contains("|0|") { return repliesWithErrorsColor } // Replies w/error
+        if text.prefix(2) == "S0" { return statusColor }                                    // Status
 
-        return color
+        return standardColor
     }
 
     /// Parse a Reply message. format: <sequenceNumber>|<hexResponse>|<message>[|<debugOutput>]
@@ -269,6 +266,7 @@ final class Tester: ObservableObject {
 }
 
 // ----------------------------------------------------------------------------
+// MARK: - RadioManagerDelegate extension
 
 extension Tester: RadioManagerDelegate {
     func willConnect() { if clearAtConnect { clearMessages() } }
@@ -280,6 +278,7 @@ extension Tester: RadioManagerDelegate {
 }
 
 // ----------------------------------------------------------------------------
+// MARK: - ApiDelegate extension
 
 extension Tester: ApiDelegate {
     public func sentMessage(_ text: String) {

@@ -14,13 +14,18 @@ struct BottomButtonsView: View {
     @ObservedObject var radioManager: RadioManager
     @Environment(\.openURL) var openURL
 
+    @AppStorage("clearAtConnect") var clearAtConnect: Bool = false
+    @AppStorage("clearAtDisconnect") var clearAtDisconnect: Bool = false
+    @AppStorage("fontSize") var fontSize: Int = 10
+
     var body: some View {
 
         HStack(spacing: 40) {
-            Stepper("Font Size", value: $tester.fontSize, in: 8...24)
+            Stepper("Font Size", value: $fontSize, in: 8...16)
+            Text("\(fontSize)").frame(alignment: .leading)
             Spacer()
-            Toggle("Clear on Connect", isOn: $tester.clearAtConnect)
-            Toggle("Clear on Disconnect", isOn: $tester.clearAtDisconnect)
+            Toggle("Clear on Connect", isOn: $clearAtConnect)
+            Toggle("Clear on Disconnect", isOn: $clearAtDisconnect)
             Button("Clear Now") { tester.clearMessages() }
         }
     }

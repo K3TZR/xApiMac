@@ -22,6 +22,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
 @main
 struct XApiMac: App {
+
     @NSApplicationDelegateAdaptor(AppDelegate.self)
     var appDelegate
 
@@ -30,8 +31,10 @@ struct XApiMac: App {
     var body: some Scene {
 
         WindowGroup {
-            ContentView(tester: tester, radioManager: RadioManager(delegate: tester as RadioManagerDelegate), selectedTab: 1)
-                .navigationTitle("xApiMac " + Version().longString)
+            ContentView(selectedTab: 0)
+                .environmentObject(tester)
+                .environmentObject(RadioManager(delegate: tester as RadioManagerDelegate))
+
         }
         .commands {
             // remove the "File->New" menu item

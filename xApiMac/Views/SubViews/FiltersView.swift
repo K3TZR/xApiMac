@@ -17,12 +17,12 @@ struct FiltersView: View {
 
             FilterView(selection: $tester.objectsFilterBy,
                         text: $dummyText,
-                        choices: FilterObjects.allCases.map {$0.rawValue},
+                        choices: ObjectFilters.allCases.map {$0.rawValue},
                         message: "Hide Objects of type",
                         showText: false)
             FilterView(selection: $tester.messagesFilterBy,
                         text: $tester.messagesFilterText,
-                        choices: FilterMessages.allCases.map {$0.rawValue},
+                        choices: MessageFilters.allCases.map {$0.rawValue},
                         message: "Filter Messages by",
                         showText: true)
         }

@@ -17,16 +17,11 @@ struct ObjectsView: View {
     var body: some View {
 
         ScrollView([.horizontal, .vertical]) {
-//            ScrollViewReader { scrollView in
             VStack(alignment: .leading) {
                 RadioView(radio: radio)
                 if filter != "otherMeters" && filter != "allMeters" { MeterView(radio: radio, sliceId: nil) }
                 ClientView(radio: radio, filter: filter)
             }
-            //                .onAppear {
-            //                    scrollView.scrollTo(0, anchor: .topLeading)
-            //                }
-            //            }
             .frame(minWidth: 920, maxWidth: .infinity, minHeight: 200, maxHeight: .infinity, alignment: .leading)
             .font(.system(size: CGFloat(fontSize), weight: .regular, design: .monospaced))
         }
@@ -157,7 +152,21 @@ struct SliceView: View {
 
 struct MeterView: View {
     @ObservedObject var radio: Radio
-//    let filter: String
+    let sliceId: ObjectId?
+
+    var body: some View {
+        let meters = Array(radio.meters.values).sorted {$0.id < $1.id}
+
+        VStack(alignment: .leading) {
+            ForEach(meters, id: \.id) { meter in
+                MeterDetailView(meter: meter, sliceId: sliceId)
+            }.foregroundColor(.secondary)
+        }
+    }
+}
+
+struct MeterDetailView: View {
+    @ObservedObject var meter: Meter
     let sliceId: ObjectId?
 
     func valueColor(_ value: Float, _ low: Float, _ high: Float) -> Color {
@@ -173,27 +182,21 @@ struct MeterView: View {
     var pad: CGFloat {sliceId == nil ? 20 : 120}
 
     var body: some View {
-        let meters = Array(radio.meters.values).sorted {$0.id < $1.id}
-
-        VStack(alignment: .leading) {
-            ForEach(meters, id: \.id) { meter in
-                HStack(spacing: 20) {
-                    if show(meter) {
-                        Text("Meter").frame(width: 50, alignment: .leading).padding(.leading, pad)
-                        Text(String(format: "% 3d", meter.id)).frame(width: 50, alignment: .leading)
-                        Text(meter.group).frame(width: 50, alignment: .leading)
-                        Text(meter.name).frame(width: 120, alignment: .leading)
-                        Text(String(format: "%-4.2f", meter.low)).frame(width: 100, alignment: .trailing)
-                        Text(String(format: "%-4.2f", meter.value))
-                            .foregroundColor(valueColor(meter.value, meter.low, meter.high))
-                            .frame(width: 100, alignment: .trailing)
-                        Text(String(format: "%-4.2f", meter.high)).frame(width: 100, alignment: .trailing)
-                        Text(meter.units).frame(width: 50, alignment: .leading)
-                        Text(String(format: "%02d", meter.fps) + " fps").frame(width: 75, alignment: .leading)
-                        Text(meter.desc)
-                    }
-                }
-            }.foregroundColor(.secondary)
+        HStack(spacing: 20) {
+            if show(meter) {
+                Text("Meter").frame(width: 50, alignment: .leading).padding(.leading, pad)
+                Text(String(format: "% 3d", meter.id)).frame(width: 50, alignment: .leading)
+                Text(meter.group).frame(width: 50, alignment: .leading)
+                Text(meter.name).frame(width: 120, alignment: .leading)
+                Text(String(format: "%-4.2f", meter.low)).frame(width: 100, alignment: .trailing)
+                Text(String(format: "%-4.2f", meter.value))
+                    .foregroundColor(valueColor(meter.value, meter.low, meter.high))
+                    .frame(width: 100, alignment: .trailing)
+                Text(String(format: "%-4.2f", meter.high)).frame(width: 100, alignment: .trailing)
+                Text(meter.units).frame(width: 50, alignment: .leading)
+                Text(String(format: "%02d", meter.fps) + " fps").frame(width: 75, alignment: .leading)
+                Text(meter.desc)
+            }
         }
     }
 }

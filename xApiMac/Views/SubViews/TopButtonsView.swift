@@ -10,8 +10,13 @@ import SwiftUI
 import xClient6001
 
 struct TopButtonsView: View {
-    @ObservedObject var tester: Tester
-    @ObservedObject var radioManager: RadioManager
+    @EnvironmentObject var tester: Tester
+    @EnvironmentObject var radioManager: RadioManager
+
+    @AppStorage("guiIsEnabled") var guiIsEnabled: Bool = false
+    @AppStorage("showTimestamps") var showTimestamps: Bool = false
+    @AppStorage("showPings") var showPings: Bool = false
+    @AppStorage("showReplies") var showReplies: Bool = false
 
     var body: some View {
 
@@ -27,10 +32,14 @@ struct TopButtonsView: View {
             .help("Using the Default connection type")
 
             HStack(spacing: 20) {
-                Toggle("Gui", isOn: $tester.guiIsEnabled)
-                Toggle("Times", isOn: $tester.showTimestamps)
-                Toggle("Pings", isOn: $tester.showPings)
-                Toggle("Replies", isOn: $tester.showReplies)
+//                Toggle("Gui", isOn: $tester.guiIsEnabled)
+//                Toggle("Times", isOn: $tester.showTimestamps)
+//                Toggle("Pings", isOn: $tester.showPings)
+//                Toggle("Replies", isOn: $tester.showReplies)
+                Toggle("Gui", isOn: $guiIsEnabled)
+                Toggle("Times", isOn: $showTimestamps)
+                Toggle("Pings", isOn: $showPings)
+                Toggle("Replies", isOn: $showReplies)
             }
 
             Spacer()
@@ -58,7 +67,10 @@ struct TopButtonsView: View {
 
 struct TopButtonsView_Previews: PreviewProvider {
     static var previews: some View {
-        TopButtonsView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate) )
+        TopButtonsView()
+            .environmentObject(Tester())
+            .environmentObject(RadioManager(delegate: Tester() as RadioManagerDelegate))
+
             .previewLayout(.fixed(width: 2160 / 2.0, height: 1620 / 2.0))
     }
 }
