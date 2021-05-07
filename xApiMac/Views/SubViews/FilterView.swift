@@ -14,6 +14,7 @@ struct FilterView: View {
     let choices: [String]
     let message: String
     let showText: Bool
+    @ObservedObject var object: Tester
 
     var body: some View {
 
@@ -23,10 +24,16 @@ struct FilterView: View {
                     Text($0)
                 }
             }
+            .onChange(of: selection, perform: { value in
+                object.filterUpdate(filterBy: value, filterText: text)
+            })
             .frame(width: 350)
 
             if showText {
                 TextField("Filter text", text: $text)
+                    .onChange(of: text, perform: { value in
+                        object.filterUpdate(filterBy: selection, filterText: value)
+                    })
                 .modifier(ClearButton(boundText: $text))
             }
         }

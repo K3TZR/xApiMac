@@ -6,7 +6,6 @@
 //
 
 import xLib6001
-import SwiftyUserDefaults
 import SwiftUI
 import xClient6001
 
@@ -45,55 +44,29 @@ final class Tester: ObservableObject {
     // ----------------------------------------------------------------------------
     // MARK: - Published properties
 
-//    @Published var clearAtConnect               = false
-//    @Published var clearAtDisconnect            = false
-//    @Published var clearOnSend                  = false
     @Published var cmdToSend                    = ""
     @Published var filteredMessages             = [Message]()
-//    @Published var fontSize                     = 12
-//    @Published var guiIsEnabled                 = false {didSet {print("guiIsEnabled = \(guiIsEnabled)") }}
-//    @Published var messagesFilterBy: String     = "none"
-//    @Published var messagesFilterText           = "" { didSet {filterCollection() }}
-//    @Published var objectsFilterBy: String      = "none" { didSet {filterCollection() }}
-//    @Published var showPings                    = false
-//    @Published var showReplies                  = false
-//    @Published var showTimestamps               = false
-//    @Published var smartlinkIsEnabled           = false
+
+    // ----------------------------------------------------------------------------
+    // MARK: - Defaults properties
 
     @AppStorage("clearOnSend") var clearOnSend: Bool = false
     @AppStorage("clearAtConnect") var clearAtConnect: Bool = false
     @AppStorage("clearAtDisconnect") var clearAtDisconnect: Bool = false
+    @AppStorage("clientId") var clientId: String = ""
     @AppStorage("fontSize") var fontSize: Int = 12
-    @AppStorage("guiIsEnabled") var guiIsEnabled: Bool = false
+    @AppStorage("fontMaxSize") var fontMaxSize: Int = 16
+    @AppStorage("fontMinSize") var fontMinSize: Int = 8
     @AppStorage("messagesFilterBy") var messagesFilterBy: String = "none"
-    @AppStorage("messagesFilterText") var messagesFilterText: String = "" { didSet { filterCollection() } }
-    @AppStorage("objectsFilterBy") var objectsFilterBy: String = "none" { didSet { filterCollection() } }
+    @AppStorage("messagesFilterText") var messagesFilterText: String = ""
     @AppStorage("showPings") var showPings: Bool = false
     @AppStorage("showReplies") var showReplies: Bool = false
-    @AppStorage("showTimestamps") var showTimestamps: Bool = false
-    @AppStorage("smartlinkIsEnabled") var smartlinkIsEnabled: Bool = false
 
     // ----------------------------------------------------------------------------
     // MARK: - Internal properties
 
     var activePacket: DiscoveryPacket?
-    var clientId: String? {
-        get { Defaults.clientId }
-        set { Defaults.clientId = newValue }
-    }
-    var defaultNonGuiConnection: String? {
-        get { Defaults.defaultNonGuiConnection }
-        set { Defaults.defaultNonGuiConnection = newValue }
-    }
-    var defaultGuiConnection: String? {
-        get { Defaults.defaultGuiConnection }
-        set { Defaults.defaultGuiConnection = newValue }
-    }
     var isConnected = false
-    var smartlinkEmail: String? {
-        get { Defaults.smartlinkEmail }
-        set { Defaults.smartlinkEmail = newValue }
-    }
     var stationName = ""
 
     // ----------------------------------------------------------------------------
@@ -133,10 +106,10 @@ final class Tester: ObservableObject {
         LogProxy.sharedInstance.delegate = LogManager.sharedInstance
 
         // is there a saved Client ID?
-        if clientId == nil {
+        if clientId.isEmpty {
             // NO, assign one
             clientId = UUID().uuidString
-            _log("Tester: ClientId created - \(clientId!)", .debug, #function, #file, #line)
+            _log("Tester: ClientId created - \(clientId)", .debug, #function, #file, #line)
         }
         _api.testerModeEnabled = true
 
@@ -165,8 +138,7 @@ final class Tester: ObservableObject {
         DispatchQueue.main.async {  [self] in
             _messageNumber = 0
             messages.removeAll()
-            filterCollection()
-        }
+            filterUpdate(filterBy: messagesFilterBy, filterText: messagesFilterText)        }
     }
 
     /// Send a command to the Radio
@@ -189,12 +161,12 @@ final class Tester: ObservableObject {
     /// - Parameter larger:           larger?
     func fontSize(larger: Bool) {
         // incr / decr the size
-        var newSize =  Defaults.fontSize + (larger ? +1 : -1)
+        var newSize =  fontSize + (larger ? +1 : -1)
         // subject to limits
         if larger {
-            if newSize > Defaults.fontMaxSize { newSize = Defaults.fontMaxSize }
+            if newSize > fontMaxSize { newSize = fontMaxSize }
         } else {
-            if newSize < Defaults.fontMinSize { newSize = Defaults.fontMinSize }
+            if newSize < fontMinSize { newSize = fontMinSize }
         }
         fontSize = newSize
     }
@@ -202,19 +174,23 @@ final class Tester: ObservableObject {
     // ----------------------------------------------------------------------------
     // MARK: - Private methods
 
-    /// Filter the message and object collections
+    /// Filter the message collection
     /// - Parameter type:     object type
-    private func filterCollection() {
-        switch messagesFilterBy {
+    func filterUpdate(filterBy: String, filterText: String) {
 
-        case MessageFilters.none.rawValue:       filteredMessages = messages
-        case MessageFilters.prefix.rawValue:     filteredMessages =  messages.filter { $0.text.localizedCaseInsensitiveContains("|" + messagesFilterText) }
-        case MessageFilters.includes.rawValue:   filteredMessages =  messages.filter { $0.text.localizedCaseInsensitiveContains(messagesFilterText) }
-        case MessageFilters.excludes.rawValue:   filteredMessages =  messages.filter { !$0.text.localizedCaseInsensitiveContains(messagesFilterText) }
-        case MessageFilters.command.rawValue:    filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "C" }
-        case MessageFilters.S0.rawValue:         filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(2) == "S0" }
-        case MessageFilters.status.rawValue:     filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "S" && $0.text.dropFirst(10).prefix(1) != "0"}
-        case MessageFilters.reply.rawValue:      filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "R" }
+        switch (filterBy, filterText) {
+
+        case (MessageFilters.none.rawValue, _):       filteredMessages = messages
+        case (MessageFilters.prefix.rawValue, ""):    filteredMessages = messages
+        case (MessageFilters.prefix.rawValue, _):     filteredMessages =  messages.filter { $0.text.localizedCaseInsensitiveContains("|" + filterText) }
+        case (MessageFilters.includes.rawValue, ""):  filteredMessages = [Message]()
+        case (MessageFilters.includes.rawValue, _):   filteredMessages =  messages.filter { $0.text.localizedCaseInsensitiveContains(filterText) }
+        case (MessageFilters.excludes.rawValue, ""):  filteredMessages = messages
+        case (MessageFilters.excludes.rawValue, _):   filteredMessages =  messages.filter { !$0.text.localizedCaseInsensitiveContains(filterText) }
+        case (MessageFilters.command.rawValue, _):    filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "C" }
+        case (MessageFilters.S0.rawValue, _):         filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(2) == "S0" }
+        case (MessageFilters.status.rawValue, _):     filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "S" && $0.text.dropFirst(10).prefix(1) != "0"}
+        case (MessageFilters.reply.rawValue, _):      filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "R" }
         default: break
         }
     }
@@ -233,7 +209,7 @@ final class Tester: ObservableObject {
             _messageNumber += 1
             messages.append( Message(id: _messageNumber, text: stampedText, color: lineColor(text)))
 
-            filterCollection()
+            filterUpdate(filterBy: messagesFilterBy, filterText: messagesFilterText)
         }
     }
 

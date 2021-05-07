@@ -11,20 +11,25 @@ struct FiltersView: View {
     @ObservedObject var tester: Tester
 
     @State var dummyText = ""
+    @AppStorage("objectsFilterBy") var objectsFilterBy: String = ""
+    @AppStorage("messagesFilterBy") var messagesFilterBy: String = ""
+    @AppStorage("messagesFilterText") var messagesFilterText: String = ""
 
     var body: some View {
         HStack(spacing: 40) {
 
-            FilterView(selection: $tester.objectsFilterBy,
+            FilterView(selection: $objectsFilterBy,
                         text: $dummyText,
                         choices: ObjectFilters.allCases.map {$0.rawValue},
                         message: "Hide Objects of type",
-                        showText: false)
-            FilterView(selection: $tester.messagesFilterBy,
-                        text: $tester.messagesFilterText,
+                        showText: false,
+                        object: tester)
+            FilterView(selection: $messagesFilterBy,
+                        text: $messagesFilterText,
                         choices: MessageFilters.allCases.map {$0.rawValue},
                         message: "Filter Messages by",
-                        showText: true)
+                        showText: true,
+                        object: tester)
         }
     }
 }

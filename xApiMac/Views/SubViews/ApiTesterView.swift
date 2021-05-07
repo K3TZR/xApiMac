@@ -13,6 +13,7 @@ struct ApiTesterView: View {
     @EnvironmentObject var radioManager: RadioManager
 
     @AppStorage("fontSize") var fontSize: Int = 10
+    @AppStorage("objectsFilterBy") var objectsFilterBy: String = ""
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -26,7 +27,7 @@ struct ApiTesterView: View {
             if radioManager.activeRadio == nil {
                 EmptyView()
             } else {
-                ObjectsView(radio: radioManager.activeRadio!, filter: tester.objectsFilterBy, fontSize: fontSize)
+                ObjectsView(radio: radioManager.activeRadio!, filter: objectsFilterBy, fontSize: fontSize)
             }
 
             Divider().background(Color(.systemBlue))

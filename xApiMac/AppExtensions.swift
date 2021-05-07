@@ -7,35 +7,6 @@
 //
 
 import Foundation
-import SwiftyUserDefaults
-
-// ----------------------------------------------------------------------------
-// MARK: - Definitions for SwiftyUserDefaults
-
-extension DefaultsKeys {
-
-    var clearAtConnect: DefaultsKey<Bool> { .init("clearAtConnect", defaultValue: false) }
-    var clearAtDisconnect: DefaultsKey<Bool> { .init("clearAtDisconnect", defaultValue: false) }
-    var clearOnSend: DefaultsKey<Bool> { .init("clearOnSend", defaultValue: false) }
-    var clientId: DefaultsKey<String?> { .init("clientId") }
-    var defaultNonGuiConnection: DefaultsKey<String?> { .init("defaultNonGuiConnection") }
-    var defaultGuiConnection: DefaultsKey<String?> { .init("defaultGuiConnection") }
-    var fontMaxSize: DefaultsKey<Int> { .init("fontMaxSize", defaultValue: 20) }
-    var fontMinSize: DefaultsKey<Int> { .init("fontMinSize", defaultValue: 8) }
-    var fontName: DefaultsKey<String> { .init("fontName", defaultValue: "Monaco") }
-    var fontSize: DefaultsKey<Int> { .init("fontSize", defaultValue: 12) }
-    var guiIsEnabled: DefaultsKey<Bool> { .init("guiIsEnabled", defaultValue: false) }
-    var messagesFilterText: DefaultsKey<String> { .init("messagesFilterText", defaultValue: "") }
-    var messagesFilterBy: DefaultsKey<String> { .init("messagesFilterBy", defaultValue: "none") }
-    var objectsFilterBy: DefaultsKey<String> { .init("objectsFilterBy", defaultValue: "none") }
-    var showReplies: DefaultsKey<Bool> { .init("showReplies", defaultValue: false) }
-    var showPings: DefaultsKey<Bool> { .init("showPings", defaultValue: false) }
-    var showTimestamps: DefaultsKey<Bool> { .init("showTimestamps", defaultValue: false) }
-    var smartlinkEmail: DefaultsKey<String?> { .init("smartlinkEmail") }
-    var smartlinkIsEnabled: DefaultsKey<Bool> { .init("smartlinkIsEnabled", defaultValue: true) }
-//    var smartlinkWasLoggedIn: DefaultsKey<Bool> { .init("smartlinkWasLoggedIn", defaultValue: false) }
-    var useLowBw: DefaultsKey<Bool> { .init("useLowBw", defaultValue: false) }
-}
 
 /// Struct to hold a Semantic Version number
 ///     with provision for a Build Number

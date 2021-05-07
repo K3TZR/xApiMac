@@ -17,6 +17,7 @@ struct TopButtonsView: View {
     @AppStorage("showTimestamps") var showTimestamps: Bool = false
     @AppStorage("showPings") var showPings: Bool = false
     @AppStorage("showReplies") var showReplies: Bool = false
+    @AppStorage("smartlinkIsEnabled") var smartlinkIsEnabled: Bool = false
 
     var body: some View {
 
@@ -32,10 +33,6 @@ struct TopButtonsView: View {
             .help("Using the Default connection type")
 
             HStack(spacing: 20) {
-//                Toggle("Gui", isOn: $tester.guiIsEnabled)
-//                Toggle("Times", isOn: $tester.showTimestamps)
-//                Toggle("Pings", isOn: $tester.showPings)
-//                Toggle("Replies", isOn: $tester.showReplies)
                 Toggle("Gui", isOn: $guiIsEnabled)
                 Toggle("Times", isOn: $showTimestamps)
                 Toggle("Pings", isOn: $showPings)
@@ -54,7 +51,7 @@ struct TopButtonsView: View {
                 }) {
                     Text(radioManager.smartlinkIsLoggedIn ? "Logout" : "Login").frame(width: 50)
                 }
-                .disabled(!radioManager.delegate.smartlinkIsEnabled)
+                .disabled(!smartlinkIsEnabled)
 
                 Button("Status") { radioManager.showView(.smartlinkStatus) }
             }.disabled(radioManager.isConnected)
