@@ -53,11 +53,11 @@ final class Tester: ObservableObject {
     @AppStorage("clearOnSend") var clearOnSend: Bool = false
     @AppStorage("clearAtConnect") var clearAtConnect: Bool = false
     @AppStorage("clearAtDisconnect") var clearAtDisconnect: Bool = false
-    @AppStorage("clientId") var clientId: String = ""
+    @AppStorage("clientId") var clientId: String?
     @AppStorage("fontSize") var fontSize: Int = 12
     @AppStorage("fontMaxSize") var fontMaxSize: Int = 16
     @AppStorage("fontMinSize") var fontMinSize: Int = 8
-    @AppStorage("messagesFilterBy") var messagesFilterBy: String = "none"
+    @AppStorage("messagesFilterBy") var messagesFilterBy: MessageFilters = .none
     @AppStorage("messagesFilterText") var messagesFilterText: String = ""
     @AppStorage("showPings") var showPings: Bool = false
     @AppStorage("showReplies") var showReplies: Bool = false
@@ -67,7 +67,7 @@ final class Tester: ObservableObject {
 
     var activePacket: DiscoveryPacket?
     var isConnected = false
-    var stationName = ""
+    var stationName = "xApiMac"
 
     // ----------------------------------------------------------------------------
     // MARK: - Private properties
@@ -82,10 +82,10 @@ final class Tester: ObservableObject {
     private var _previousCommand = ""
     private var _startTimestamp: Date?
 
-    private let commandsColor = Color(.systemGreen)
-    private let repliesColor = Color(.systemGray)
-    private let repliesWithErrorsColor = Color(.systemGray)
-    private let standardColor = Color(.textColor)
+    private let commandColor = Color(.systemGreen)
+    private let replyColor = Color(.systemGray)
+    private let replyWithErrorColor = Color(.systemRed)
+    private let defaultColor = Color(.textColor)
     private let statusColor = Color(.systemOrange)
 
     // ----------------------------------------------------------------------------
@@ -106,10 +106,10 @@ final class Tester: ObservableObject {
         LogProxy.sharedInstance.delegate = LogManager.sharedInstance
 
         // is there a saved Client ID?
-        if clientId.isEmpty {
+        if clientId == nil {
             // NO, assign one
             clientId = UUID().uuidString
-            _log("Tester: ClientId created - \(clientId)", .debug, #function, #file, #line)
+            _log("Tester: ClientId created - \(clientId!)", .debug, #function, #file, #line)
         }
         _api.testerModeEnabled = true
 
@@ -176,22 +176,21 @@ final class Tester: ObservableObject {
 
     /// Filter the message collection
     /// - Parameter type:     object type
-    func filterUpdate(filterBy: String, filterText: String) {
+    func filterUpdate(filterBy: MessageFilters, filterText: String) {
 
         switch (filterBy, filterText) {
 
-        case (MessageFilters.none.rawValue, _):       filteredMessages = messages
-        case (MessageFilters.prefix.rawValue, ""):    filteredMessages = messages
-        case (MessageFilters.prefix.rawValue, _):     filteredMessages =  messages.filter { $0.text.localizedCaseInsensitiveContains("|" + filterText) }
-        case (MessageFilters.includes.rawValue, ""):  filteredMessages = [Message]()
-        case (MessageFilters.includes.rawValue, _):   filteredMessages =  messages.filter { $0.text.localizedCaseInsensitiveContains(filterText) }
-        case (MessageFilters.excludes.rawValue, ""):  filteredMessages = messages
-        case (MessageFilters.excludes.rawValue, _):   filteredMessages =  messages.filter { !$0.text.localizedCaseInsensitiveContains(filterText) }
-        case (MessageFilters.command.rawValue, _):    filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "C" }
-        case (MessageFilters.S0.rawValue, _):         filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(2) == "S0" }
-        case (MessageFilters.status.rawValue, _):     filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "S" && $0.text.dropFirst(10).prefix(1) != "0"}
-        case (MessageFilters.reply.rawValue, _):      filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "R" }
-        default: break
+        case (.none, _):       filteredMessages = messages
+        case (.prefix, ""):    filteredMessages = messages
+        case (.prefix, _):     filteredMessages =  messages.filter { $0.text.localizedCaseInsensitiveContains("|" + filterText) }
+        case (.includes, ""):  filteredMessages = [Message]()
+        case (.includes, _):   filteredMessages =  messages.filter { $0.text.localizedCaseInsensitiveContains(filterText) }
+        case (.excludes, ""):  filteredMessages = messages
+        case (.excludes, _):   filteredMessages =  messages.filter { !$0.text.localizedCaseInsensitiveContains(filterText) }
+        case (.command, _):    filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "C" }
+        case (.S0, _):         filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(2) == "S0" }
+        case (.status, _):     filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "S" && $0.text.dropFirst(10).prefix(1) != "0"}
+        case (.reply, _):      filteredMessages =  messages.filter { $0.text.dropFirst(9).prefix(1) == "R" }
         }
     }
 
@@ -218,12 +217,12 @@ final class Tester: ObservableObject {
     /// - Returns:          a Color
     private func lineColor(_ text: String) -> Color {
 
-        if text.prefix(1) == "C" { return commandsColor }                                   // Commands
-        if text.prefix(1) == "R" && text.contains("|0|") { return repliesColor }            // Replies no error
-        if text.prefix(1) == "R" && !text.contains("|0|") { return repliesWithErrorsColor } // Replies w/error
+        if text.prefix(1) == "C" { return commandColor }                                   // Commands
+        if text.prefix(1) == "R" && text.contains("|0|") { return replyColor }            // Replies no error
+        if text.prefix(1) == "R" && !text.contains("|0|") { return replyWithErrorColor } // Replies w/error
         if text.prefix(2) == "S0" { return statusColor }                                    // Status
 
-        return standardColor
+        return defaultColor
     }
 
     /// Parse a Reply message. format: <sequenceNumber>|<hexResponse>|<message>[|<debugOutput>]

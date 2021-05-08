@@ -13,7 +13,6 @@
 		91541C3524E02FA1002FE61E /* AppExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91541C3424E02FA1002FE61E /* AppExtensions.swift */; };
 		917F20AE26248C6700204D66 /* xClient6001 in Frameworks */ = {isa = PBXBuildFile; productRef = 917F20AD26248C6700204D66 /* xClient6001 */; };
 		9185317B252262570085EC51 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 9185317A252262570085EC51 /* README.md */; };
-		9185917E257E80D400C7D6F5 /* FilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859170257E80D400C7D6F5 /* FilterView.swift */; };
 		9185917F257E80D400C7D6F5 /* SendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859171257E80D400C7D6F5 /* SendView.swift */; };
 		91859181257E80D400C7D6F5 /* BottomButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859173257E80D400C7D6F5 /* BottomButtonsView.swift */; };
 		91859183257E80D400C7D6F5 /* MessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91859175257E80D400C7D6F5 /* MessagesView.swift */; };
@@ -34,7 +33,6 @@
 		91541C2524E02E7D002FE61E /* xApiMac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = xApiMac.entitlements; sourceTree = "<group>"; };
 		91541C3424E02FA1002FE61E /* AppExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppExtensions.swift; sourceTree = "<group>"; };
 		9185317A252262570085EC51 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		91859170257E80D400C7D6F5 /* FilterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterView.swift; sourceTree = "<group>"; };
 		91859171257E80D400C7D6F5 /* SendView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendView.swift; sourceTree = "<group>"; };
 		91859173257E80D400C7D6F5 /* BottomButtonsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomButtonsView.swift; sourceTree = "<group>"; };
 		91859175257E80D400C7D6F5 /* MessagesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesView.swift; sourceTree = "<group>"; };
@@ -120,7 +118,6 @@
 			children = (
 				91859173257E80D400C7D6F5 /* BottomButtonsView.swift */,
 				91859177257E80D400C7D6F5 /* FiltersView.swift */,
-				91859170257E80D400C7D6F5 /* FilterView.swift */,
 				91859175257E80D400C7D6F5 /* MessagesView.swift */,
 				91859171257E80D400C7D6F5 /* SendView.swift */,
 				91CCF46C2592D7F00063757A /* TopButtonsView.swift */,
@@ -238,7 +235,6 @@
 			files = (
 				91CCF46D2592D7F00063757A /* TopButtonsView.swift in Sources */,
 				91859181257E80D400C7D6F5 /* BottomButtonsView.swift in Sources */,
-				9185917E257E80D400C7D6F5 /* FilterView.swift in Sources */,
 				91859183257E80D400C7D6F5 /* MessagesView.swift in Sources */,
 				91859185257E80D400C7D6F5 /* FiltersView.swift in Sources */,
 				91541C3524E02FA1002FE61E /* AppExtensions.swift in Sources */,
@@ -388,7 +384,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.4.1;
+				MARKETING_VERSION = 1.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -414,7 +410,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.4.1;
+				MARKETING_VERSION = 1.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -450,7 +446,7 @@
 			repositoryURL = "https://github.com/K3TZR/xClient6001.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.7.3;
+				minimumVersion = 0.7.4;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

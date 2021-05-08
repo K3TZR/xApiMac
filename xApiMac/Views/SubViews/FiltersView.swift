@@ -6,31 +6,63 @@
 //
 
 import SwiftUI
+import xClient6001
 
 struct FiltersView: View {
     @ObservedObject var tester: Tester
 
-    @State var dummyText = ""
-    @AppStorage("objectsFilterBy") var objectsFilterBy: String = ""
-    @AppStorage("messagesFilterBy") var messagesFilterBy: String = ""
+    var body: some View {
+        HStack(spacing: 100) {
+            FilterObjectsView()
+            FilterMessagesView(object: tester)
+        }
+    }
+}
+
+struct FilterObjectsView: View {
+
+    @AppStorage("objectsFilterBy") var objectsFilterBy: ObjectFilters = .none
+
+    var body: some View {
+
+        HStack {
+            Picker("Hide objects of type", selection: $objectsFilterBy) {
+                ForEach(ObjectFilters.allCases, id: \.self) {
+                    Text($0.rawValue)
+                }
+            }
+            .frame(width: 275)
+        }
+        .pickerStyle(MenuPickerStyle())
+    }
+}
+
+struct FilterMessagesView: View {
+    @ObservedObject var object: Tester
+
+    @AppStorage("messagesFilterBy") var messagesFilterBy: MessageFilters = .none
     @AppStorage("messagesFilterText") var messagesFilterText: String = ""
 
     var body: some View {
-        HStack(spacing: 40) {
 
-            FilterView(selection: $objectsFilterBy,
-                        text: $dummyText,
-                        choices: ObjectFilters.allCases.map {$0.rawValue},
-                        message: "Hide Objects of type",
-                        showText: false,
-                        object: tester)
-            FilterView(selection: $messagesFilterBy,
-                        text: $messagesFilterText,
-                        choices: MessageFilters.allCases.map {$0.rawValue},
-                        message: "Filter Messages by",
-                        showText: true,
-                        object: tester)
+        HStack {
+            Picker("Filter messages by", selection: $messagesFilterBy) {
+                ForEach(MessageFilters.allCases, id: \.self) {
+                    Text($0.rawValue)
+                }
+            }
+            .onChange(of: messagesFilterBy, perform: { value in
+                object.filterUpdate(filterBy: value, filterText: messagesFilterText)
+            })
+            .frame(width: 275)
+
+            TextField("Filter text", text: $messagesFilterText)
+                .onChange(of: messagesFilterText, perform: { value in
+                    object.filterUpdate(filterBy: messagesFilterBy, filterText: value)
+                })
+                .modifier(ClearButton(boundText: $messagesFilterText))
         }
+        .pickerStyle(MenuPickerStyle())
     }
 }
 
