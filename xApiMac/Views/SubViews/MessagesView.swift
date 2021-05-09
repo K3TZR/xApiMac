@@ -43,11 +43,18 @@ struct MessagesView: View {
 struct MessagesView_Previews: PreviewProvider {
 
     static var previews: some View {
+        let commandColor = Color(.systemGreen)
+        let replyColor = Color(.systemGray)
+        let replyWithErrorColor = Color(.systemRed)
+        let defaultColor = Color(.textColor)
+        let status0Color = Color(.systemOrange)
+
         let mockMessages = [
-            Message(id: 0, text: "11:40:04 C  The first message", color: .red),
-            Message(id: 1, text: "11:40:05 R  The second message", color: .orange),
-            Message(id: 2, text: "11:40:06 S0 The third message", color: .yellow),
-            Message(id: 3, text: "11:40:06    The fourth message", color: .green)
+            Message(id: 0, text: "11:40:04 C  A Command message", color: commandColor),
+            Message(id: 1, text: "11:40:05 R  A Reply message", color: replyColor),
+            Message(id: 2, text: "11:40:05 R  A Reply message w/error", color: replyWithErrorColor),
+            Message(id: 3, text: "11:40:06 S0 An S0 message", color: status0Color),
+            Message(id: 4, text: "11:40:06    Other messages", color: defaultColor)
         ]
         MessagesView(messages: mockMessages, fontSize: 20)
     }

@@ -22,12 +22,20 @@ struct Message: Identifiable {
 }
 
 enum ObjectFilters: String, CaseIterable {
-    case none
-    case sliceMeters
-    case otherMeters
-    case allMeters
-    case slices
+    case core
+    case coreNoMeters = "core w/o meters"
+    case amplifiers
+    case atu
+    case bands
+    case gps
+    case interlock
+    case memories
+    case meters
     case streams
+    case transmit
+    case tnfs
+    case waveform
+    case xvtrs
 }
 enum MessageFilters: String, CaseIterable {
     case none
@@ -75,6 +83,7 @@ final class Tester: ObservableObject {
     private var _api = Api.sharedInstance
     private var _commandsIndex = 0
     private var _commandHistory = [String]()
+    private var _lastPingSequenceNumber = ""
     private lazy var _log = LogManager.sharedInstance.logMessage
     private var _messageNumber = 0
     private let _objectQ  = DispatchQueue(label: kAppName + ".objectQ", attributes: [.concurrent])
@@ -86,7 +95,7 @@ final class Tester: ObservableObject {
     private let replyColor = Color(.systemGray)
     private let replyWithErrorColor = Color(.systemRed)
     private let defaultColor = Color(.textColor)
-    private let statusColor = Color(.systemOrange)
+    private let status0Color = Color(.systemOrange)
 
     // ----------------------------------------------------------------------------
     // MARK: - Private properties with concurrency protection
@@ -217,10 +226,10 @@ final class Tester: ObservableObject {
     /// - Returns:          a Color
     private func lineColor(_ text: String) -> Color {
 
-        if text.prefix(1) == "C" { return commandColor }                                   // Commands
-        if text.prefix(1) == "R" && text.contains("|0|") { return replyColor }            // Replies no error
+        if text.prefix(1) == "C" { return commandColor }                                 // Commands
+        if text.prefix(1) == "R" && text.contains("|0|") { return replyColor }           // Replies no error
         if text.prefix(1) == "R" && !text.contains("|0|") { return replyWithErrorColor } // Replies w/error
-        if text.prefix(2) == "S0" { return statusColor }                                    // Status
+        if text.prefix(2) == "S0" { return status0Color }                                // S0
 
         return defaultColor
     }
@@ -234,7 +243,11 @@ final class Tester: ObservableObject {
         // ignore incorrectly formatted replies
         guard components.count >= 2 else { populateMessages("ERROR: R\(commandSuffix)") ; return }
 
-        if showReplies || components[1] != "0" || (components.count >= 3 && components[2] != "") {
+        if showPings && components[0] == _lastPingSequenceNumber {
+            populateMessages("R\(commandSuffix)")
+
+        }
+        if showReplies && (components[0] != _lastPingSequenceNumber || components[1] != "0" || (components.count >= 3 && components[2] != "")) {
             populateMessages("R\(commandSuffix)")
         }
     }
@@ -257,8 +270,12 @@ extension Tester: RadioManagerDelegate {
 
 extension Tester: ApiDelegate {
     public func sentMessage(_ text: String) {
-        if !text.hasSuffix("|ping") { populateMessages(text) }
-        if text.hasSuffix("|ping") && showPings { populateMessages(text) }
+        if !text.hasSuffix("|ping") {
+            populateMessages(text)
+        } else {
+            _lastPingSequenceNumber = String(text.prefix(while: {$0 != "|"}).dropFirst())
+            if showPings { populateMessages(text)  }
+        }
     }
 
     public func receivedMessage(_ text: String) {

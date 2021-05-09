@@ -21,12 +21,12 @@ struct FiltersView: View {
 
 struct FilterObjectsView: View {
 
-    @AppStorage("objectsFilterBy") var objectsFilterBy: ObjectFilters = .none
+    @AppStorage("objectsFilterBy") var objectsFilterBy: ObjectFilters = .core
 
     var body: some View {
 
         HStack {
-            Picker("Hide objects of type", selection: $objectsFilterBy) {
+            Picker("Show objects of type", selection: $objectsFilterBy) {
                 ForEach(ObjectFilters.allCases, id: \.self) {
                     Text($0.rawValue)
                 }

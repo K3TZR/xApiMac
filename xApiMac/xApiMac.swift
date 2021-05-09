@@ -34,6 +34,7 @@ struct XApiMac: App {
             ContentView(selectedTab: 0)
                 .environmentObject(tester)
                 .environmentObject(RadioManager(delegate: tester as RadioManagerDelegate))
+                .navigationTitle("xApiMac " + Version().longString)
 
         }
         .commands {
