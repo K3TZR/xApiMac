@@ -10,6 +10,7 @@ import xClient6001
 import xLib6001
 
 struct ObjectsView: View {
+    @ObservedObject var tester: Tester
     @ObservedObject var radio: Radio
     let objectFilter: ObjectFilters
     let fontSize: Int
@@ -19,7 +20,7 @@ struct ObjectsView: View {
         ScrollView([.horizontal, .vertical]) {
             VStack(alignment: .leading) {
                 RadioView(radio: radio)
-                ClientView(radio: radio, objectFilter: objectFilter)
+                ClientView(tester: tester, radio: radio, objectFilter: objectFilter)
             }
             .frame(minWidth: 920, maxWidth: .infinity, minHeight: 200, maxHeight: .infinity, alignment: .leading)
             .font(.system(size: CGFloat(fontSize), weight: .regular, design: .monospaced))
@@ -29,7 +30,7 @@ struct ObjectsView: View {
 
  struct ObjectsView_Previews: PreviewProvider {
     static var previews: some View {
-        ObjectsView(radio: Radio(DiscoveryPacket()), objectFilter: .core, fontSize: 12)
+        ObjectsView(tester: Tester(), radio: Radio(DiscoveryPacket()), objectFilter: .core, fontSize: 12)
     }
  }
 
@@ -39,37 +40,50 @@ struct RadioView: View {
     @ObservedObject var radio: Radio
 
     var body: some View {
-        HStack(spacing: 20) {
-            Text(radio.nickname)
-//            Text(radio.packet.model)
-            Text(radio.packet.status)
-            Text(radio.packet.isWan ? "Smartlink" : "Local")
-            Text(radio.packet.publicIp)
-            Text(radio.serialNumber)
-            Text(radio.packet.firmwareVersion)
-            Text("Atu=\(radio.atuPresent ? "Y" : "N")")
-            Text("Gps=\(radio.gpsPresent ? "Y" : "N")")
-            Text("Scu=\(radio.numberOfScus)")
-            Text("DaxEnabled=\(radio.transmit.daxEnabled ? "Y" : "N")")
-        }.foregroundColor(Color(.systemGreen))
+        VStack(alignment: .leading) {
+            HStack {
+                HStack(spacing: 20) {
+                    Text("RADIO -> ").frame(width: 140, alignment: .leading)
+                    Text(radio.nickname).frame(width: 120, alignment: .leading)
+                    Text(radio.packet.model)
+                    Text(radio.packet.status)
+                    Text(radio.packet.isWan ? "Smartlink" : "Local")
+                    Text(radio.packet.publicIp)
+                    Text(radio.packet.serialNumber)
+                    Text(radio.packet.firmwareVersion)
+                }.padding(.trailing, 10)
+                HStack(spacing: 20) {
+                    Text("Atu \(radio.atuPresent ? "Y" : "N")")
+                    Text("Gps \(radio.gpsPresent ? "Y" : "N")")
+                    Text("Scu \(radio.numberOfScus)")
+                }
+            }
+            if radio.atuPresent {  AtuView(radio: radio) }
+            if radio.gpsPresent {  GpsView(radio: radio) }
+        }
+        .foregroundColor(Color(.systemGreen))
     }
 }
 
 // ----------------------------------------------------------------------------
 
 struct ClientView: View {
+    @ObservedObject var tester: Tester
     @ObservedObject var radio: Radio
     let objectFilter: ObjectFilters
+
+    @AppStorage("guiIsEnabled") var guiIsEnabled: Bool = false
 
     var body: some View {
 
         let guiClients = radio.guiClients
 
+        if !guiIsEnabled { NonGuiView(tester: tester, radio: radio, objectFilter: objectFilter) }
         ForEach(guiClients, id: \.id) { guiClient in
             Divider().foregroundColor(Color(.systemRed))
             HStack(spacing: 20) {
-                Text("Gui Client -> ")
-                Text(guiClient.station).frame(width: 120)
+                Text("GUI CLIENT -> ").frame(width: 140, alignment: .leading)
+                Text(guiClient.station).frame(width: 120, alignment: .leading)
                 Text("Handle \(guiClient.handle.hex)")
                 Text("ClientId \(guiClient.clientId ?? "Unknown")")
                 Text("LocalPtt \(guiClient.isLocalPtt ? "Y" : "N")")
@@ -83,19 +97,37 @@ struct ClientView: View {
                 StreamView(radio: radio, handle: guiClient.handle)
                 PanadapterView(radio: radio, handle: guiClient.handle, showMeters: false)
             case .amplifiers:       AmplifierView(radio: radio)
-//            case .atu:          EmptyView()
-//            case .bands:        EmptyView()
-//            case .gps:          EmptyView()
-//            case .interlock:    EmptyView()
-//            case .memories:     EmptyView()
-            case .meters:       MeterView(radio: radio, sliceId: nil)
-            case .streams:      StreamView(radio: radio, handle: nil)
-            case .transmit:     TransmitView(radio: radio)
-            case .tnfs:         TnfView(radio: radio)
-            case .waveform:     EmptyView()
-            case .xvtrs:        EmptyView()
-            default:            EmptyView()
+            case .bandSettings:     BandView(radio: radio)
+            case .interlock:        InterlockView(radio: radio)
+            case .memories:         MemoryView(radio: radio)
+            case .meters:           MeterView(radio: radio, sliceId: nil)
+            case .streams:          StreamView(radio: radio, handle: guiClient.handle)
+            case .transmit:         TransmitView(radio: radio, handle: guiClient.handle)
+            case .tnfs:             TnfView(radio: radio)
+            case .waveforms:        WaveformView(radio: radio)
+            case .xvtrs:            XvtrView(radio: radio)
             }
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+struct NonGuiView: View {
+    @ObservedObject var tester: Tester
+    @ObservedObject var radio: Radio
+    let objectFilter: ObjectFilters
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Divider().foregroundColor(Color(.systemRed))
+            HStack(spacing: 20) {
+                Text("NONGUI CLIENT -> ").frame(width: 140, alignment: .leading)
+                Text(tester.stationName).frame(width: 120, alignment: .leading)
+                Text("Handle \(Api.sharedInstance.connectionHandle!.hex)")
+            }
+            if objectFilter == .streams { StreamView(radio: radio, handle: Api.sharedInstance.connectionHandle!) }
+            if objectFilter == .transmit { TransmitView(radio: radio, handle: Api.sharedInstance.connectionHandle!) }
         }
     }
 }
@@ -253,6 +285,208 @@ struct AmplifierView: View {
 
 // ----------------------------------------------------------------------------
 
+struct AtuView: View {
+    @ObservedObject var radio: Radio
+
+    var body: some View {
+        let atu = radio.atu!
+        VStack {
+            HStack(spacing: 20) {
+                Text("ATU -> ").frame(width: 140, alignment: .leading)
+                Text("").frame(width: 120, alignment: .leading)
+                Text("Enabled \(atu.enabled ? "Y" : "N")")
+                Text("Status \(atu.status)")
+                Text("Memories enabled \(atu.memoriesEnabled ? "Y" : "N")")
+                Text("Using memories \(atu.usingMemory ? "Y" : "N")")
+            }
+            HStack(spacing: 40) {
+                Button("ATU") { atu.start() }
+                Button("MEM") { atu.memoriesEnabled.toggle() }
+                Button("BYP") { atu.bypass() }
+            }
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+struct BandView: View {
+    @ObservedObject var radio: Radio
+
+    var body: some View {
+        let bandSettings = radio.bandSettings
+
+        HStack(spacing: 20) {
+            Text("BANDSETTINGS -> ").frame(width: 140, alignment: .leading)
+            Text("BANDSETTINGS NOT IMPLEMENTED")
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+struct GpsView: View {
+    @ObservedObject var radio: Radio
+
+    var body: some View {
+        let gps = radio.gps!
+
+        HStack(spacing: 20) {
+            Text("GPS -> ").frame(width: 140, alignment: .leading)
+            Text("GPS NOT IMPLEMENTED")
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+struct InterlockView: View {
+    @ObservedObject var radio: Radio
+
+    var body: some View {
+        let interlock = radio.interlock!
+
+        HStack(spacing: 20) {
+            Text("INTERLOCK -> ").frame(width: 140, alignment: .leading)
+            Text("INTERLOCK NOT IMPLEMENTED")
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+struct MemoryView: View {
+    @ObservedObject var radio: Radio
+
+    var body: some View {
+        let memories = radio.memories
+
+        HStack(spacing: 20) {
+            Text("MEMORY -> ").frame(width: 140, alignment: .leading)
+            Text("MEMORY NOT IMPLEMENTED")
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+struct StreamView: View {
+    @ObservedObject var radio: Radio
+    let handle: Handle
+
+    var body: some View {
+        let remoteRx = Array(radio.remoteRxAudioStreams.values)
+        let remoteTx = Array(radio.remoteTxAudioStreams.values)
+        let daxMic = Array(radio.daxMicAudioStreams.values)
+        let daxRx = Array(radio.daxRxAudioStreams.values)
+        let daxTx = Array(radio.daxTxAudioStreams.values)
+        let daxIq = Array(radio.daxIqStreams.values)
+
+        VStack(alignment: .leading) {
+            ForEach(remoteRx) { stream in
+                if handle == stream.clientHandle {
+                    HStack(spacing: 20) {
+                        if handle == Api.sharedInstance.connectionHandle { Button("Remove") { stream.remove() } }
+                        Text("RemoteRxAudioStream")
+                        Text(stream.id.hex)
+                        Text("Handle \(stream.clientHandle.hex)")
+                        Text("Compression \(stream.compression)")
+                        Text("Ip \(stream.ip)")
+                        Text("Streaming \(stream.isStreaming ? "Y" : "N")")
+                    }
+                    .foregroundColor(.red)
+                }
+            }
+            ForEach(remoteTx) { stream in
+                if handle == stream.clientHandle {
+                    HStack(spacing: 20) {
+                        if handle == Api.sharedInstance.connectionHandle { Button("Remove") { stream.remove() } }
+                        Text("RemoteTxAudioStream")
+                        Text(stream.id.hex)
+                        Text("Handle \(stream.clientHandle.hex)")
+                        Text("Compression \(stream.compression)")
+                        Text("Streaming \(stream.isStreaming ? "Y" : "N")")
+                    }
+                    .foregroundColor(.orange)
+                }
+            }
+            ForEach(daxMic) { stream in
+                if handle == stream.clientHandle {
+                    HStack(spacing: 20) {
+                        if handle == Api.sharedInstance.connectionHandle { Button("Remove") { stream.remove() } }
+                        Text("DaxMicAudioStream")
+                        Text(stream.id.hex)
+                        Text("Handle \(stream.clientHandle.hex)")
+                        Text("Ip \(stream.ip)")
+                    }
+                    .foregroundColor(.yellow)
+                }
+            }
+            ForEach(daxRx) { stream in
+                if handle == stream.clientHandle {
+                    HStack(spacing: 20) {
+                        if handle == Api.sharedInstance.connectionHandle { Button("Remove") { stream.remove() } }
+                        Text("DaxRxAudioStream")
+                        Text(stream.id.hex)
+                        Text("Handle \(stream.clientHandle.hex)")
+                        Text("Channel \(stream.daxChannel)")
+                        Text("Ip \(stream.ip)")
+                    }
+                    .foregroundColor(.green)
+                }
+            }
+            ForEach(daxTx) { stream in
+
+                if handle == stream.clientHandle {
+                    HStack(spacing: 20) {
+                        if handle == Api.sharedInstance.connectionHandle { Button("Remove") { stream.remove() } }
+                        Text("DaxTxAudioStream")
+                        Text("Id=\(stream.id.hex)")
+                        Text("ClientHandle=\(stream.clientHandle.hex)")
+                        Text("Transmit=\(stream.isTransmitChannel ? "Y" : "N")")
+                    }
+                    .foregroundColor(.blue)
+                }
+            }
+            ForEach(daxIq) { stream in
+                if handle == stream.clientHandle {
+                    HStack(spacing: 20) {
+                        if handle == Api.sharedInstance.connectionHandle { Button("Remove") { stream.remove() } }
+                        Text("DaxIqStream")
+                        Text(stream.id.hex)
+                        Text("Handle=\(stream.clientHandle.hex)")
+                        Text("Channel \(stream.channel)")
+                        Text("Ip \(stream.ip)")
+                        Text("Pan \(stream.pan.hex)")
+                        Text("Streaming \(stream.isStreaming ? "Y" : "N")")
+                    }
+                    .foregroundColor(.purple)
+                }
+            }
+            if handle == Api.sharedInstance.connectionHandle {
+                HStack(alignment: .center, spacing: 40) {
+                    Button("RemoteRxAudio") { radio.requestRemoteRxAudioStream() }
+                    Button("RemoteTxAudio") { radio.requestRemoteTxAudioStream() }
+                    Button("DaxMicAudio") { radio.requestDaxMicAudioStream() }
+                    Button("DaxRxAudio") { radio.requestDaxRxAudioStream("1") }
+                    Button("DaxTxAudio") { radio.requestDaxTxAudioStream() }
+                    Button("DaxIq") { radio.requestDaxIqStream("1") }
+                    Button("Pete") {
+                        radio.transmit.daxEnabled = true
+                        radio.requestDaxTxAudioStream()
+                        sleep(1)
+                        radio.transmit.daxEnabled = false
+
+                    }
+                }
+            }
+        }
+        .padding(.leading, 20)
+    }
+}
+
+// ----------------------------------------------------------------------------
+
 struct TnfView: View {
     @ObservedObject var radio: Radio
 
@@ -276,9 +510,11 @@ struct TnfView: View {
 
 struct TransmitView: View {
     @ObservedObject var radio: Radio
+    let handle: Handle
 
     var body: some View {
         let transmit = radio.transmit!
+        let width: CGFloat = 80
 
         VStack {
             HStack(spacing: 20) {
@@ -286,20 +522,68 @@ struct TransmitView: View {
                 Text("RF Power \(transmit.rfPower)")
                 Text("Tune Power \(transmit.tunePower)")
                 Text("Frequency \(transmit.frequency)")
-                Text("Dax \(transmit.daxEnabled ? "ON" : "OFF")")
-                Text("Proc \(transmit.speechProcessorEnabled ? "ON" : "OFF")")
-                Text("Mon \(transmit.txMonitorEnabled ? "ON" : "OFF")")
                 Text("Mon Level \(transmit.txMonitorGainSb)")
-                Text("Acc \(transmit.micAccEnabled ? "ON" : "OFF")")
-            }
-            HStack(spacing: 20) {
-                Text("Comp \(transmit.companderEnabled ? "ON" : "OFF")")
                 Text("Comp Level \(transmit.companderLevel)")
                 Text("Mic \(transmit.micSelection)")
                 Text("Mic Level \(transmit.micLevel)")
-                Text("Vox \(transmit.voxEnabled ? "ON" : "OFF")")
                 Text("Vox Delay \(transmit.voxDelay)")
                 Text("Vox Level \(transmit.voxLevel)")
+            }
+            HStack(spacing: 60) {
+                VStack {
+                    Text("Proc \(transmit.speechProcessorEnabled ? "ON" : "OFF")")
+                        .foregroundColor(transmit.speechProcessorEnabled ? .green : .red)
+                        .frame(width: width, alignment: .center)
+                    if handle == Api.sharedInstance.connectionHandle {
+                        Button(action: { transmit.speechProcessorEnabled.toggle() }
+                        ) { Text("PROC").frame(width: width) }
+                    }
+                }
+                VStack {
+                    Text("Mon \(transmit.txMonitorEnabled ? "ON" : "OFF")")
+                        .foregroundColor(transmit.txMonitorEnabled ? .green : .red)
+                        .frame(width: width, alignment: .center)
+                    if handle == Api.sharedInstance.connectionHandle {
+                        Button(action: { transmit.txMonitorEnabled.toggle() }
+                        ) { Text("MON").frame(width: width) }
+                    }
+                }
+                VStack {
+                    Text("Acc \(transmit.micAccEnabled ? "ON" : "OFF")")
+                        .foregroundColor(transmit.micAccEnabled ? .green : .red)
+                        .frame(width: width, alignment: .center)
+                    if handle == Api.sharedInstance.connectionHandle {
+                        Button(action: { transmit.micAccEnabled.toggle() }
+                        ) { Text("+ACC").frame(width: width) }
+                    }
+                }
+                VStack {
+                    Text("Comp \(transmit.companderEnabled ? "ON" : "OFF")")
+                        .foregroundColor(transmit.companderEnabled ? .green : .red)
+                        .frame(width: width, alignment: .center)
+                    if handle == Api.sharedInstance.connectionHandle {
+                        Button(action: { transmit.companderEnabled.toggle() }
+                        ) { Text("COMP").frame(width: width) }
+                    }
+                }
+                VStack {
+                    Text("Dax \(transmit.daxEnabled ? "ON" : "OFF")")
+                        .foregroundColor(transmit.daxEnabled ? .green : .red)
+                        .frame(width: width, alignment: .center)
+                    if handle == Api.sharedInstance.connectionHandle {
+                        Button(action: { transmit.daxEnabled.toggle() }
+                        ) { Text("DAX").frame(width: width) }
+                    }
+                }
+                VStack {
+                    Text("Vox \(transmit.voxEnabled ? "ON" : "OFF")")
+                        .foregroundColor(transmit.voxEnabled ? .green : .red)
+                        .frame(width: width, alignment: .center)
+                    if handle == Api.sharedInstance.connectionHandle {
+                        Button(action: { transmit.voxEnabled.toggle() }
+                        ) { Text("VOX").frame(width: width) }
+                    }
+                }
             }
         }
     }
@@ -307,88 +591,30 @@ struct TransmitView: View {
 
 // ----------------------------------------------------------------------------
 
-struct StreamView: View {
+struct WaveformView: View {
     @ObservedObject var radio: Radio
-    let handle: Handle?
 
     var body: some View {
-        let remRx = Array(radio.remoteRxAudioStreams.values)
-        let remTx = Array(radio.remoteTxAudioStreams.values)
-        let mics = Array(radio.daxMicAudioStreams.values)
-        let rxs = Array(radio.daxRxAudioStreams.values)
-        let txs = Array(radio.daxTxAudioStreams.values)
-        let iqs = Array(radio.daxIqStreams.values)
+        let waveform = radio.waveform!
 
-        VStack(alignment: .leading) {
-            ForEach(remRx) { stream in
-                if handle == nil || handle == stream.clientHandle {
-                    HStack(spacing: 20) {
-                        Text("RemoteRxAudioStream")
-                        Text(stream.id.hex)
-                        Text("Handle \(stream.clientHandle.hex)")
-                        Text("Compression \(stream.compression)")
-                        Text("Ip \(stream.ip)")
-                        Text("Streaming \(stream.isStreaming ? "Y" : "N")")
-                    }
-                }
-            }
-            ForEach(remTx) { stream in
-                if handle == nil || handle == stream.clientHandle {
-                    HStack(spacing: 20) {
-                        Text("RemoteTxAudioStream")
-                        Text(stream.id.hex)
-                        Text("Handle \(stream.clientHandle.hex)")
-                        Text("Compression \(stream.compression)")
-                        Text("Streaming \(stream.isStreaming ? "Y" : "N")")
-                    }
-                }
-            }
-            ForEach(mics) { stream in
-                if handle == nil || handle == stream.clientHandle {
-                    HStack(spacing: 20) {
-                        Text("DaxMicAudioStream")
-                        Text(stream.id.hex)
-                        Text("Handle \(stream.clientHandle.hex)")
-                        Text("Ip \(stream.ip)")
-                    }
-                }
-            }
-            ForEach(rxs) { stream in
-                if handle == nil || handle == stream.clientHandle {
-                    HStack(spacing: 20) {
-                        Text("DaxRxAudioStream")
-                        Text(stream.id.hex)
-                        Text("Handle \(stream.clientHandle.hex)")
-                        Text("Channel \(stream.daxChannel)")
-                        Text("Ip \(stream.ip)")
-                    }
-                }
-            }
-            ForEach(txs) { stream in
-                if handle == nil || handle == stream.clientHandle {
-                    HStack(spacing: 20) {
-                        Text("DaxTxAudioStream")
-                        Text("Id=\(stream.id.hex)")
-                        Text("Handle=\(stream.clientHandle.hex)")
-                        Text("Transmit=\(stream.isTransmitChannel ? "Y" : "N")")
-                    }
-                }
-            }
-            ForEach(iqs) { stream in
-                if handle == nil || handle == stream.clientHandle {
-                    HStack(spacing: 20) {
-                        Text("DaxTxAudioStream")
-                        Text(stream.id.hex)
-                        Text("Handle=\(stream.clientHandle.hex)")
-                        Text("Channel \(stream.channel)")
-                        Text("Ip \(stream.ip)")
-                        Text("Pan \(stream.pan.hex)")
-                        Text("Streaming \(stream.isStreaming ? "Y" : "N")")
-                    }
-                }
-            }
+        HStack(spacing: 20) {
+            Text("WAVEFORMs -> ").frame(width: 140, alignment: .leading)
+            Text("WAVEFORMs NOT IMPLEMENTED")
         }
-        .padding(.leading, 20)
-        .foregroundColor(.purple)
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+struct XvtrView: View {
+    @ObservedObject var radio: Radio
+
+    var body: some View {
+        let xvtrs = radio.xvtrs
+
+        HStack(spacing: 20) {
+            Text("XVTR -> ").frame(width: 140, alignment: .leading)
+            Text("XVTR NOT IMPLEMENTED")
+        }
     }
 }

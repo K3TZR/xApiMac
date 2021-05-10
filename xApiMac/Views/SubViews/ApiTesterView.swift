@@ -27,7 +27,7 @@ struct ApiTesterView: View {
             if radioManager.activeRadio == nil {
                 EmptyView()
             } else {
-                ObjectsView(radio: radioManager.activeRadio!, objectFilter: objectsFilterBy, fontSize: fontSize)
+                ObjectsView(tester: tester, radio: radioManager.activeRadio!, objectFilter: objectsFilterBy, fontSize: fontSize)
             }
 
             Divider().background(Color(.systemBlue))

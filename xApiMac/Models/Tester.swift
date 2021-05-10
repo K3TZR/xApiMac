@@ -25,16 +25,14 @@ enum ObjectFilters: String, CaseIterable {
     case core
     case coreNoMeters = "core w/o meters"
     case amplifiers
-    case atu
-    case bands
-    case gps
+    case bandSettings = "band settings"
     case interlock
     case memories
     case meters
     case streams
     case transmit
     case tnfs
-    case waveform
+    case waveforms
     case xvtrs
 }
 enum MessageFilters: String, CaseIterable {
