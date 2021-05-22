@@ -10,9 +10,11 @@ import SwiftUI
 
 struct MessagesView: View {
     let messages: [Message]
-    let fontSize: Int
 
+    @AppStorage("fontSize") var fontSize: Int = 10
     @AppStorage("showTimestamps") var showTimestamps: Bool = false
+
+    @State var lastId: Int?
 
     func timestamps(text: String) -> String {
         if showTimestamps {

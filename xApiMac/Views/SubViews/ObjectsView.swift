@@ -12,15 +12,15 @@ import xLib6001
 struct ObjectsView: View {
     @ObservedObject var tester: Tester
     @ObservedObject var radio: Radio
-    let objectFilter: ObjectFilters
-    let fontSize: Int
+
+    @AppStorage("fontSize") var fontSize: Int = 10
 
     var body: some View {
 
         ScrollView([.horizontal, .vertical]) {
             VStack(alignment: .leading) {
                 RadioView(radio: radio)
-                ClientView(tester: tester, radio: radio, objectFilter: objectFilter)
+                ClientView(tester: tester, radio: radio)
             }
             .frame(minWidth: 920, maxWidth: .infinity, minHeight: 200, maxHeight: .infinity, alignment: .leading)
             .font(.system(size: CGFloat(fontSize), weight: .regular, design: .monospaced))
@@ -30,7 +30,7 @@ struct ObjectsView: View {
 
  struct ObjectsView_Previews: PreviewProvider {
     static var previews: some View {
-        ObjectsView(tester: Tester(), radio: Radio(DiscoveryPacket()), objectFilter: .core, fontSize: 12)
+        ObjectsView(tester: Tester(), radio: Radio(DiscoveryPacket()))
     }
  }
 
@@ -70,7 +70,6 @@ struct RadioView: View {
 struct ClientView: View {
     @ObservedObject var tester: Tester
     @ObservedObject var radio: Radio
-    let objectFilter: ObjectFilters
 
     @AppStorage("guiIsEnabled") var guiIsEnabled: Bool = false
 
@@ -78,9 +77,9 @@ struct ClientView: View {
 
         let guiClients = radio.guiClients
 
-        if !guiIsEnabled { NonGuiView(tester: tester, radio: radio, objectFilter: objectFilter) }
+        if !guiIsEnabled { NonGuiView(tester: tester, radio: radio) }
         ForEach(guiClients, id: \.id) { guiClient in
-            Divider().foregroundColor(Color(.systemRed))
+            Divider().background(Color(.red))
             HStack(spacing: 20) {
                 Text("GUI CLIENT -> ").frame(width: 140, alignment: .leading)
                 Text(guiClient.station).frame(width: 120, alignment: .leading)
@@ -89,24 +88,37 @@ struct ClientView: View {
                 Text("LocalPtt \(guiClient.isLocalPtt ? "Y" : "N")")
                 Text("Program \(guiClient.program)")
             }
-            switch objectFilter {
-            case .core:
-                StreamView(radio: radio, handle: guiClient.handle)
-                PanadapterView(radio: radio, handle: guiClient.handle, showMeters: true)
-            case .coreNoMeters:
-                StreamView(radio: radio, handle: guiClient.handle)
-                PanadapterView(radio: radio, handle: guiClient.handle, showMeters: false)
-            case .amplifiers:       AmplifierView(radio: radio)
-            case .bandSettings:     BandView(radio: radio)
-            case .interlock:        InterlockView(radio: radio)
-            case .memories:         MemoryView(radio: radio)
-            case .meters:           MeterView(radio: radio, sliceId: nil)
-            case .streams:          StreamView(radio: radio, handle: guiClient.handle)
-            case .transmit:         TransmitView(radio: radio, handle: guiClient.handle)
-            case .tnfs:             TnfView(radio: radio)
-            case .waveforms:        WaveformView(radio: radio)
-            case .xvtrs:            XvtrView(radio: radio)
-            }
+            ClientSubView(tester: tester, radio: radio, handle: guiClient.handle)
+        }
+    }
+}
+
+struct ClientSubView: View {
+    @ObservedObject var tester: Tester
+    @ObservedObject var radio: Radio
+    let handle: Handle
+
+    @AppStorage("objectsFilterBy") var objectsFilterBy: ObjectFilters = .core
+
+    var body: some View {
+
+        switch objectsFilterBy {
+        case .core:
+            StreamView(tester: tester, radio: radio, handle: handle)
+            PanadapterView(radio: radio, handle: handle, showMeters: true)
+        case .coreNoMeters:
+            StreamView(tester: tester, radio: radio, handle: handle)
+            PanadapterView(radio: radio, handle: handle, showMeters: false)
+        case .amplifiers:       AmplifierView(radio: radio)
+        case .bandSettings:     BandView(radio: radio)
+        case .interlock:        InterlockView(radio: radio)
+        case .memories:         MemoryView(radio: radio)
+        case .meters:           MeterView(radio: radio, sliceId: nil)
+        case .streams:          StreamView(tester: tester, radio: radio, handle: handle)
+        case .transmit:         TransmitView(radio: radio, handle: handle)
+        case .tnfs:             TnfView(radio: radio)
+        case .waveforms:        WaveformView(radio: radio)
+        case .xvtrs:            XvtrView(radio: radio)
         }
     }
 }
@@ -116,18 +128,19 @@ struct ClientView: View {
 struct NonGuiView: View {
     @ObservedObject var tester: Tester
     @ObservedObject var radio: Radio
-    let objectFilter: ObjectFilters
+
+    @AppStorage("objectsFilterBy") var objectsFilterBy: ObjectFilters = .core
 
     var body: some View {
         VStack(alignment: .leading) {
             Divider().foregroundColor(Color(.systemRed))
             HStack(spacing: 20) {
                 Text("NONGUI CLIENT -> ").frame(width: 140, alignment: .leading)
-                Text(tester.stationName).frame(width: 120, alignment: .leading)
+                Text(tester.stationName ?? "UNKNOWN").frame(width: 120, alignment: .leading)
                 Text("Handle \(Api.sharedInstance.connectionHandle!.hex)")
             }
-            if objectFilter == .streams { StreamView(radio: radio, handle: Api.sharedInstance.connectionHandle!) }
-            if objectFilter == .transmit { TransmitView(radio: radio, handle: Api.sharedInstance.connectionHandle!) }
+            if objectsFilterBy == .streams { StreamView(tester: tester, radio: radio, handle: Api.sharedInstance.connectionHandle!) }
+            if objectsFilterBy == .transmit { TransmitView(radio: radio, handle: Api.sharedInstance.connectionHandle!) }
         }
     }
 }
@@ -288,6 +301,8 @@ struct AmplifierView: View {
 struct AtuView: View {
     @ObservedObject var radio: Radio
 
+    @AppStorage("showButtons") var showButtons: Bool = false
+
     var body: some View {
         let atu = radio.atu!
         VStack {
@@ -299,10 +314,12 @@ struct AtuView: View {
                 Text("Memories enabled \(atu.memoriesEnabled ? "Y" : "N")")
                 Text("Using memories \(atu.usingMemory ? "Y" : "N")")
             }
-            HStack(spacing: 40) {
-                Button("ATU") { atu.start() }
-                Button("MEM") { atu.memoriesEnabled.toggle() }
-                Button("BYP") { atu.bypass() }
+            if showButtons {
+                HStack(spacing: 40) {
+                    Button("ATU") { atu.start() }
+                    Button("MEM") { atu.memoriesEnabled.toggle() }
+                    Button("BYP") { atu.bypass() }
+                }.foregroundColor(Color(.controlTextColor))
             }
         }
     }
@@ -314,7 +331,7 @@ struct BandView: View {
     @ObservedObject var radio: Radio
 
     var body: some View {
-        let bandSettings = radio.bandSettings
+//        let bandSettings = radio.bandSettings
 
         HStack(spacing: 20) {
             Text("BANDSETTINGS -> ").frame(width: 140, alignment: .leading)
@@ -329,7 +346,7 @@ struct GpsView: View {
     @ObservedObject var radio: Radio
 
     var body: some View {
-        let gps = radio.gps!
+//        let gps = radio.gps!
 
         HStack(spacing: 20) {
             Text("GPS -> ").frame(width: 140, alignment: .leading)
@@ -344,7 +361,7 @@ struct InterlockView: View {
     @ObservedObject var radio: Radio
 
     var body: some View {
-        let interlock = radio.interlock!
+//        let interlock = radio.interlock!
 
         HStack(spacing: 20) {
             Text("INTERLOCK -> ").frame(width: 140, alignment: .leading)
@@ -359,7 +376,7 @@ struct MemoryView: View {
     @ObservedObject var radio: Radio
 
     var body: some View {
-        let memories = radio.memories
+//        let memories = radio.memories
 
         HStack(spacing: 20) {
             Text("MEMORY -> ").frame(width: 140, alignment: .leading)
@@ -371,8 +388,11 @@ struct MemoryView: View {
 // ----------------------------------------------------------------------------
 
 struct StreamView: View {
+    @ObservedObject var tester: Tester
     @ObservedObject var radio: Radio
     let handle: Handle
+
+    @AppStorage("showButtons") var showButtons: Bool = false
 
     var body: some View {
         let remoteRx = Array(radio.remoteRxAudioStreams.values)
@@ -463,7 +483,7 @@ struct StreamView: View {
                     .foregroundColor(.purple)
                 }
             }
-            if handle == Api.sharedInstance.connectionHandle {
+            if showButtons && handle == Api.sharedInstance.connectionHandle {
                 HStack(alignment: .center, spacing: 40) {
                     Button("RemoteRxAudio") { radio.requestRemoteRxAudioStream() }
                     Button("RemoteTxAudio") { radio.requestRemoteTxAudioStream() }
@@ -471,13 +491,6 @@ struct StreamView: View {
                     Button("DaxRxAudio") { radio.requestDaxRxAudioStream("1") }
                     Button("DaxTxAudio") { radio.requestDaxTxAudioStream() }
                     Button("DaxIq") { radio.requestDaxIqStream("1") }
-                    Button("Pete") {
-                        radio.transmit.daxEnabled = true
-                        radio.requestDaxTxAudioStream()
-                        sleep(1)
-                        radio.transmit.daxEnabled = false
-
-                    }
                 }
             }
         }
@@ -595,7 +608,7 @@ struct WaveformView: View {
     @ObservedObject var radio: Radio
 
     var body: some View {
-        let waveform = radio.waveform!
+//        let waveform = radio.waveform!
 
         HStack(spacing: 20) {
             Text("WAVEFORMs -> ").frame(width: 140, alignment: .leading)
@@ -610,7 +623,7 @@ struct XvtrView: View {
     @ObservedObject var radio: Radio
 
     var body: some View {
-        let xvtrs = radio.xvtrs
+//        let xvtrs = radio.xvtrs
 
         HStack(spacing: 20) {
             Text("XVTR -> ").frame(width: 140, alignment: .leading)

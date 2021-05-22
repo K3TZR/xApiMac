@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/Quick/Nimble.git",
         "state": {
           "branch": null,
-          "revision": "7a54aaf19a8ef16f67787c260fda81ead7ba4d67",
-          "version": "9.0.1"
+          "revision": "af1730dde4e6c0d45bf01b99f8a41713ce536790",
+          "version": "9.2.0"
         }
       },
       {
@@ -69,8 +69,8 @@
         "repositoryURL": "https://github.com/K3TZR/xClient6001.git",
         "state": {
           "branch": null,
-          "revision": "169c2da2c77970d62f070df7afd5180f17a931ca",
-          "version": "0.7.6"
+          "revision": "49ee12591001ecd498b4dd6ed375fc1331d2340d",
+          "version": "0.8.7"
         }
       },
       {
@@ -78,8 +78,8 @@
         "repositoryURL": "https://github.com/K3TZR/xLib6001.git",
         "state": {
           "branch": null,
-          "revision": "e8fc361151923575a3ee0ed2bf31fde62af66d37",
-          "version": "0.7.2"
+          "revision": "0124f219f52e5f9ec8bf96b291e4c472ff41722d",
+          "version": "0.8.5"
         }
       }
     ]

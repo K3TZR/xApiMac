@@ -21,6 +21,10 @@ struct Message: Identifiable {
     var color = Color(.textColor)
 }
 
+enum Views: String {
+    case apiTester = "Api Tester"
+    case logViewer = "Log Viewer"
+}
 enum ObjectFilters: String, CaseIterable {
     case core
     case coreNoMeters = "core w/o meters"
@@ -50,30 +54,43 @@ final class Tester: ObservableObject {
     // ----------------------------------------------------------------------------
     // MARK: - Published properties
 
-    @Published var cmdToSend                    = ""
-    @Published var filteredMessages             = [Message]()
+    @Published var cmdToSend = ""
+    @Published var filteredMessages = [Message]()
+    @Published var lastMessageId: Int?
 
     // ----------------------------------------------------------------------------
     // MARK: - Defaults properties
 
+    // local usage
     @AppStorage("clearOnSend") var clearOnSend: Bool = false
     @AppStorage("clearAtConnect") var clearAtConnect: Bool = false
     @AppStorage("clearAtDisconnect") var clearAtDisconnect: Bool = false
-    @AppStorage("clientId") var clientId: String?
     @AppStorage("fontSize") var fontSize: Int = 12
     @AppStorage("fontMaxSize") var fontMaxSize: Int = 16
     @AppStorage("fontMinSize") var fontMinSize: Int = 8
     @AppStorage("messagesFilterBy") var messagesFilterBy: MessageFilters = .none
     @AppStorage("messagesFilterText") var messagesFilterText: String = ""
+    @AppStorage("showButtons") var showButtons: Bool = false
     @AppStorage("showPings") var showPings: Bool = false
     @AppStorage("showReplies") var showReplies: Bool = false
+    @AppStorage("showTimestamps") var showTimestamps: Bool = false
+
+    // required by RadioManagerDelegate protocol
+    @AppStorage("clientId") var clientId: String?
+    @AppStorage("defaultGuiConnection") var defaultGuiConnection: String?
+    @AppStorage("defaultNonGuiConnection") var defaultNonGuiConnection: String?
+    @AppStorage("guiIsEnabled") var guiIsEnabled: Bool = false
+    @AppStorage("smartlinkCallsign") var smartlinkCallsign: String?
+    @AppStorage("smartlinkEmail") var smartlinkEmail: String?
+    @AppStorage("smartlinkIsEnabled") var smartlinkIsEnabled: Bool = false
+    @AppStorage("smartlinkName") var smartlinkName: String?
+    @AppStorage("stationName") var stationName: String?
 
     // ----------------------------------------------------------------------------
     // MARK: - Internal properties
 
     var activePacket: DiscoveryPacket?
     var isConnected = false
-    var stationName = "xApiMac"
 
     // ----------------------------------------------------------------------------
     // MARK: - Private properties
@@ -255,6 +272,7 @@ final class Tester: ObservableObject {
 // MARK: - RadioManagerDelegate extension
 
 extension Tester: RadioManagerDelegate {
+
     func willConnect() { if clearAtConnect { clearMessages() } }
     func willDisconnect() { if clearAtDisconnect { clearMessages() } }
 

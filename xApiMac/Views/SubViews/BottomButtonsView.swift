@@ -12,7 +12,6 @@ import xClient6001
 struct BottomButtonsView: View {
     @ObservedObject var tester: Tester
     @ObservedObject var radioManager: RadioManager
-    @Environment(\.openURL) var openURL
 
     @AppStorage("clearAtConnect") var clearAtConnect: Bool = false
     @AppStorage("clearAtDisconnect") var clearAtDisconnect: Bool = false

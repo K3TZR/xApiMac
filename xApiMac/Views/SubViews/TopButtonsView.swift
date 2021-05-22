@@ -13,11 +13,11 @@ struct TopButtonsView: View {
     @EnvironmentObject var tester: Tester
     @EnvironmentObject var radioManager: RadioManager
 
-    @AppStorage("guiIsEnabled") var guiIsEnabled: Bool = false
+    @AppStorage("guiIsEnabled") var guiIsEnabled = false
     @AppStorage("showTimestamps") var showTimestamps: Bool = false
     @AppStorage("showPings") var showPings: Bool = false
     @AppStorage("showReplies") var showReplies: Bool = false
-    @AppStorage("smartlinkIsEnabled") var smartlinkIsEnabled: Bool = false
+    @AppStorage("showButtons") var showButtons: Bool = false
 
     var body: some View {
 
@@ -37,6 +37,7 @@ struct TopButtonsView: View {
                 Toggle("Times", isOn: $showTimestamps)
                 Toggle("Pings", isOn: $showPings)
                 Toggle("Replies", isOn: $showReplies)
+                Toggle("Buttons", isOn: $showButtons)
             }
 
             Spacer()
@@ -51,13 +52,13 @@ struct TopButtonsView: View {
                 }) {
                     Text(radioManager.smartlinkIsLoggedIn ? "Logout" : "Login").frame(width: 50)
                 }
-                .disabled(!smartlinkIsEnabled)
+                .disabled(!tester.smartlinkIsEnabled)
 
                 Button("Status") { radioManager.showView(.smartlinkStatus) }
             }.disabled(radioManager.isConnected)
 
             Spacer()
-            Button("Defaults") { radioManager.defaultChoose() }.disabled(radioManager.isConnected)
+            Button("Default") { radioManager.defaultChoose() }
         }
     }
 }

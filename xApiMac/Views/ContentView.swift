@@ -11,33 +11,30 @@ import xClient6001
 struct ContentView: View {
     @EnvironmentObject var tester: Tester
     @EnvironmentObject var radioManager: RadioManager
-    @State var selectedTab: Int
+    @State var selectedView: Views
 
     var body: some View {
+        Group {
+            if selectedView == .apiTester {
+                ApiTesterView()
+                    .environmentObject(tester)
+                    .environmentObject(radioManager)
+                    .padding(.horizontal)
 
-        TabView(selection: $selectedTab) {
-            ApiTesterView()
-                .environmentObject(tester)
-                .environmentObject(radioManager)
-                .tabItem {Text("Api Tester")}
-                .padding(.horizontal)
-                .tag(0)
-
-            LogView()
-                .environmentObject(LogManager.sharedInstance)
-                .environmentObject(radioManager)
-                .tabItem {Text("Log View")}
-                .padding(.horizontal)
-                .tag(1)
+            } else {
+                LogView()
+                    .environmentObject(LogManager.sharedInstance)
+                    .environmentObject(radioManager)
+                    .padding(.horizontal)
+            }
         }
-//        .onAppear {
-//            if tester.smartlinkIsEnabled && tester.smartlinkWasLoggedIn {
-//                radioManager.smartlinkLogin(showPicker: false)
-//            }
-//        }
         .frame(minWidth: 920, minHeight: 400)
-
-        // Sheet presentation
+        .toolbar {
+            ToolbarItemGroup {
+                Button(Views.apiTester.rawValue) { selectedView = .apiTester }
+                Button(Views.logViewer.rawValue) { selectedView = .logViewer }
+            }
+        }
        .sheet(item: $radioManager.activeView) { viewType in
            switch viewType {
 
@@ -52,10 +49,10 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(selectedTab: 0)
+        ContentView(selectedView: .apiTester)
             .environmentObject(Tester())
             .environmentObject(RadioManager(delegate: Tester() as RadioManagerDelegate))
-        ContentView(selectedTab: 1)
+        ContentView(selectedView: .logViewer)
             .environmentObject(Tester())
             .environmentObject(RadioManager(delegate: Tester() as RadioManagerDelegate))
     }

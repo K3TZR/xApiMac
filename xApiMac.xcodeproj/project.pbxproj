@@ -21,7 +21,7 @@
 		91874C1C2585620600D80F05 /* Tester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91874C1B2585620600D80F05 /* Tester.swift */; };
 		919DBBE22612431500BC4AFA /* ApiTesterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 919DBBE12612431500BC4AFA /* ApiTesterView.swift */; };
 		91CCF46D2592D7F00063757A /* TopButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CCF46C2592D7F00063757A /* TopButtonsView.swift */; };
-		91FAC20A2606CD19004DCE43 /* xApiMac.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91FAC2092606CD19004DCE43 /* xApiMac.swift */; };
+		91FAC20A2606CD19004DCE43 /* XApiMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91FAC2092606CD19004DCE43 /* XApiMacApp.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,7 +41,7 @@
 		91874C1B2585620600D80F05 /* Tester.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tester.swift; sourceTree = "<group>"; };
 		919DBBE12612431500BC4AFA /* ApiTesterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiTesterView.swift; sourceTree = "<group>"; };
 		91CCF46C2592D7F00063757A /* TopButtonsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopButtonsView.swift; sourceTree = "<group>"; };
-		91FAC2092606CD19004DCE43 /* xApiMac.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = xApiMac.swift; sourceTree = "<group>"; };
+		91FAC2092606CD19004DCE43 /* XApiMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XApiMacApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,7 +84,7 @@
 				91541C2424E02E7D002FE61E /* Info.plist */,
 				91541C1E24E02E7D002FE61E /* Preview Content */,
 				91541C2524E02E7D002FE61E /* xApiMac.entitlements */,
-				91FAC2092606CD19004DCE43 /* xApiMac.swift */,
+				91FAC2092606CD19004DCE43 /* XApiMacApp.swift */,
 			);
 			path = xApiMac;
 			sourceTree = "<group>";
@@ -240,7 +240,7 @@
 				91541C3524E02FA1002FE61E /* AppExtensions.swift in Sources */,
 				9140FA16262613FF0026C81B /* ObjectsView.swift in Sources */,
 				91874C1C2585620600D80F05 /* Tester.swift in Sources */,
-				91FAC20A2606CD19004DCE43 /* xApiMac.swift in Sources */,
+				91FAC20A2606CD19004DCE43 /* XApiMacApp.swift in Sources */,
 				91859187257E80D400C7D6F5 /* ContentView.swift in Sources */,
 				9185917F257E80D400C7D6F5 /* SendView.swift in Sources */,
 				919DBBE22612431500BC4AFA /* ApiTesterView.swift in Sources */,
@@ -384,7 +384,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.4.4;
+				MARKETING_VERSION = 1.4.5;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -410,7 +410,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.4.4;
+				MARKETING_VERSION = 1.4.5;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.xApiMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -446,7 +446,7 @@
 			repositoryURL = "https://github.com/K3TZR/xClient6001.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.7.6;
+				minimumVersion = 0.8.7;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

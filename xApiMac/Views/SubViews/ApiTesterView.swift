@@ -12,9 +12,6 @@ struct ApiTesterView: View {
     @EnvironmentObject var tester: Tester
     @EnvironmentObject var radioManager: RadioManager
 
-    @AppStorage("fontSize") var fontSize: Int = 10
-    @AppStorage("objectsFilterBy") var objectsFilterBy: ObjectFilters = .core
-
     var body: some View {
         VStack(alignment: .leading) {
             TopButtonsView()
@@ -23,17 +20,18 @@ struct ApiTesterView: View {
             SendView(tester: tester, radioManager: radioManager)
             FiltersView(tester: tester)
 
-            Divider()
-            if radioManager.activeRadio == nil {
-                EmptyView()
-            } else {
-                ObjectsView(tester: tester, radio: radioManager.activeRadio!, objectFilter: objectsFilterBy, fontSize: fontSize)
+            Divider().background(Color(.red))
+
+            VSplitView {
+                if radioManager.activeRadio == nil {
+                    EmptyView()
+                } else {
+                    ObjectsView(tester: tester, radio: radioManager.activeRadio!)
+                }
+                MessagesView(messages: tester.filteredMessages)
             }
 
-            Divider().background(Color(.systemBlue))
-            MessagesView(messages: tester.filteredMessages, fontSize: fontSize)
-
-            Divider()
+            Divider().background(Color(.red))
             BottomButtonsView(tester: tester, radioManager: radioManager)
         }
         .padding()
