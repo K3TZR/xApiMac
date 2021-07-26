@@ -30,7 +30,7 @@ struct ObjectsView: View {
 
  struct ObjectsView_Previews: PreviewProvider {
     static var previews: some View {
-        ObjectsView(tester: Tester(), radio: Radio(DiscoveryPacket()))
+        ObjectsView(tester: Tester(), radio: Radio("local.1234-5678-9012-3456"))
     }
  }
 
@@ -45,12 +45,12 @@ struct RadioView: View {
                 HStack(spacing: 20) {
                     Text("RADIO -> ").frame(width: 140, alignment: .leading)
                     Text(radio.nickname).frame(width: 120, alignment: .leading)
-                    Text(radio.packet.model)
-                    Text(radio.packet.status)
-                    Text(radio.packet.isWan ? "Smartlink" : "Local")
-                    Text(radio.packet.publicIp)
-                    Text(radio.packet.serialNumber)
-                    Text(radio.packet.firmwareVersion)
+                    Text(radio.model)
+                    Text(radio.status)
+                    Text(radio.isWan ? "Smartlink" : "Local")
+                    Text(radio.publicIp)
+                    Text(radio.serialNumber)
+                    Text(radio.firmwareVersion)
                 }.padding(.trailing, 10)
                 HStack(spacing: 20) {
                     Text("Atu \(radio.atuPresent ? "Y" : "N")")
