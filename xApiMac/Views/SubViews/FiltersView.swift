@@ -13,20 +13,19 @@ struct FiltersView: View {
 
     var body: some View {
         HStack(spacing: 100) {
-            FilterObjectsView()
+            FilterObjectsView(object: tester)
             FilterMessagesView(object: tester)
         }
     }
 }
 
 struct FilterObjectsView: View {
-
-    @AppStorage("objectsFilterBy") var objectsFilterBy: ObjectFilters = .core
+    @ObservedObject var object: Tester
 
     var body: some View {
 
         HStack {
-            Picker("Show objects of type", selection: $objectsFilterBy) {
+            Picker("Show objects of type", selection: object.$objectsFilterBy) {
                 ForEach(ObjectFilters.allCases, id: \.self) {
                     Text($0.rawValue)
                 }
@@ -40,27 +39,24 @@ struct FilterObjectsView: View {
 struct FilterMessagesView: View {
     @ObservedObject var object: Tester
 
-    @AppStorage("messagesFilterBy") var messagesFilterBy: MessageFilters = .none
-    @AppStorage("messagesFilterText") var messagesFilterText: String = ""
-
     var body: some View {
 
         HStack {
-            Picker("Filter messages by", selection: $messagesFilterBy) {
+            Picker("Filter messages by", selection: object.$messagesFilterBy) {
                 ForEach(MessageFilters.allCases, id: \.self) {
                     Text($0.rawValue)
                 }
             }
-            .onChange(of: messagesFilterBy, perform: { value in
-                object.filterUpdate(filterBy: value, filterText: messagesFilterText)
+            .onChange(of: object.messagesFilterBy, perform: { value in
+                object.filterUpdate(filterBy: value, filterText: object.messagesFilterText)
             })
             .frame(width: 275)
 
-            TextField("Filter text", text: $messagesFilterText)
-                .onChange(of: messagesFilterText, perform: { value in
-                    object.filterUpdate(filterBy: messagesFilterBy, filterText: value)
+            TextField("Filter text", text: object.$messagesFilterText)
+                .onChange(of: object.messagesFilterText, perform: { value in
+                    object.filterUpdate(filterBy: object.messagesFilterBy, filterText: value)
                 })
-                .modifier(ClearButton(boundText: $messagesFilterText))
+                .modifier(ClearButton(boundText: object.$messagesFilterText))
         }
         .pickerStyle(MenuPickerStyle())
     }

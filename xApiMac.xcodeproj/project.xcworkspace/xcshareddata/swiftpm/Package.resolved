@@ -29,7 +29,7 @@
         }
       },
       {
-        "package": "JWTDecode.swift",
+        "package": "JWTDecode",
         "repositoryURL": "https://github.com/auth0/JWTDecode.swift.git",
         "state": {
           "branch": null,
@@ -69,8 +69,8 @@
         "repositoryURL": "https://github.com/K3TZR/xClient6001.git",
         "state": {
           "branch": null,
-          "revision": "3540c3fa31fe8efec61758d58ebd1fec0d29287f",
-          "version": "0.9.0"
+          "revision": "13a7bb87991055ba2f49a7e6fca4227f9c3031ba",
+          "version": "0.9.1"
         }
       },
       {

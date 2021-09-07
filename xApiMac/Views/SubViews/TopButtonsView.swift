@@ -13,42 +13,28 @@ struct TopButtonsView: View {
     @EnvironmentObject var tester: Tester
     @EnvironmentObject var radioManager: RadioManager
 
-    @AppStorage("guiIsEnabled") var guiIsEnabled = false
-    @AppStorage("showTimestamps") var showTimestamps: Bool = false
-    @AppStorage("showPings") var showPings: Bool = false
-    @AppStorage("showReplies") var showReplies: Bool = false
-    @AppStorage("showButtons") var showButtons: Bool = false
-
     var body: some View {
 
         HStack(spacing: 30) {
             Button(radioManager.isConnected ? "Stop" : "Start") {
-                if radioManager.isConnected {
-                    radioManager.disconnect()
-                } else {
-                    radioManager.connect()
-                }
+                radioManager.startStopConnection()
             }
             .keyboardShortcut(radioManager.isConnected ? .cancelAction : .defaultAction)
             .help("Using the Default connection type")
 
             HStack(spacing: 20) {
-                Toggle("Gui", isOn: $guiIsEnabled)
-                Toggle("Times", isOn: $showTimestamps)
-                Toggle("Pings", isOn: $showPings)
-                Toggle("Replies", isOn: $showReplies)
-                Toggle("Buttons", isOn: $showButtons)
+                Toggle("Gui", isOn: tester.$guiIsEnabled)
+                Toggle("Times", isOn: tester.$showTimestamps)
+                Toggle("Pings", isOn: tester.$showPings)
+                Toggle("Replies", isOn: tester.$showReplies)
+                Toggle("Buttons", isOn: tester.$showButtons)
             }
 
             Spacer()
             HStack(spacing: 10) {
                 Text("SmartLink")
                 Button(action: {
-                    if radioManager.smartlinkIsLoggedIn {
-                        radioManager.smartlinkLogout()
-                    } else {
-                        radioManager.smartlinkLogin()
-                    }
+                    radioManager.smartlinkLoginLogout()
                 }) {
                     Text(radioManager.smartlinkIsLoggedIn ? "Logout" : "Login").frame(width: 50)
                 }

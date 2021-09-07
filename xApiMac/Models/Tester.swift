@@ -70,6 +70,8 @@ final class Tester: ObservableObject {
     @AppStorage("fontMinSize") var fontMinSize: Int = 8
     @AppStorage("messagesFilterBy") var messagesFilterBy: MessageFilters = .none
     @AppStorage("messagesFilterText") var messagesFilterText: String = ""
+    @AppStorage("objectsFilterBy") var objectsFilterBy: ObjectFilters = .core
+    @AppStorage("objectsFilterText") var objectsFilterText: String = ""
     @AppStorage("showButtons") var showButtons: Bool = false
     @AppStorage("showPings") var showPings: Bool = false
     @AppStorage("showReplies") var showReplies: Bool = false
@@ -220,8 +222,8 @@ final class Tester: ObservableObject {
 
     /// Add an entry to the messages collection
     /// - Parameter text:       the text of the entry
-    private func populateMessages(_ text: String) {
-        DispatchQueue.main.async { [self] in
+    @MainActor private func populateMessages(_ text: String) {
+//        DispatchQueue.main.async { [self] in
             // guard that a session has been started
             if _startTimestamp == nil { _startTimestamp = Date() }
 
@@ -233,7 +235,7 @@ final class Tester: ObservableObject {
             messages.append( Message(id: _messageNumber, text: stampedText, color: lineColor(text)))
 
             filterUpdate(filterBy: messagesFilterBy, filterText: messagesFilterText)
-        }
+//        }
     }
 
     /// Assign each text line a color
@@ -251,7 +253,7 @@ final class Tester: ObservableObject {
 
     /// Parse a Reply message. format: <sequenceNumber>|<hexResponse>|<message>[|<debugOutput>]
     /// - parameter commandSuffix:    a Command Suffix
-    private func parseReplyMessage(_ commandSuffix: String) {
+    @MainActor private func parseReplyMessage(_ commandSuffix: String) {
         // separate it into its components
         let components = commandSuffix.components(separatedBy: "|")
 
@@ -287,10 +289,10 @@ extension Tester: RadioManagerDelegate {
 extension Tester: ApiDelegate {
     public func sentMessage(_ text: String) {
         if !text.hasSuffix("|ping") {
-            populateMessages(text)
+            DispatchQueue.main.async { self.populateMessages(text) }
         } else {
             _lastPingSequenceNumber = String(text.prefix(while: {$0 != "|"}).dropFirst())
-            if showPings { populateMessages(text)  }
+            if showPings { DispatchQueue.main.async { self.populateMessages(text) } }
         }
     }
 
@@ -301,13 +303,13 @@ extension Tester: ApiDelegate {
         // switch on the first character
         switch text[text.startIndex] {
 
-        case "C":   populateMessages(text)       // Commands
-        case "H":   populateMessages(text)       // Handle type
-        case "M":   populateMessages(text)       // Message Type
-        case "R":   parseReplyMessage(suffix)    // Reply Type
-        case "S":   populateMessages(text)       // Status type
-        case "V":   populateMessages(text)       // Version Type
-        default:    populateMessages("Tester: Unknown Message type, \(text[text.startIndex]) ") // Unknown Type
+        case "C":   DispatchQueue.main.async { self.populateMessages(text) }      // Commands
+        case "H":   DispatchQueue.main.async { self.populateMessages(text) }      // Handle type
+        case "M":   DispatchQueue.main.async { self.populateMessages(text) }      // Message Type
+        case "R":   DispatchQueue.main.async { self.parseReplyMessage(suffix) }   // Reply Type
+        case "S":   DispatchQueue.main.async { self.populateMessages(text) }      // Status type
+        case "V":   DispatchQueue.main.async { self.populateMessages(text) }      // Version Type
+        default:    DispatchQueue.main.async { self.populateMessages("Tester: Unknown Message type, \(text[text.startIndex]) ") } // Unknown Type
         }
     }
 

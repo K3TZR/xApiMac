@@ -11,20 +11,15 @@ import xClient6001
 
 struct BottomButtonsView: View {
     @ObservedObject var tester: Tester
-    @ObservedObject var radioManager: RadioManager
-
-    @AppStorage("clearAtConnect") var clearAtConnect: Bool = false
-    @AppStorage("clearAtDisconnect") var clearAtDisconnect: Bool = false
-    @AppStorage("fontSize") var fontSize: Int = 10
 
     var body: some View {
 
         HStack(spacing: 40) {
-            Stepper("Font Size", value: $fontSize, in: 8...16)
-            Text("\(fontSize)").frame(alignment: .leading)
+            Stepper("Font Size", value: tester.$fontSize, in: 8...16)
+            Text("\(tester.fontSize)").frame(alignment: .leading)
             Spacer()
-            Toggle("Clear on Connect", isOn: $clearAtConnect)
-            Toggle("Clear on Disconnect", isOn: $clearAtDisconnect)
+            Toggle("Clear on Connect", isOn: tester.$clearAtConnect)
+            Toggle("Clear on Disconnect", isOn: tester.$clearAtDisconnect)
             Button("Clear Now") { tester.clearMessages() }
         }
     }
@@ -33,6 +28,6 @@ struct BottomButtonsView: View {
 struct BottomButtonsView_Previews: PreviewProvider {
 
     static var previews: some View {
-        BottomButtonsView(tester: Tester(), radioManager: RadioManager(delegate: Tester() as RadioManagerDelegate) )
+        BottomButtonsView(tester: Tester() )
     }
 }

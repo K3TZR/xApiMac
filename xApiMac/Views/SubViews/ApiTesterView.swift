@@ -28,11 +28,13 @@ struct ApiTesterView: View {
                 } else {
                     ObjectsView(tester: tester, radio: radioManager.activeRadio!)
                 }
-                MessagesView(messages: tester.filteredMessages)
+                MessagesView()
+                    .environmentObject(tester)
             }
 
             Divider().background(Color(.red))
-            BottomButtonsView(tester: tester, radioManager: radioManager)
+//            BottomButtonsView(tester: tester, radioManager: radioManager)
+            BottomButtonsView(tester: tester)
         }
         .padding()
     }

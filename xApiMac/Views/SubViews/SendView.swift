@@ -12,8 +12,6 @@ struct SendView: View {
     @ObservedObject var tester: Tester
     @ObservedObject var radioManager: RadioManager
 
-    @AppStorage("clearOnSend") var clearOnSend: Bool = false
-
     var body: some View {
 
         HStack(spacing: 30) {
@@ -28,7 +26,7 @@ struct SendView: View {
                 .modifier(ClearButton(boundText: $tester.cmdToSend))
 
             Spacer()
-            Toggle("Clear on Send", isOn: $clearOnSend)
+            Toggle("Clear on Send", isOn: tester.$clearOnSend)
         }
     }
 }
